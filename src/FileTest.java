@@ -21,8 +21,13 @@ public class FileTest {
         System.out.println("Input circuit name: ");
         circuitName = input.next();
 
+        DepthFirst groupingGenerator = new DepthFirst();
+        groupingGenerator.stirlingNum(scNum, gNum);
+
         ScAggre scAggre = new ScAggre(circuitName);
         scAggre.scAggreReader();
         scAggre.scAggreId.stream().forEach(System.out::println);
-    }
+        System.out.println();
+        System.out.println(scAggre.scAggreId.get(1).get(0).toString());
+        }
 }
