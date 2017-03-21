@@ -4,7 +4,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 /**
  * Created by ZhangYucong on 2017/3/20.
@@ -47,5 +46,6 @@ public class ScAggre {
         List<Integer> temp = new ArrayList<>();
         temp.addAll(util.clone(tempAggre));
         scAggreId.add(temp);
+        bufReader.close();
     }
 }
