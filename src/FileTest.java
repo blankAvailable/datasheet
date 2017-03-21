@@ -21,10 +21,8 @@ public class FileTest {
         System.out.println("Input circuit name: ");
         circuitName = input.next();
 
-        Scffaggre scffAggre = new Scffaggre(circuitName);
-        scffAggre.scFFidReader();
-        scffAggre.ffidAggreReader();
-        System.out.println(scffAggre.scFFid.size());
-        System.out.println(scffAggre.ffidAggre.size());
+        ScAggre scAggre = new ScAggre(circuitName);
+        scAggre.scAggreReader();
+        scAggre.scAggreId.stream().forEach(System.out::println);
     }
 }

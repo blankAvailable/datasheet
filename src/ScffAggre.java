@@ -1,12 +1,17 @@
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringJoiner;
 
 /**
  * Created by ZhangYucong on 2017/3/12.
+ * read the .ScFFAggre filt to get scan chain -- flip flop id list,
+ * flip flop id -- aggressor pid id list
+ * and pid id -- fanout number array
  */
-public class Scffaggre {
+public class ScffAggre {
 
     public List<List<Integer>> scFFid = new ArrayList<>();
     public List<List<Integer>> ffidAggre = new ArrayList<>();
@@ -15,12 +20,12 @@ public class Scffaggre {
     private String extension = ".ScFFAggre";
 
     /** initialize ffidAggre list, pidFanout array and .ScFFAggre file path */
-    public Scffaggre(String circuitName) throws IOException {
-        int ffNum = this.ffNum();
+    public ScffAggre(String circuitName) throws IOException {
+        int ffNum = this.ffNum(circuitName);
         for (int i=0; i<ffNum; i++){
             ffidAggre.add(new ArrayList<>());
         }
-        pidFanout = new int[this.pidSize()];
+        pidFanout = new int[this.pidSize(circuitName)];
 
         filePath = filePath.concat(circuitName + "\\");
         circuitName = circuitName.concat(extension);
@@ -29,8 +34,8 @@ public class Scffaggre {
     }
 
     /** get number of flip flops from .ctsppilist file */
-    private int ffNum() throws IOException {
-        File ppiList = new File("..\\originalData\\b20\\b20.ctsppilist");
+    private int ffNum(String circuitName) throws IOException {
+        File ppiList = new File("..\\originalData\\" + circuitName + "\\" + circuitName + ".ctsppilist");
         BufferedReader bufReader = new BufferedReader(new FileReader(ppiList));
 
         int ffNum = 0;
@@ -43,16 +48,16 @@ public class Scffaggre {
     }
 
     /** get maximum pid id from .pid file */
-    private int pidSize() throws IOException {
-        File pid = new File("..\\originalData\\b20\\b20.pid");
+    private int pidSize(String circuitName) throws IOException {
+        File pid = new File("..\\originalData\\" + circuitName + "\\" + circuitName + ".pid");
         BufferedReader bufReader = new BufferedReader(new FileReader(pid));
 
-        int pidSize = 0;
+        int pidSize = 1;
         while (bufReader.readLine()!=null){
             pidSize++;
         }
         bufReader.close();
-        System.out.println("pid size is: " + pidSize);
+        System.out.println("pid size is: " + (pidSize-1));
         return pidSize;
     }
 
