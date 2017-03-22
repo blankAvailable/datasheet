@@ -10,18 +10,21 @@ import java.util.List;
  */
 public class ScAggre {
     public List<List<Integer>> scAggreId = new ArrayList<>();
+
     private String filePath = "..\\originalData\\";
     private String extension = ".ScAggre";
 
-    public ScAggre(String circuitName){
+    public ScAggre(String circuitName) throws IOException {
         filePath = filePath.concat(circuitName + "\\");
         circuitName = circuitName.concat(extension);
         filePath = filePath.concat(circuitName);
         System.out.println(filePath);
+        scAggreId.add(new ArrayList<>());
+        scAggreReader();
     }
 
     /** read .ScAggre file to get scan chain -- reachable aggressor set table*/
-    public void scAggreReader() throws IOException {
+    private void scAggreReader() throws IOException {
         File scAggre = new File(filePath);
         BufferedReader bufReader = new BufferedReader(new FileReader(scAggre));
         List<Integer> tempAggre = new ArrayList<>();

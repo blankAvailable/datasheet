@@ -1,12 +1,22 @@
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Created by ZhangYucong on 2017/3/10.
  */
 public class DepthFirst {
+    List<List<List<Integer>>> scGrouping = new ArrayList<>();
+    List<Integer> scanChain = new ArrayList<>();
 
-    public int stirlingNum(int scNum, int gNum) {
+    public DepthFirst(int scNum, int gNum){
+        System.out.println("The number of different groupings is: " + stirlingNum(scNum, gNum));
+        for (int i=0; i<scNum; i++)
+            scanChain.add(i);
+        scGrouping.addAll(reGrouping(scanChain, gNum));
+    }
+
+    private int stirlingNum(int scNum, int gNum) {
         if (scNum == 1 && gNum == 0)
             return 1;
         else if (scNum == gNum || gNum == 1)
@@ -15,7 +25,7 @@ public class DepthFirst {
     }
 
     /** reGrouping scan chains */
-    public List<List<List<Integer>>> reGrouping(List<Integer> scanChain, int gNum) {
+    private List<List<List<Integer>>> reGrouping(List<Integer> scanChain, int gNum) {
         if (scanChain.size() < gNum)
             throw new IllegalArgumentException("gNum must =< scNum!");
 

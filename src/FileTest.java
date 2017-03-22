@@ -1,4 +1,4 @@
-import java.io.*;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -21,13 +21,10 @@ public class FileTest {
         System.out.println("Input circuit name: ");
         circuitName = input.next();
 
-        DepthFirst groupingGenerator = new DepthFirst();
-        groupingGenerator.stirlingNum(scNum, gNum);
-
+        DepthFirst groupingGenerator = new DepthFirst(scNum, gNum);
+        groupingGenerator.scGrouping.stream().forEach(System.out::println);
         ScAggre scAggre = new ScAggre(circuitName);
-        scAggre.scAggreReader();
-        scAggre.scAggreId.stream().forEach(System.out::println);
-        System.out.println();
-        System.out.println(scAggre.scAggreId.get(1).get(0).toString());
+        ScffAggre scffAggre = new ScffAggre(circuitName);
+        scAggre.scAggreId.get(groupingGenerator.scGrouping.get(0).get(0).get(0)).stream().forEach(System.out::println);
         }
 }

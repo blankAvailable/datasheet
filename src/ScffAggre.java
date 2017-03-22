@@ -16,6 +16,7 @@ public class ScffAggre {
     public List<List<Integer>> scFFid = new ArrayList<>();
     public List<List<Integer>> ffidAggre = new ArrayList<>();
     public int[] pidFanout;
+
     private String filePath = "..\\originalData\\";
     private String extension = ".ScFFAggre";
 
@@ -31,6 +32,9 @@ public class ScffAggre {
         circuitName = circuitName.concat(extension);
         filePath = filePath.concat(circuitName);
         System.out.println(filePath);
+        scFFid.add(new ArrayList<>());
+        scFFidReader();
+        ffidAggreReader();
     }
 
     /** get number of flip flops from .ctsppilist file */
@@ -63,7 +67,7 @@ public class ScffAggre {
 
     /** read .ScFFAggre file to get scan chain number -- flip flop id table,
      * and pid id -- number of fanout array */
-    public void scFFidReader() throws IOException {
+    private void scFFidReader() throws IOException {
         File scFFAggre = new File(filePath);
         BufferedReader bufReader = new BufferedReader(new FileReader(scFFAggre));
         List<Integer> tempFFid = new ArrayList<>();
@@ -98,7 +102,7 @@ public class ScffAggre {
     }
 
     /** read .ScFFAggre file to get flip flop id -- aggressor pid id table*/
-    public void ffidAggreReader() throws IOException {
+    private void ffidAggreReader() throws IOException {
         File scFFAggre = new File(filePath);
         BufferedReader bufReader = new BufferedReader(new FileReader(scFFAggre));
         List<Integer> tempAggreId = new ArrayList<>();
