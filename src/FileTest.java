@@ -23,8 +23,12 @@ public class FileTest {
 
         DepthFirst groupingGenerator = new DepthFirst(scNum, gNum);
         groupingGenerator.scGrouping.stream().forEach(System.out::println);
-        ScAggre scAggre = new ScAggre(circuitName);
-        ScffAggre scffAggre = new ScffAggre(circuitName);
-        scAggre.scAggreId.get(groupingGenerator.scGrouping.get(0).get(0).get(0)).stream().forEach(System.out::println);
+        Matrix matrix = new Matrix(scNum, gNum, circuitName);
+        for (int i=0; i<groupingGenerator.scGrouping.size(); i++){
+            System.out.println("Grouping " + i);
+            System.out.println(groupingGenerator.scGrouping.get(i).toString());
+            System.out.print("Groping evulate(Lower is better): " +
+                    matrix.groupEvaluate(groupingGenerator.scGrouping.get(i)));
         }
+    }
 }

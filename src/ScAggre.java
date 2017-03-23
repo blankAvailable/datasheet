@@ -7,6 +7,7 @@ import java.util.List;
 
 /**
  * Created by ZhangYucong on 2017/3/20.
+ * read .ScAggre file to get scan chain -- reachable aggressor pid id list
  */
 public class ScAggre {
     public List<List<Integer>> scAggreId = new ArrayList<>();

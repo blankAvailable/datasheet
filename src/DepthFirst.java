@@ -11,7 +11,7 @@ public class DepthFirst {
 
     public DepthFirst(int scNum, int gNum){
         System.out.println("The number of different groupings is: " + stirlingNum(scNum, gNum));
-        for (int i=0; i<scNum; i++)
+        for (int i=1; i<=scNum; i++)
             scanChain.add(i);
         scGrouping.addAll(reGrouping(scanChain, gNum));
     }
