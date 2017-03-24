@@ -1,3 +1,5 @@
+import org.omg.PortableInterceptor.INACTIVE;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,25 +12,55 @@ public class Matrix {
     private int gNam = 0;
     private String circuitName = null;
 
-    public Matrix(int scNam, int gNam, String citcuitName){
+    public Matrix(int scNam, int gNam, String circuitName){
         this.scNam = scNam;
         this.gNam = gNam;
-        this.circuitName = citcuitName;
+        this.circuitName = circuitName;
     }
 
     /** calculate the biggest WSA difference between every two neighboring flip flips in one grouping */
     public int groupEvaluate(List<List<Integer>> scGroup) throws IOException {
+        int maxWsa = 0;
         int maxWsaDiff = 0;
+        List<Integer> maxWsaList = new ArrayList<>();
         List<Integer> reachableAggre = new ArrayList<>();
+        List<Integer> tempffAggre = new ArrayList<>();
         ScffAggre scffAggre = new ScffAggre(circuitName);
         ScAggre scAggre = new ScAggre(circuitName);
+        Util util = new Util();
 
+        //get reachable aggressor set of one scan chain group
         for (int i=0; i<scGroup.size(); i++){
             for (int j=0; j<scGroup.get(i).size(); j++){
-                reachableAggre.removeAll(scAggre.scAggreId.get(Integer.parseInt(scGroup.get(i).get(j).toString())));
-                reachableAggre.addAll(scAggre.scAggreId.get(Integer.parseInt(scGroup.get(i).get(j).toString())));
+                reachableAggre.removeAll(scAggre.scAggreId.get(scGroup.get(i).get(j)));
+                reachableAggre.addAll(scAggre.scAggreId.get(scGroup.get(i).get(j)));
             }
-            reachableAggre.stream().forEach(System.out::println);
+            System.out.println("reachable aggressor set: " + reachableAggre);
+
+            for (int j=0; j<scGroup.get(i).size(); j++){
+                for (int k=0; k<scffAggre.scFFid.get(scGroup.get(i).get(j)).size(); k++){
+                    System.out.println("flip flop id: " + scffAggre.scFFid.get(scGroup.get(i).get(j)).get(k));
+                    tempffAggre.addAll(util.clone(scffAggre.ffidAggre.get(scffAggre.scFFid.get(scGroup.get(i).get(j)).get(k))));
+                    tempffAggre.retainAll(reachableAggre);
+                    System.out.println("impact aggressor set: " + tempffAggre);
+                    for (int l=0; l<tempffAggre.size(); l++){
+                        maxWsa = maxWsa + scffAggre.pidFanout[tempffAggre.get(l)];
+                    }
+                    System.out.println("maxWsa of ff: " + scffAggre.scFFid.get(scGroup.get(i).get(j)).get(k) + " is " + maxWsa);
+                    maxWsaList.add(maxWsa);
+                    tempffAggre.clear();
+                    maxWsa = 0;
+                    for (int l=0; l<maxWsaList.size(); l++){
+                        if ((l+1)<maxWsaList.size()) {
+                            int wsaDiff = maxWsaList.get(l + 1) - maxWsaList.get(l);
+                            if (maxWsaDiff<wsaDiff)
+                                maxWsaDiff = wsaDiff;
+                        }else{
+                            break;
+                        }
+                    }
+                }
+            }
             System.out.println();
             reachableAggre.clear();
         }

@@ -27,7 +27,7 @@ public class FileTest {
         for (int i=0; i<groupingGenerator.scGrouping.size(); i++){
             System.out.println("Grouping " + i);
             System.out.println(groupingGenerator.scGrouping.get(i).toString());
-            System.out.print("Groping evulate(Lower is better): " +
+            System.out.println("Groping evulate(Lower is better): " +
                     matrix.groupEvaluate(groupingGenerator.scGrouping.get(i)));
         }
     }
