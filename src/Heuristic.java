@@ -6,19 +6,19 @@ import java.util.Random;
 /**
  * Created by ZhangYucong on 2017/3/29.
  */
-public class heuristic {
+public class Heuristic {
     private int scNum = 0;
     private int thr = 0;
-    //save the status of a group that it's empty or not
-    private int[] groupStatus;
-    private String circuitName = null;
     /** save the status of all groups, if all groups are empty,
      * curruntStatus = 1; if no group is empty, curruntStatus = 2;
      * if not all group is empty, curruntStatus = 3. */
     private int curruntStatus = 1;
+    //save the status of a group that it's empty or not
+    private int[] groupStatus;
+    private String circuitName = null;
     public List<List<Integer>> scGroup = new ArrayList<>();
 
-    public heuristic(int scNum, int gNum, String circuitName, int thr){
+    public Heuristic(int scNum, int gNum, String circuitName, int thr) throws IOException {
         this.scNum = scNum;
         this.thr = thr;
         groupStatus = new int[gNum];
@@ -27,9 +27,10 @@ public class heuristic {
             List<Integer> oneGroup = new ArrayList<>();
             scGroup.add(oneGroup);
         }
+        grouping();
     }
 
-    public void grouping() throws IOException {
+    private void grouping() throws IOException {
         List<Integer> maxWsaList = new ArrayList<>();
         Util util = new Util();
         Matrix matrix = new Matrix(circuitName);
@@ -42,6 +43,7 @@ public class heuristic {
                     curruntStatus = 3;
                 }else if (util.arraySum(groupStatus) == groupStatus.length)
                     curruntStatus = 2;
+                continue;
             }
             if (curruntStatus == 2){
                 for (int j=0; j<groupStatus.length; j++){
@@ -53,6 +55,7 @@ public class heuristic {
                         " generate smallest difference of max WSA");
                 scGroup.get(util.findMin(maxWsaList)).add(i);
                 maxWsaList.clear();
+                continue;
             }
             if (curruntStatus == 3){
                 int minUsedIndex = 0;
@@ -89,6 +92,7 @@ public class heuristic {
                 }
                 if (util.arraySum(groupStatus) == groupStatus.length)
                     curruntStatus = 2;
+                continue;
             }
         }
     }
