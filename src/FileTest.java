@@ -11,7 +11,6 @@ public class FileTest {
         int scNum = 0;
         int gNum = 0;
         String circuitName = null;
-        List<List<List<Integer>>> scGrouping = new ArrayList<>();
 
         Scanner input = new Scanner(System.in);
         System.out.println("Input scan chain number: ");
@@ -23,7 +22,7 @@ public class FileTest {
 
         DepthFirst groupingGenerator = new DepthFirst(scNum, gNum);
         groupingGenerator.scGrouping.stream().forEach(System.out::println);
-        Matrix matrix = new Matrix(scNum, gNum, circuitName);
+        Matrix matrix = new Matrix(circuitName);
         for (int i=0; i<groupingGenerator.scGrouping.size(); i++){
             System.out.println("Grouping " + i);
             System.out.println(groupingGenerator.scGrouping.get(i).toString());

@@ -1,5 +1,3 @@
-import org.omg.PortableInterceptor.INACTIVE;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,18 +6,14 @@ import java.util.List;
  * Created by ZhangYucong on 2017/3/22.
  */
 public class Matrix {
-    private int scNam = 0;
-    private int gNam = 0;
     private String circuitName = null;
 
-    public Matrix(int scNam, int gNam, String circuitName){
-        this.scNam = scNam;
-        this.gNam = gNam;
+    public Matrix(String circuitName){
         this.circuitName = circuitName;
     }
 
     /** calculate the biggest WSA difference between every two neighboring flip flips in one grouping */
-    public int groupEvaluate(List<List<Integer>> scGroup) throws IOException {
+    public int groupEvaluate(List<List<Integer>> scGroup) throws IOException  {
         int maxWsa = 0;
         int maxWsaDiff = 0;
         List<Integer> maxWsaList = new ArrayList<>();
@@ -29,14 +23,15 @@ public class Matrix {
         ScAggre scAggre = new ScAggre(circuitName);
         Util util = new Util();
 
-        //get reachable aggressor set of one scan chain group
         for (int i=0; i<scGroup.size(); i++){
+            //get reachable aggressor set of one scan chain group
             for (int j=0; j<scGroup.get(i).size(); j++){
                 reachableAggre.removeAll(scAggre.scAggreId.get(scGroup.get(i).get(j)));
                 reachableAggre.addAll(scAggre.scAggreId.get(scGroup.get(i).get(j)));
             }
             System.out.println("reachable aggressor set: " + reachableAggre);
 
+            //calculate the biggest max WSA difference of every group
             for (int j=0; j<scGroup.get(i).size(); j++){
                 for (int k=0; k<scffAggre.scFFid.get(scGroup.get(i).get(j)).size(); k++){
                     System.out.println("flip flop id: " + scffAggre.scFFid.get(scGroup.get(i).get(j)).get(k));
@@ -64,7 +59,7 @@ public class Matrix {
             System.out.println();
             reachableAggre.clear();
         }
-
+        //return the biggest max WSA difference of one scan chain grouping
         return maxWsaDiff;
     }
 }
