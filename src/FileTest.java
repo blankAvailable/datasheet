@@ -1,6 +1,6 @@
+import org.apache.commons.cli.Options;
+
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -12,6 +12,10 @@ public class FileTest {
         int gNum = 0;
         int thr = 0;
         String circuitName = null;
+
+        Options options = new Options();
+
+        options.addOption();
 
         Scanner input = new Scanner(System.in);
         System.out.print("Input scan chain number: ");
