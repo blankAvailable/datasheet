@@ -10,7 +10,6 @@ public class FileTest {
     public static void main(String[] args) throws IOException {
         CommandProcess command = new CommandProcess();
         command.setArgs(args);
-
         DepthFirst groupingGenerator = new DepthFirst(command.scNum, command.gNum);
         groupingGenerator.scGrouping.stream().forEach(System.out::println);
         Matrix matrix = new Matrix(command.circuitName);
