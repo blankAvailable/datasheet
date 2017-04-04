@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/datasheet.iml" filepath="$PROJECT_DIR$/datasheet.iml" />
+      <module fileurl="file://$PROJECT_DIR$/grouping.iml" filepath="$PROJECT_DIR$/grouping.iml" />
     </modules>
   </component>
 </project>
