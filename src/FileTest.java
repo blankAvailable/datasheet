@@ -6,20 +6,6 @@ import java.util.Scanner;
  */
 public class FileTest {
     public static void main(String[] args) throws IOException {
-//        int scNum = 0;
-//        int gNum = 0;
-//        int thr = 0;
-//        String circuitName = null;
-//
-//        Scanner input = new Scanner(System.in);
-//        System.out.print("Input scan chain number: ");
-//        scNum = input.nextInt();
-//        System.out.print("Input group number: ");
-//        gNum = input.nextInt();
-//        System.out.print("Input circuit name: ");
-//        circuitName = input.next();
-//        System.out.print("Input threshold value: ");
-//        thr = input.nextInt();
         CommandProcess command = new CommandProcess();
         command.setArgs(args);
 
