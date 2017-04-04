@@ -19,7 +19,7 @@ public class ScffAggre {
     public List<List<Integer>> ffidAggre = new ArrayList<>();
     public int[] pidFanout;
 
-    private String filePath = "..\\originalData\\";
+    private String filePath = ".\\testdata\\";
     private String extension = ".ScFFAggre";
 
     /** initialize ffidAggre list, pidFanout array and .ScFFAggre file path */
@@ -41,7 +41,7 @@ public class ScffAggre {
 
     /** get number of flip flops from .ctsppilist file */
     private int ffNum(String circuitName) throws IOException {
-        File ppiList = new File("..\\originalData\\" + circuitName + "\\" + circuitName + ".ctsppilist");
+        File ppiList = new File(".\\testdata\\" + circuitName + "\\" + circuitName + ".ctsppilist");
         BufferedReader bufReader = new BufferedReader(new FileReader(ppiList));
 
         int ffNum = 0;
@@ -55,7 +55,7 @@ public class ScffAggre {
 
     /** get maximum pid id from .pid file */
     private int pidSize(String circuitName) throws IOException {
-        File pid = new File("..\\originalData\\" + circuitName + "\\" + circuitName + ".pid");
+        File pid = new File(".\\testdata\\" + circuitName + "\\" + circuitName + ".pid");
         BufferedReader bufReader = new BufferedReader(new FileReader(pid));
 
         int pidSize = 1;

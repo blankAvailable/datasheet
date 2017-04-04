@@ -14,7 +14,7 @@ import java.util.List;
 public class ScAggre {
     public List<List<Integer>> scAggreId = new ArrayList<>();
 
-    private String filePath = "..\\originalData\\";
+    private String filePath = ".\\testdata\\";
     private String extension = ".ScAggre";
 
     public ScAggre(String circuitName) throws IOException {
