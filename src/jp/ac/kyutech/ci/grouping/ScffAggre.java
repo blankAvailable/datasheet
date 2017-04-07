@@ -62,6 +62,7 @@ public class ScffAggre {
         while (bufReader.readLine()!=null){
             pidSize++;
         }
+
         bufReader.close();
         System.out.println("pid size is: " + (pidSize-1));
         return pidSize;
