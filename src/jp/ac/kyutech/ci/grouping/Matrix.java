@@ -1,5 +1,9 @@
 package jp.ac.kyutech.ci.grouping;
 
+import jp.ac.kyutech.ci.datasheet.ScAggre;
+import jp.ac.kyutech.ci.datasheet.ScffAggre;
+import jp.ac.kyutech.ci.datasheet.Util;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
