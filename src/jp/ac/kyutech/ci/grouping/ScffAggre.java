@@ -48,6 +48,7 @@ public class ScffAggre {
         while (bufReader.readLine()!=null){
             ffNum++;
         }
+
         bufReader.close();
         System.out.println("Flip Flop number is: " + ffNum);
         return ffNum;
