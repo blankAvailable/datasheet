@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/grouping.iml" filepath="$PROJECT_DIR$/grouping.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../kyupi/kyupi.iml" filepath="$PROJECT_DIR$/../kyupi/kyupi.iml" />
     </modules>
   </component>
 </project>
