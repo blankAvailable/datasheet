@@ -35,6 +35,8 @@ public class Main extends KyupiApp {
 		
 		circuit = loadCircuitFromArgs();
 		
+		circuit.printStats();
+		
 		ScanChains chains = new ScanChains(circuit);
 		
 		log.info("ScanChainCount " + chains.size());

@@ -1,0 +1,34 @@
+#!/bin/bash
+
+test -z "$KYUPI_HOME"     && KYUPI_HOME="/Users/Stefan/Dropbox/App.KyuPI"
+test -z "$KYUPI_MEMORY"   && KYUPI_MEMORY=2048
+
+export KYUPI_HOME
+export KYUPI_MEMORY
+
+export KYUPI_VMARGS="-server -Dfile.encoding=UTF8  $KYUPI_VMARGS"
+
+#
+# set CLASSPATH
+#
+
+if [ -f "$KYUPI_HOME/lib/commons-cli-1.0.jar" ]; then
+  cli=$KYUPI_HOME/lib/commons-cli-1.0.jar
+  log4j=$KYUPI_HOME/lib/log4j-1.2.17.jar
+  junit=$KYUPI_HOME/lib/junit-4.12.jar
+  hamcrest=$KYUPI_HOME/lib/hamcrest-core-1.3.jar
+  compress=$KYUPI_HOME/lib/commons-compress-1.4.1.jar
+  bin=$KYUPI_HOME/bin:`dirname $0`/bin
+  export CLASSPATH=$bin:$log4j:$cli:$hamcrest:$junit:$compress
+else
+  echo "KyuPI distribution not found in directory '$KYUPI_HOME'."
+  echo "Set the variable KYUPI_HOME to the directory which contains the distribution."
+  exit 1
+fi
+
+#
+# Start Java process
+#
+
+cmd="java $KYUPI_VMARGS -DKyuPI.home=$KYUPI_HOME -Xmx${KYUPI_MEMORY}m -Xms${KYUPI_MEMORY}m jp.ac.kyutech.ci.grouping.Main"
+exec $cmd "$@"
