@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.kyupi.graph.FormatVerilog;
 import org.kyupi.graph.Graph;
 import org.kyupi.graph.Graph.Node;
+import org.kyupi.graph.Library;
 import org.kyupi.graph.LibraryOldSAED;
 import org.kyupi.graph.LibrarySAED;
 import org.kyupi.graph.ScanChains;
@@ -59,7 +60,7 @@ public class Main extends KyupiApp {
 			String filename = argsParsed().getOptionValue("separate_clocks");
 			separateClocks(chains, cbinfo);
 			FileOutputStream os = new FileOutputStream(filename);
-			FormatVerilog.save(os, circuit, "foo");
+			FormatVerilog.save(os, circuit, circuit.getName());
 			os.close();
 		}
 
@@ -67,7 +68,17 @@ public class Main extends KyupiApp {
 	}
 
 	private void separateClocks(ScanChains chains, CBInfo cbinfo) {
-		// TODO Auto-generated method stub
+		Node clock = circuit.searchNode("clock");
+		clock.remove();
+		int intfNodeIdx = circuit.accessInterface().length;
+		for (int chainIdx = 0; chainIdx < chains.size(); chainIdx++) {
+			ScanChain chain = chains.get(chainIdx);
+			Node clk = circuit.new Node(String.format("clk%03d", chainIdx), LibrarySAED.TYPE_BUF | Library.FLAG_INPUT);
+			clk.setIntfPosition(intfNodeIdx++);
+			for (ScanCell cell : chain.cells) {
+				circuit.connect(clk, -1, cell.node, circuit.library().getClockPin(cell.node.type()));
+			}
+		}
 	}
 
 	@Test
