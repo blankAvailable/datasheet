@@ -60,7 +60,7 @@ public class Main extends KyupiApp {
 			String filename = argsParsed().getOptionValue("separate_clocks");
 			separateClocks(chains, cbinfo);
 			FileOutputStream os = new FileOutputStream(filename);
-			FormatVerilog.save(os, circuit, circuit.getName());
+			FormatVerilog.save(os, circuit);
 			os.close();
 		}
 
