@@ -12,10 +12,12 @@ import org.kyupi.graph.Graph.Node;
 import org.kyupi.graph.Library;
 import org.kyupi.graph.LibraryOldSAED;
 import org.kyupi.graph.LibrarySAED;
+import org.kyupi.graph.Placement;
 import org.kyupi.graph.ScanChains;
 import org.kyupi.graph.ScanChains.ScanCell;
 import org.kyupi.graph.ScanChains.ScanChain;
 import org.kyupi.misc.KyupiApp;
+import org.kyupi.misc.StringFilter;
 
 public class Main extends KyupiApp {
 
@@ -62,7 +64,27 @@ public class Main extends KyupiApp {
 			FileOutputStream os = new FileOutputStream(filename);
 			FormatVerilog.save(os, circuit);
 			os.close();
+			printGoodbye();
+			return null;
 		}
+
+		Placement placement = new Placement(circuit);
+
+		if (argsParsed().hasOption("def")) {
+			String filename = argsParsed().getOptionValue("def");
+			placement.parseDefFile(filename, new StringFilter() {
+				@Override
+				public String filter(String source) {
+					return source.replaceAll("\\\\", "");
+				}
+			});
+		}
+
+		// SAED90 row eight is 2880nm
+		// NAND2X0 and NAND2X1 cell width is 1920nm
+		// def file units are nm.
+		
+		ArrayList<Node> foo = placement.getRectangle(20000, 30000, 80000, 100000);
 
 		return null;
 	}
