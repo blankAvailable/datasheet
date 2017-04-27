@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.kyupi.graph.FormatVerilog;
 import org.kyupi.graph.Graph;
 import org.kyupi.graph.Graph.Node;
+import org.kyupi.graph.GraphTools;
 import org.kyupi.graph.Library;
 import org.kyupi.graph.LibraryOldSAED;
 import org.kyupi.graph.LibrarySAED;
@@ -48,13 +49,14 @@ public class Main extends KyupiApp {
 
 		log.info("ScanChainCount " + chains.size());
 
-		for (int chainIdx = 0; chainIdx < chains.size(); chainIdx++) {
-			ScanChain chain = chains.get(chainIdx);
-			log.info("Chain " + chainIdx + " ScanInPort " + chain.in.node.queryName());
-			for (ScanCell cell : chain.cells) {
-				log.info("  ScanCell " + cell.node.queryName());
-			}
-		}
+		// for (int chainIdx = 0; chainIdx < chains.size(); chainIdx++) {
+		// ScanChain chain = chains.get(chainIdx);
+		// log.info("Chain " + chainIdx + " ScanInPort " +
+		// chain.in.node.queryName());
+		// for (ScanCell cell : chain.cells) {
+		// log.info(" ScanCell " + cell.node.queryName());
+		// }
+		// }
 
 		CBInfo cbinfo = collectClockBuffers(circuit, chains);
 
@@ -83,8 +85,35 @@ public class Main extends KyupiApp {
 		// SAED90 row eight is 2880nm
 		// NAND2X0 and NAND2X1 cell width is 1920nm
 		// def file units are nm.
-		
-		ArrayList<Node> foo = placement.getRectangle(20000, 30000, 80000, 100000);
+
+		int NAND_WIDTH = 1920;
+
+		int ROW_HEIGHT = 2880;
+
+		int X_RADIUS = 10 * NAND_WIDTH;
+
+		int Y_RADIUS = 3 * ROW_HEIGHT;
+
+		int nodecount = circuit.countNodes();
+
+		HashMap<ScanCell, HashSet<Node>> aggressors = new HashMap<>();
+		HashMap<ScanChain, HashSet<Node>> reach = new HashMap<>();
+
+		for (int chainIdx = 0; chainIdx < chains.size(); chainIdx++) {
+			ScanChain chain = chains.get(chainIdx);
+			HashSet<Node> r = new HashSet<Node>();
+			reach.put(chain, r);
+			log.info("Chain " + chainIdx + " ScanInPort " + chain.in.node.queryName());
+			for (ScanCell cell : chain.cells) {
+				int x = placement.getX(cell.node);
+				int y = placement.getY(cell.node);
+				aggressors.put(cell, placement.getRectangle(x - X_RADIUS, y - Y_RADIUS, x + X_RADIUS, y + Y_RADIUS));
+				log.info("  ScanCell " + cell.node.queryName() + " Aggressors " + aggressors.get(cell).size());
+				r.addAll(GraphTools.collectCombinationalOutputCone(cell.node));
+			}
+			int percent = r.size() * 100 / nodecount;
+			log.info("  CombinationalReach " + r.size() + " " + percent + "%%");
+		}
 
 		return null;
 	}
