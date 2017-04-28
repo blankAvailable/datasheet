@@ -6,6 +6,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import org.junit.Test;
+import org.kyupi.data.item.BBlock;
+import org.kyupi.data.source.BBSource;
+import org.kyupi.data.source.QBSource;
 import org.kyupi.graph.FormatVerilog;
 import org.kyupi.graph.Graph;
 import org.kyupi.graph.Graph.Node;
@@ -19,6 +22,9 @@ import org.kyupi.graph.ScanChains.ScanCell;
 import org.kyupi.graph.ScanChains.ScanChain;
 import org.kyupi.misc.KyupiApp;
 import org.kyupi.misc.StringFilter;
+import org.kyupi.sim.BBPlainSim;
+
+import jp.ac.kyutech.ci.grouping.QBWeightedSwitchingActivitySim.WeightedNodeSet;
 
 public class Main extends KyupiApp {
 
@@ -28,6 +34,7 @@ public class Main extends KyupiApp {
 
 	public Main() {
 		options.addOption("def", true, "input def file");
+		options.addOption("sim", true, "simulate given number of random pattern blocks (32 pattern pairs).");
 		options.addOption("separate_clocks", true,
 				"safe a new design with separate clock for each chain to given file.");
 	}
@@ -113,6 +120,36 @@ public class Main extends KyupiApp {
 			}
 			int percent = r.size() * 100 / nodecount;
 			log.info("  CombinationalReach " + r.size() + " " + percent + "%%");
+		}
+
+		if (argsParsed().hasOption("sim")) {
+			int pats = Integer.parseInt(argsParsed().getOptionValue("sim"));
+			log.info("WSA Simulation Setup...");
+			BBSource random_patterns = BBSource.random(circuit.accessInterface().length, 42);
+			QBWeightedSwitchingActivitySim sim = new QBWeightedSwitchingActivitySim(circuit,
+					QBSource.from(random_patterns));
+			HashMap<ScanCell, WeightedNodeSet> aggressor_wns = new HashMap<>();
+			for (ScanCell sc : aggressors.keySet()) {
+				WeightedNodeSet wns = sim.new WeightedNodeSet();
+				for (Node n: aggressors.get(sc)) {
+					wns.add(n, 1.0);
+				}
+				aggressor_wns.put(sc, wns);
+			}
+			log.info("WSA Simulation Start...");
+			for (int i = 0; i < pats; i++) {
+				sim.next();
+			}
+			log.info("WSA Simulation Finished.");
+
+			for (int chainIdx = 0; chainIdx < chains.size(); chainIdx++) {
+				ScanChain chain = chains.get(chainIdx);
+				log.info("Chain " + chainIdx + " ScanInPort " + chain.in.node.queryName());
+				for (ScanCell cell : chain.cells) {
+					log.info("  ScanCell " + cell.node.queryName() + " AvgWSA " + aggressor_wns.get(cell).getAverageActivity());
+				}
+			}
+
 		}
 
 		return null;
