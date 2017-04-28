@@ -11,5 +11,14 @@
     <orderEntry type="library" name="commons-cli-1" level="application" />
     <orderEntry type="library" name="commons-cli-1.0" level="project" />
     <orderEntry type="module" module-name="kyupi" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../kyupi/lib/junit-4.12.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
 </module>

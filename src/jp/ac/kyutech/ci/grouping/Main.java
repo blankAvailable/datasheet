@@ -1,6 +1,9 @@
 package jp.ac.kyutech.ci.grouping;
 
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -99,21 +102,32 @@ public class Main extends KyupiApp {
 		HashMap<ScanCell, HashSet<Node>> aggressors = new HashMap<>();
 		HashMap<ScanChain, HashSet<Node>> reach = new HashMap<>();
 
+		int aggressorCounter = 0;
+		File tableWriter = new File(".\\table\\data.tex");
+		tableWriter.createNewFile();
+		BufferedWriter out = new BufferedWriter(new FileWriter(tableWriter));
 		for (int chainIdx = 0; chainIdx < chains.size(); chainIdx++) {
 			ScanChain chain = chains.get(chainIdx);
 			HashSet<Node> r = new HashSet<Node>();
 			reach.put(chain, r);
 			log.info("Chain " + chainIdx + " ScanInPort " + chain.in.node.queryName());
+			out.write(chainIdx + " & ");
 			for (ScanCell cell : chain.cells) {
 				int x = placement.getX(cell.node);
 				int y = placement.getY(cell.node);
 				aggressors.put(cell, placement.getRectangle(x - X_RADIUS, y - Y_RADIUS, x + X_RADIUS, y + Y_RADIUS));
 				log.info("  ScanCell " + cell.node.queryName() + " Aggressors " + aggressors.get(cell).size());
+				aggressorCounter = aggressorCounter + aggressors.get(cell).size();
 				r.addAll(GraphTools.collectCombinationalOutputCone(cell.node));
 			}
+			out.write(aggressorCounter + " & ");
+			aggressorCounter = 0;
 			int percent = r.size() * 100 / nodecount;
 			log.info("  CombinationalReach " + r.size() + " " + percent + "%%");
+			out.write(percent + "\\\\n");
+			out.flush();
 		}
+		out.close();
 
 		return null;
 	}
