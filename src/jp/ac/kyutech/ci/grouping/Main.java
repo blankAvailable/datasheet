@@ -163,8 +163,8 @@ public class Main extends KyupiApp {
 					log.info("  ScanCell " + cell.node.queryName() + " AvgWSA " + aggressor_wns.get(cell).getAverageActivity());
 				}
 			}
-
 		}
+		out.close();
 
 		return null;
 	}
