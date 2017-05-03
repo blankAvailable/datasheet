@@ -23,6 +23,7 @@ import org.kyupi.graph.Placement;
 import org.kyupi.graph.ScanChains;
 import org.kyupi.graph.ScanChains.ScanCell;
 import org.kyupi.graph.ScanChains.ScanChain;
+import org.kyupi.misc.ArrayTools;
 import org.kyupi.misc.KyupiApp;
 import org.kyupi.misc.StringFilter;
 import org.kyupi.sim.BBPlainSim;
@@ -95,9 +96,9 @@ public class Main extends KyupiApp {
 
 		int ROW_HEIGHT = 2880;
 
-		int X_RADIUS = 10 * NAND_WIDTH;
+		int X_RADIUS = 300 * NAND_WIDTH;
 
-		int Y_RADIUS = 3 * ROW_HEIGHT;
+		int Y_RADIUS = 7 * ROW_HEIGHT;
 
 		int nodecount = circuit.countNodes();
 
@@ -120,6 +121,8 @@ public class Main extends KyupiApp {
 				aggressorSetTemp.removeAll(aggressors.get(cell));
 				aggressorSetTemp.addAll(aggressors.get(cell));
 				r.addAll(GraphTools.collectCombinationalOutputCone(cell.node));
+				if (cbinfo.sff_to_clock_buffer_set.get(cell) != null)
+				r.addAll(cbinfo.sff_to_clock_buffer_set.get(cell));
 			}
 			aggressorCounter[chainIdx] = aggressorSetTemp.size();
 			aggressorSetTemp.clear();
@@ -148,10 +151,13 @@ public class Main extends KyupiApp {
 			out.close();
 		}
 
+		int clocking[] = getClocking(chains);
+
+		staticAssessment(circuit, chains, clocking, aggressors, reach);
+		
 		if (argsParsed().hasOption("sim")) {
 			int blocks = Integer.parseInt(argsParsed().getOptionValue("sim"));
 			log.info("WSA Simulation Setup...");
-			int clocking[] = getClocking(chains);
 			int stimuliExpansionMap[][] = expandForWsa(chains.scanInMapping(clocking));
 			int responseExpansionMap[][] = expandForWsa(chains.scanOutMapping(clocking));
 			BBSource stimuli = BBSource.random(circuit.accessInterface().length, 42);
@@ -209,6 +215,76 @@ public class Main extends KyupiApp {
 		}
 
 		return null;
+	}
+
+	private void staticAssessment(Graph circuit, ScanChains chains, int[] clocking,
+			HashMap<ScanCell, HashSet<Node>> aggressors, HashMap<ScanChain, HashSet<Node>> reach) {
+		//int nodecount = circuit.countNodes();
+
+		int selfAggressingHist[] = new int[11];
+		
+		for (int chainIdx = 0; chainIdx < chains.size(); chainIdx++) {
+			ScanChain chain = chains.get(chainIdx);
+			HashSet<Node> r = reach.get(chain);
+			//log.info("Chain " + chainIdx + " ScanInPort " + chain.in.node.queryName());
+			for (ScanCell cell : chain.cells) {
+				int selfAggressor = 0; 
+				for (Node a : aggressors.get(cell)) {
+					if (r.contains(a))
+						selfAggressor++;
+				}
+				int aggressor = aggressors.get(cell).size();
+				int selfAggressorPercent = 100*selfAggressor/aggressor;
+				selfAggressingHist[selfAggressorPercent/10]++;
+				//log.info("  ScanCell " + cell.node.queryName() + " Aggressors " + aggressor + " Self " + selfAggressor + " (" + selfAggressorPercent + "%%)");
+			}
+			//int reachsize = reach.get(chain).size();
+			//int percent = reachsize * 100 / nodecount;
+			//log.info("  CombinationalReach " + reachsize + " " + percent + "%%");
+		}
+
+		int sum = 0;
+		for (int i = selfAggressingHist.length-1; i>= 0  ; i--) {
+			sum += selfAggressingHist[i];
+			int p = sum * 100 / chains.scanCellCount();
+			log.info("SelfAggressorPortion >= " + i*10 + "%% for " + sum + " ScanCells (" + p + "%%)");
+		}
+		
+		int aggressingHist[] = new int[11];
+		
+		int clocks = ArrayTools.max(clocking) + 1;
+		
+		for (int c = 0; c < clocks; c++) {
+			for (int chainIdx = 0; chainIdx < chains.size(); chainIdx++) {
+				if (clocking[chainIdx] != c)
+					continue;
+				ScanChain chain = chains.get(chainIdx);
+				HashSet<Node> r = reach.get(chain);
+				for (ScanCell cell : chain.cells) {
+					HashSet<Node> intersect = new HashSet<>(); 
+					for (Node a : aggressors.get(cell)) {
+						for (int chainIdx2 = 0; chainIdx2 < chains.size(); chainIdx2++) {
+							if (clocking[chainIdx2] != c)
+								continue;
+							if (reach.get(chains.get(chainIdx2)).contains(a))
+								intersect.add(a);
+						}
+					}
+					int aggressorCount = aggressors.get(cell).size();
+					int intersectCount = intersect.size();
+					int aggressorPercent = 100*intersectCount/aggressorCount;
+					aggressingHist[aggressorPercent/10]++;
+				}
+			}
+		}
+		
+		sum = 0;
+		for (int i = aggressingHist.length-1; i>= 0  ; i--) {
+			sum += aggressingHist[i];
+			int p = sum * 100 / chains.scanCellCount();
+			log.info("StaggeredClockingAggressorPortion >= " + i*10 + "%% for " + sum + " ScanCells (" + p + "%%)");
+		}
+
 	}
 
 	/**
