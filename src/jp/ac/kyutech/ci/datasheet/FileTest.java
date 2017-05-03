@@ -10,6 +10,7 @@ public class FileTest {
     public static void main(String[] args) throws Exception {
         CommandProcess command = new CommandProcess();
         command.setArgs(args);
-        ReachableAggre reachableAggre = new ReachableAggre(command.circuitName);
+        ReachableAggre reachableAggre = new ReachableAggre();
+        reachableAggre.callWithCircuitName(command.circuitName);
     }
 }
