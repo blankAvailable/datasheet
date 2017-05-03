@@ -48,7 +48,7 @@ public class ReachableAggre extends KyupiApp{
         printWelcome();
         setLib(new LibrarySAED());
         circuit = loadCircuitFromArgs();
-
+        
         Node[] nodeSet = circuit.accessInterface();
         for (Node n : nodeSet){
             System.out.println("check node: " + n);
