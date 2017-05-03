@@ -17,11 +17,12 @@ import java.io.IOException;
 public class ReachableAggre extends KyupiApp{
     private Graph circuit;
     private Library lib;
-    private String filePath = ".\\testdata\\";
+    private String filePath = "." + File.separator + "testdata" + File.separator;
     private String extension = "_flat.v";
 
-    public ReachableAggre(String circuitName) throws Exception {
-        filePath = filePath.concat(circuitName + "\\");
+    // constructors of kyupi apps should only set the options.
+    public void callWithCircuitName(String circuitName) throws Exception {
+    	filePath = filePath.concat(circuitName + File.separator);
         circuitName = circuitName.concat(extension);
         filePath = filePath.concat(circuitName);
         System.out.println(filePath);
@@ -48,6 +49,10 @@ public class ReachableAggre extends KyupiApp{
         printWelcome();
         setLib(new LibrarySAED());
         circuit = loadCircuitFromArgs();
+        
+        if (circuit == null) {
+        	return null;
+        }
         
         Node[] nodeSet = circuit.accessInterface();
         for (Node n : nodeSet){
