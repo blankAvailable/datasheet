@@ -133,13 +133,7 @@ public class Main extends KyupiApp {
 
 		if (argsParsed().hasOption("table")) {
 			String designName = argsParsed().getOptionValue("table");
-			String symbol;
-			if (System.getProperty("os.name").contains("Win")||System.getProperty("os.name").contains("win")){
-				symbol = "\\";
-			}else {
-				symbol = "/";
-			}
-			File tableWriter = new File("."+ symbol+ "table" + symbol + designName + "_statistics.tex");
+			File tableWriter = new File("."+ File.separator + "table" + File.separator + designName + "_statistics.tex");
 			tableWriter.createNewFile();
 			BufferedWriter out = new BufferedWriter(new FileWriter(tableWriter));
 
