@@ -4,11 +4,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Random;
+import java.util.*;
 
 import org.junit.Test;
 import org.kyupi.data.QVExpander;
@@ -47,7 +43,7 @@ public class Main extends KyupiApp {
 		options.addOption("clk", true, "number of staggered clocks.");
 		options.addOption("prt_index", true, "specify the partition to use out of a sorted sequence of all partitions.");
 		options.addOption("prt_seed", true, "generate a random partitioning based on specified seed");
-		
+		options.addOption("table", true, "choose to output the data table for latex or not, need to input design name. ");
 	}
 
 	private Graph circuit;
@@ -107,33 +103,50 @@ public class Main extends KyupiApp {
 
 		HashMap<ScanCell, HashSet<Node>> aggressors = new HashMap<>();
 		HashMap<ScanChain, HashSet<Node>> reach = new HashMap<>();
+		HashSet<Node> aggressorSetTemp = new HashSet<>();
+		int[] aggressorCounter = new int[chains.size()];
+		int[] combinationalReach = new int[chains.size()];
 
-		int aggressorCounter = 0;
-		File tableWriter = new File(".\\table\\data.tex");
-		tableWriter.createNewFile();
-		BufferedWriter out = new BufferedWriter(new FileWriter(tableWriter));
 		for (int chainIdx = 0; chainIdx < chains.size(); chainIdx++) {
 			ScanChain chain = chains.get(chainIdx);
 			HashSet<Node> r = new HashSet<Node>();
 			reach.put(chain, r);
 			log.info("Chain " + chainIdx + " ScanInPort " + chain.in.node.queryName());
-			out.write(chainIdx + " & ");
 			for (ScanCell cell : chain.cells) {
 				int x = placement.getX(cell.node);
 				int y = placement.getY(cell.node);
 				aggressors.put(cell, placement.getRectangle(x - X_RADIUS, y - Y_RADIUS, x + X_RADIUS, y + Y_RADIUS));
 				log.info("  ScanCell " + cell.node.queryName() + " Aggressors " + aggressors.get(cell).size());
-				aggressorCounter = aggressorCounter + aggressors.get(cell).size();
+				aggressorSetTemp.removeAll(aggressors.get(cell));
+				aggressorSetTemp.addAll(aggressors.get(cell));
 				r.addAll(GraphTools.collectCombinationalOutputCone(cell.node));
 			}
-			out.write(aggressorCounter + " & ");
-			aggressorCounter = 0;
+			aggressorCounter[chainIdx] = aggressorSetTemp.size();
+			aggressorSetTemp.clear();
 			int percent = r.size() * 100 / nodecount;
 			log.info("  CombinationalReach " + r.size() + " " + percent + "%%");
-			out.write(percent + "\\\\n");
-			out.flush();
+			combinationalReach[chainIdx] = percent;
 		}
-		out.close();
+
+		if (argsParsed().hasOption("table")) {
+			String designName = argsParsed().getOptionValue("table");
+			String symbol;
+			if (System.getProperty("os.name").contains("Win")||System.getProperty("os.name").contains("win")){
+				symbol = "\\";
+			}else {
+				symbol = "/";
+			}
+			File tableWriter = new File("."+ symbol+ "table" + symbol + designName + "_statistics.tex");
+			tableWriter.createNewFile();
+			BufferedWriter out = new BufferedWriter(new FileWriter(tableWriter));
+
+			for (int chainIdx = 0; chainIdx < chains.size(); chainIdx++) {
+				out.write(chainIdx + " & " + aggressorCounter[chainIdx] + " & " + combinationalReach[chainIdx]
+						+ "\\\\" + "\n");
+			}
+			out.flush();
+			out.close();
+		}
 
 		if (argsParsed().hasOption("sim")) {
 			int blocks = Integer.parseInt(argsParsed().getOptionValue("sim"));
@@ -194,7 +207,6 @@ public class Main extends KyupiApp {
 				}
 			}
 		}
-		out.close();
 
 		return null;
 	}
