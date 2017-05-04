@@ -148,7 +148,8 @@ public class Main extends KyupiApp {
 					+ chain2aggressorSet.get(chain).size());
 			log.info("  ImpactCellCount " + chain2impactSet.get(chain).size());
 			if (out != null)
-				out.write(chainIdx + " & " + chain2aggressorSet.get(chain).size() + " & " + chain2impactSet.get(chain).size() + " & " + " & " + " & " + "\\\\" + "\n");
+				out.write(chainIdx + " & " + chain2aggressorSet.get(chain).size() + " & " + chain2impactSet.get(chain).size() + "\\\\"
+						+ "\n");
 		}
 
 		if (out != null) {
@@ -210,16 +211,12 @@ public class Main extends KyupiApp {
 			log.info("WSA Simulation Finished.");
 
 			for (int chainIdx = 0; chainIdx < chains.size(); chainIdx++) {
-				double maxWsa = 0.0;
 				ScanChain chain = chains.get(chainIdx);
 				log.info("Chain " + chainIdx + " ScanInPort " + chain.in.node.queryName());
 				for (ScanCell cell : chain.cells) {
-					if (aggressor_wns.get(cell).getMaxActivity() > maxWsa)
-						maxWsa = aggressor_wns.get(cell).getMaxActivity();
 					log.info("  ScanCell " + cell.node.queryName() + " AvgWSA "
-							+ aggressor_wns.get(cell).getAverageActivity() + " MaxWSA " + aggressor_wns.get(cell).getMaxActivity());
+							+ aggressor_wns.get(cell).getAverageActivity());
 				}
-				log.info("  Chain " + chainIdx + " MaxWSA " + maxWsa);
 			}
 		}
 

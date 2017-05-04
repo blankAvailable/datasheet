@@ -2,12 +2,13 @@
 
 test -z "$GROUPING_HOME"  && GROUPING_HOME=`dirname $0`
 test -z "$KYUPI_HOME"     && KYUPI_HOME=$GROUPING_HOME/../kyupi
-test -z "$KYUPI_MEMORY"   && KYUPI_MEMORY=2048
+test -z "$KYUPI_MEMORY"   && KYUPI_MEMORY=4096
 
 export GROUPING_HOME
 export KYUPI_HOME
 export KYUPI_MEMORY
 
+# -verbose:gc 
 export KYUPI_VMARGS="-server -Dfile.encoding=UTF8  $KYUPI_VMARGS"
 
 #
