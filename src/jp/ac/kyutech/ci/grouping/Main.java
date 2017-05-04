@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.util.*;
+import java.util.function.Predicate;
 
 import org.junit.Test;
 import org.kyupi.data.QVExpander;
@@ -46,14 +47,12 @@ public class Main extends KyupiApp {
 	public Main() {
 		options.addOption("def", true, "input def file");
 		options.addOption("sim", true, "simulate given number of blocks (1 block = 32 shift cycles).");
-		options.addOption("separate_clocks", true,
-				"safe a new design with separate clock for each chain to given file.");
+		options.addOption("sep_clk", true, "safe a new design with separate clock for each chain to given file.");
 		options.addOption("clk", true, "number of staggered clocks.");
 		options.addOption("prt_index", true,
 				"specify the partition to use out of a sorted sequence of all partitions.");
 		options.addOption("prt_seed", true, "generate a random partitioning based on specified seed");
-		options.addOption("table", true,
-				"choose to output the data table for latex or not, need to input design name. ");
+		options.addOption("table", true, "output a data table for latex into given file. ");
 		options.addOption("arx", true, "horizontal size of aggressor regions in units of NAND2X1 widths.");
 		options.addOption("ary", true, "vertical size of aggressor regions in units of rows.");
 	}
@@ -74,11 +73,16 @@ public class Main extends KyupiApp {
 		ScanChains chains = new ScanChains(circuit);
 
 		log.info("ScanChainCount " + chains.size());
+		log.info("MaxChainLength " + chains.maxChainLength());
+		
+		int nodecount = circuit.countNonPseudoNodes();
+
+		log.info("NonPseudoNodes " + nodecount);
 
 		CBInfo cbinfo = collectClockBuffers(circuit, chains);
 
-		if (argsParsed().hasOption("separate_clocks")) {
-			String filename = argsParsed().getOptionValue("separate_clocks");
+		if (argsParsed().hasOption("sep_clk")) {
+			String filename = argsParsed().getOptionValue("sep_clk");
 			separateClocks(chains, cbinfo);
 			FileOutputStream os = new FileOutputStream(filename);
 			FormatVerilog.save(os, circuit);
@@ -100,64 +104,61 @@ public class Main extends KyupiApp {
 
 		double arx = doubleFromArgsOrDefault("arx", 600);
 		double ary = doubleFromArgsOrDefault("ary", 14);
-		
+
 		log.info("AggressorRegionSize X " + arx + "  Y " + ary);
-		
+
 		int arxnm = (int) (arx * NAND_WIDTH);
 		int arynm = (int) (ary * ROW_HEIGHT);
 
 		log.info("AggressorRegionSizeNM X " + arxnm + "  Y " + arynm);
 
-		int nodecount = circuit.countNodes();
+		log.info("Calculating aggressor sets...");
+		HashMap<ScanCell, HashSet<Node>> cell2aggressorSet = new HashMap<>();
+		HashMap<ScanChain, HashSet<Node>> chain2aggressorSet = new HashMap<>();
+		calculateAggressorSets(chains, placement, arxnm, arynm, cell2aggressorSet, chain2aggressorSet);
 
-		HashMap<ScanCell, HashSet<Node>> cell2aggressors = new HashMap<>();
-		HashMap<ScanChain, HashSet<Node>> chain2aggressors = new HashMap<>();
-		HashMap<ScanChain, HashSet<Node>> chain2impactarea = new HashMap<>();
-		HashSet<Node> aggressorSetTemp = new HashSet<>();
-		int[] aggressorCounter = new int[chains.size()];
-		int[] combinationalReach = new int[chains.size()];
+		log.info("Calculating impact sets...");
+		HashMap<ScanChain, HashSet<Node>> chain2impactSet = new HashMap<>();
+		calculateImpactSets(chains, cbinfo, chain2impactSet);
+
+		BufferedWriter out = null;
+		if (argsParsed().hasOption("table")) {
+			String filename = argsParsed().getOptionValue("table");
+			File tableWriter = new File(filename);
+			tableWriter.createNewFile();
+			out = new BufferedWriter(new FileWriter(tableWriter));
+		}
 
 		for (int chainIdx = 0; chainIdx < chains.size(); chainIdx++) {
 			ScanChain chain = chains.get(chainIdx);
-			HashSet<Node> r = new HashSet<Node>();
-			chain2impactarea.put(chain, r);
 			log.info("Chain " + chainIdx + " ScanInPort " + chain.in.node.queryName());
-			for (ScanCell cell : chain.cells) {
-				int x = placement.getX(cell.node);
-				int y = placement.getY(cell.node);
-				cell2aggressors.put(cell, placement.getRectangle(x - arxnm/2, y - arynm/2, x + arxnm/2, y + arynm/2));
-				log.info("  ScanCell " + cell.node.queryName() + " Aggressors " + cell2aggressors.get(cell).size());
-				aggressorSetTemp.removeAll(cell2aggressors.get(cell));
-				aggressorSetTemp.addAll(cell2aggressors.get(cell));
-				r.addAll(GraphTools.collectCombinationalOutputCone(cell.node));
-				if (cbinfo.sff_to_clock_buffer_set.get(cell) != null)
-					r.addAll(cbinfo.sff_to_clock_buffer_set.get(cell));
+			log.info("  ChainLength " + chain.cells.size());
+			int aggmin = Integer.MAX_VALUE;
+			int aggmax = 0;
+			int aggsum = 0;
+			for (ScanCell sff : chain.cells) {
+				int agg = cell2aggressorSet.get(sff).size();
+				aggmin = Math.min(aggmin, agg);
+				aggmax = Math.max(aggmax, agg);
+				aggsum += agg;
 			}
-			aggressorCounter[chainIdx] = aggressorSetTemp.size();
-			aggressorSetTemp.clear();
-			int percent = r.size() * 100 / nodecount;
-			log.info("  CombinationalReach " + r.size() + " " + percent + "%%");
-			combinationalReach[chainIdx] = percent;
+			int aggavg = aggsum / chain.cells.size();
+			log.info("  AggressorsPerScanCell Min " + aggmin + " Avg " + aggavg + " Max " + aggmax);
+			log.info("  AggressorsForChain SimpleSum " + aggsum + " UniqueAggressorCount "
+					+ chain2aggressorSet.get(chain).size());
+			log.info("  ImpactCellCount " + chain2impactSet.get(chain).size());
+			if (out != null)
+				out.write(chainIdx + " & " + chain2aggressorSet.get(chain).size() + " & " + chain2impactSet.get(chain).size() + "\\\\"
+						+ "\n");
 		}
 
-		if (argsParsed().hasOption("table")) {
-			String designName = argsParsed().getOptionValue("table");
-			File tableWriter = new File(
-					"." + File.separator + "table" + File.separator + designName + "_statistics.tex");
-			tableWriter.createNewFile();
-			BufferedWriter out = new BufferedWriter(new FileWriter(tableWriter));
-
-			for (int chainIdx = 0; chainIdx < chains.size(); chainIdx++) {
-				out.write(chainIdx + " & " + aggressorCounter[chainIdx] + " & " + combinationalReach[chainIdx] + "\\\\"
-						+ "\n");
-			}
-			out.flush();
+		if (out != null) {
 			out.close();
 		}
 
 		int clocking[] = getClocking(chains);
 
-		staticAssessment(circuit, chains, clocking, cell2aggressors, chain2impactarea);
+		staticAssessment(circuit, chains, clocking, cell2aggressorSet, chain2impactSet);
 
 		if (argsParsed().hasOption("sim")) {
 			int blocks = Integer.parseInt(argsParsed().getOptionValue("sim"));
@@ -196,9 +197,9 @@ public class Main extends KyupiApp {
 
 			QBWeightedSwitchingActivitySim sim = new QBWeightedSwitchingActivitySim(circuit, QBSource.from(shifts));
 			HashMap<ScanCell, WeightedNodeSet> aggressor_wns = new HashMap<>();
-			for (ScanCell sc : cell2aggressors.keySet()) {
+			for (ScanCell sc : cell2aggressorSet.keySet()) {
 				WeightedNodeSet wns = sim.new WeightedNodeSet();
-				for (Node n : cell2aggressors.get(sc)) {
+				for (Node n : cell2aggressorSet.get(sc)) {
 					wns.add(n, 1.0);
 				}
 				aggressor_wns.put(sc, wns);
@@ -220,6 +221,57 @@ public class Main extends KyupiApp {
 		}
 
 		return null;
+	}
+
+	private void calculateAggressorSets(ScanChains chains, Placement placement, int arxnm, int arynm,
+			HashMap<ScanCell, HashSet<Node>> cell2aggressors, HashMap<ScanChain, HashSet<Node>> chain2aggressors) {
+		for (int chainIdx = 0; chainIdx < chains.size(); chainIdx++) {
+			ScanChain chain = chains.get(chainIdx);
+			HashSet<Node> chainaggressors = new HashSet<Node>();
+			chain2aggressors.put(chain, chainaggressors);
+			for (ScanCell cell : chain.cells) {
+				int x = placement.getX(cell.node);
+				int y = placement.getY(cell.node);
+				cell2aggressors.put(cell,
+						placement.getRectangle(x - arxnm / 2, y - arynm / 2, x + arxnm / 2, y + arynm / 2));
+				// log.info(" ScanCell " + cell.node.queryName() + " Aggressors
+				// " + cell2aggressors.get(cell).size());
+				chainaggressors.addAll(cell2aggressors.get(cell));
+			}
+			// aggressorCounter[chainIdx] = aggressorSetTemp.size();
+			// int percent = impactarea.size() * 100 / nodecount;
+			// log.info(" CombinationalReach " + r.size() + " " + percent +
+			// "%%");
+			// combinationalReach[chainIdx] = percent;
+		}
+	}
+
+	private void calculateImpactSets(ScanChains chains, CBInfo cbinfo,
+			HashMap<ScanChain, HashSet<Node>> chain2impactSet) {
+		for (int chainIdx = 0; chainIdx < chains.size(); chainIdx++) {
+			ScanChain chain = chains.get(chainIdx);
+			HashSet<Node> impactSet = new HashSet<Node>();
+			chain2impactSet.put(chain, impactSet);
+			// log.info("Chain " + chainIdx + " ScanInPort " +
+			// chain.in.node.queryName());
+			for (ScanCell cell : chain.cells) {
+				impactSet.add(cell.node);
+				impactSet.addAll(GraphTools.collectCombinationalOutputCone(cell.node));
+				if (cbinfo.sff_to_clock_buffer_set.get(cell) != null)
+					impactSet.addAll(cbinfo.sff_to_clock_buffer_set.get(cell));
+			}
+			impactSet.removeIf(new Predicate<Node>() {
+				public boolean test(Node n) {
+					return n.isPseudo();
+				}
+			});
+			// aggressorCounter[chainIdx] = aggressorSetTemp.size();
+			// aggressorSetTemp.clear();
+			// int percent = impactarea.size() * 100 / nodecount;
+			// log.info(" CombinationalReach " + r.size() + " " + percent +
+			// "%%");
+			// combinationalReach[chainIdx] = percent;
+		}
 	}
 
 	private void staticAssessment(Graph circuit, ScanChains chains, int[] clocking,
