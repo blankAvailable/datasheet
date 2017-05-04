@@ -8,8 +8,7 @@ export GROUPING_HOME
 export KYUPI_HOME
 export KYUPI_MEMORY
 
-# -verbose:gc 
-export KYUPI_VMARGS="-server -Dfile.encoding=UTF8  $KYUPI_VMARGS"
+export KYUPI_VMARGS="-server -verbose:gc -Dfile.encoding=UTF8  $KYUPI_VMARGS"
 
 #
 # set CLASSPATH

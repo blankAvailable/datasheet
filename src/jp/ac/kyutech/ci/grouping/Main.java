@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.*;
 import java.util.function.Predicate;
 
@@ -56,6 +57,7 @@ public class Main extends KyupiApp {
 		options.addOption("table", true, "output a data table for latex into given file. ");
 		options.addOption("arx", true, "horizontal size of aggressor regions in units of NAND2X1 widths.");
 		options.addOption("ary", true, "vertical size of aggressor regions in units of rows.");
+		options.addOption("gp_correlation", true, "output a gnuplot file for correlation between structural and WSA. ");
 	}
 
 	private Graph circuit;
@@ -132,6 +134,7 @@ public class Main extends KyupiApp {
 
 		log.info("Calculating active aggressor sets...");
 		int clocking[] = getClocking(chains);
+		int clocks = ArrayTools.max(clocking) + 1;
 		HashMap<ScanCell, HashSet<Node>> cell2activeAggressorSet = calculateActiveAggressors(chains, clocking,
 				cell2aggressorSet, chain2impactSet);
 
@@ -139,6 +142,23 @@ public class Main extends KyupiApp {
 
 		if (argsParsed().hasOption("sim")) {
 			int blocks = Integer.parseInt(argsParsed().getOptionValue("sim"));
+
+			PrintWriter gp_correlation = null;
+			if (argsParsed().hasOption("gp_correlation")) {
+				String fn = argsParsed().getOptionValue("gp_correlation");
+				gp_correlation = new PrintWriter(new File(fn));
+				gp_correlation.println("set terminal png size 1024,1024");
+				gp_correlation.println("set output '" + fn + ".png'");
+				gp_correlation.println("set title 'Correlation between structural overlap and maximum WSA. "
+						+ circuit.getName() + " " + (blocks * 32) + " shifts, " + clocks + " clock(s)'");
+				gp_correlation
+						.println("set xlabel 'Structural overlap between aggressor region and active impact areas'");
+				gp_correlation.println("set ylabel 'Maximum WSA in aggressor region'");
+				gp_correlation.println("set xrange [0:5000]");
+				gp_correlation.println("set yrange [0:5000]");
+				gp_correlation.println("plot '-' w p t 'scan cell'");
+			}
+
 			log.info("WSA Simulation Setup...");
 			int stimuliExpansionMap[][] = expandForWsa(chains.scanInMapping(clocking));
 			int responseExpansionMap[][] = expandForWsa(chains.scanOutMapping(clocking));
@@ -192,6 +212,10 @@ public class Main extends KyupiApp {
 				ScanChain chain = chains.get(chainIdx);
 				log.info("Chain " + chainIdx + " ScanInPort " + chain.in.node.queryName());
 				for (ScanCell cell : chain.cells) {
+					if (gp_correlation != null) {
+						gp_correlation.println("" + cell2activeAggressorSet.get(cell).size() + " "
+								+ aggressor_wns.get(cell).getMaxActivity());
+					}
 					if (aggressor_wns.get(cell).getMaxActivity() > maxWsa)
 						maxWsa = aggressor_wns.get(cell).getMaxActivity();
 					log.info("  ScanCell " + cell.node.queryName() + " AvgWSA "
@@ -199,6 +223,11 @@ public class Main extends KyupiApp {
 							+ aggressor_wns.get(cell).getMaxActivity());
 				}
 				log.info("  Chain " + chainIdx + " MaxWSA " + maxWsa);
+			}
+
+			if (gp_correlation != null) {
+				gp_correlation.println("e");
+				gp_correlation.close();
 			}
 
 		}
