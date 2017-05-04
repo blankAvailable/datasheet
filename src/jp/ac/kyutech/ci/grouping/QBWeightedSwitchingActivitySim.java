@@ -47,6 +47,7 @@ public class QBWeightedSwitchingActivitySim extends QBSource {
 			}
 			return sum / activity.size();
 		}
+
 		public double getMaxActivity() {
 			double max = 0.0;
 			for (Double d : activity) {
