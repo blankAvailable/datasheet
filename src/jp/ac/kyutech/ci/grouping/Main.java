@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 import java.util.function.Predicate;
 
@@ -74,7 +75,7 @@ public class Main extends KyupiApp {
 
 		log.info("ScanChainCount " + chains.size());
 		log.info("MaxChainLength " + chains.maxChainLength());
-		
+
 		int nodecount = circuit.countNonPseudoNodes();
 
 		log.info("NonPseudoNodes " + nodecount);
@@ -121,45 +122,22 @@ public class Main extends KyupiApp {
 		HashMap<ScanChain, HashSet<Node>> chain2impactSet = new HashMap<>();
 		calculateImpactSets(chains, cbinfo, chain2impactSet);
 
-		BufferedWriter out = null;
-		if (argsParsed().hasOption("table")) {
-			String filename = argsParsed().getOptionValue("table");
-			File tableWriter = new File(filename);
-			tableWriter.createNewFile();
-			out = new BufferedWriter(new FileWriter(tableWriter));
-		}
+		printAggressorAndImpactStatistics(chains, cell2aggressorSet, chain2aggressorSet, chain2impactSet);
 
-		for (int chainIdx = 0; chainIdx < chains.size(); chainIdx++) {
-			ScanChain chain = chains.get(chainIdx);
-			log.info("Chain " + chainIdx + " ScanInPort " + chain.in.node.queryName());
-			log.info("  ChainLength " + chain.cells.size());
-			int aggmin = Integer.MAX_VALUE;
-			int aggmax = 0;
-			int aggsum = 0;
-			for (ScanCell sff : chain.cells) {
-				int agg = cell2aggressorSet.get(sff).size();
-				aggmin = Math.min(aggmin, agg);
-				aggmax = Math.max(aggmax, agg);
-				aggsum += agg;
-			}
-			int aggavg = aggsum / chain.cells.size();
-			log.info("  AggressorsPerScanCell Min " + aggmin + " Avg " + aggavg + " Max " + aggmax);
-			log.info("  AggressorsForChain SimpleSum " + aggsum + " UniqueAggressorCount "
-					+ chain2aggressorSet.get(chain).size());
-			log.info("  ImpactCellCount " + chain2impactSet.get(chain).size());
-			if (out != null)
-				out.write(chainIdx + " & " + chain2aggressorSet.get(chain).size() + " & " + chain2impactSet.get(chain).size() + "\\\\"
-						+ "\n");
-		}
+		log.info("Calculating self aggressor sets...");
+		HashMap<ScanCell, HashSet<Node>> cell2selfAggressorSet = calculateSelfAggressors(chains, cell2aggressorSet,
+				chain2impactSet);
+		
+		printSizeHistogram(cell2selfAggressorSet, cell2aggressorSet);
 
-		if (out != null) {
-			out.close();
-		}
-
+		log.info("Calculating active aggressor sets...");
 		int clocking[] = getClocking(chains);
+		HashMap<ScanCell, HashSet<Node>> cell2activeAggressorSet = calculateActiveAggressors(chains, clocking,
+				cell2aggressorSet, chain2impactSet);
 
-		staticAssessment(circuit, chains, clocking, cell2aggressorSet, chain2impactSet);
+		printSizeHistogram(cell2activeAggressorSet, cell2aggressorSet);
 
+		
 		if (argsParsed().hasOption("sim")) {
 			int blocks = Integer.parseInt(argsParsed().getOptionValue("sim"));
 			log.info("WSA Simulation Setup...");
@@ -223,6 +201,45 @@ public class Main extends KyupiApp {
 		return null;
 	}
 
+	private void printAggressorAndImpactStatistics(ScanChains chains,
+			HashMap<ScanCell, HashSet<Node>> cell2aggressorSet, HashMap<ScanChain, HashSet<Node>> chain2aggressorSet,
+			HashMap<ScanChain, HashSet<Node>> chain2impactSet) throws IOException {
+		BufferedWriter out = null;
+		if (argsParsed().hasOption("table")) {
+			String filename = argsParsed().getOptionValue("table");
+			File tableWriter = new File(filename);
+			tableWriter.createNewFile();
+			out = new BufferedWriter(new FileWriter(tableWriter));
+		}
+
+		for (int chainIdx = 0; chainIdx < chains.size(); chainIdx++) {
+			ScanChain chain = chains.get(chainIdx);
+			log.info("Chain " + chainIdx + " ScanInPort " + chain.in.node.queryName());
+			log.info("  ChainLength " + chain.cells.size());
+			int aggmin = Integer.MAX_VALUE;
+			int aggmax = 0;
+			int aggsum = 0;
+			for (ScanCell sff : chain.cells) {
+				int agg = cell2aggressorSet.get(sff).size();
+				aggmin = Math.min(aggmin, agg);
+				aggmax = Math.max(aggmax, agg);
+				aggsum += agg;
+			}
+			int aggavg = aggsum / chain.cells.size();
+			log.info("  AggressorsPerScanCell Min " + aggmin + " Avg " + aggavg + " Max " + aggmax);
+			log.info("  AggressorsForChain SimpleSum " + aggsum + " UniqueAggressorCount "
+					+ chain2aggressorSet.get(chain).size());
+			log.info("  ImpactCellCount " + chain2impactSet.get(chain).size());
+			if (out != null)
+				out.write(chainIdx + " & " + chain2aggressorSet.get(chain).size() + " & "
+						+ chain2impactSet.get(chain).size() + "\\\\" + "\n");
+		}
+
+		if (out != null) {
+			out.close();
+		}
+	}
+
 	private void calculateAggressorSets(ScanChains chains, Placement placement, int arxnm, int arynm,
 			HashMap<ScanCell, HashSet<Node>> cell2aggressors, HashMap<ScanChain, HashSet<Node>> chain2aggressors) {
 		for (int chainIdx = 0; chainIdx < chains.size(); chainIdx++) {
@@ -234,15 +251,8 @@ public class Main extends KyupiApp {
 				int y = placement.getY(cell.node);
 				cell2aggressors.put(cell,
 						placement.getRectangle(x - arxnm / 2, y - arynm / 2, x + arxnm / 2, y + arynm / 2));
-				// log.info(" ScanCell " + cell.node.queryName() + " Aggressors
-				// " + cell2aggressors.get(cell).size());
 				chainaggressors.addAll(cell2aggressors.get(cell));
 			}
-			// aggressorCounter[chainIdx] = aggressorSetTemp.size();
-			// int percent = impactarea.size() * 100 / nodecount;
-			// log.info(" CombinationalReach " + r.size() + " " + percent +
-			// "%%");
-			// combinationalReach[chainIdx] = percent;
 		}
 	}
 
@@ -252,8 +262,6 @@ public class Main extends KyupiApp {
 			ScanChain chain = chains.get(chainIdx);
 			HashSet<Node> impactSet = new HashSet<Node>();
 			chain2impactSet.put(chain, impactSet);
-			// log.info("Chain " + chainIdx + " ScanInPort " +
-			// chain.in.node.queryName());
 			for (ScanCell cell : chain.cells) {
 				impactSet.add(cell.node);
 				impactSet.addAll(GraphTools.collectCombinationalOutputCone(cell.node));
@@ -265,87 +273,66 @@ public class Main extends KyupiApp {
 					return n.isPseudo();
 				}
 			});
-			// aggressorCounter[chainIdx] = aggressorSetTemp.size();
-			// aggressorSetTemp.clear();
-			// int percent = impactarea.size() * 100 / nodecount;
-			// log.info(" CombinationalReach " + r.size() + " " + percent +
-			// "%%");
-			// combinationalReach[chainIdx] = percent;
 		}
 	}
 
-	private void staticAssessment(Graph circuit, ScanChains chains, int[] clocking,
-			HashMap<ScanCell, HashSet<Node>> aggressors, HashMap<ScanChain, HashSet<Node>> reach) {
-		// int nodecount = circuit.countNodes();
-
-		int selfAggressingHist[] = new int[11];
-
-		for (int chainIdx = 0; chainIdx < chains.size(); chainIdx++) {
-			ScanChain chain = chains.get(chainIdx);
-			HashSet<Node> r = reach.get(chain);
-			// log.info("Chain " + chainIdx + " ScanInPort " +
-			// chain.in.node.queryName());
-			for (ScanCell cell : chain.cells) {
-				int selfAggressor = 0;
-				for (Node a : aggressors.get(cell)) {
-					if (r.contains(a))
-						selfAggressor++;
-				}
-				int aggressor = aggressors.get(cell).size();
-				int selfAggressorPercent = 100 * selfAggressor / aggressor;
-				selfAggressingHist[selfAggressorPercent / 10]++;
-				// log.info(" ScanCell " + cell.node.queryName() + " Aggressors
-				// " + aggressor + " Self " + selfAggressor + " (" +
-				// selfAggressorPercent + "%%)");
-			}
-			// int reachsize = reach.get(chain).size();
-			// int percent = reachsize * 100 / nodecount;
-			// log.info(" CombinationalReach " + reachsize + " " + percent +
-			// "%%");
-		}
-
-		int sum = 0;
-		for (int i = selfAggressingHist.length - 1; i >= 0; i--) {
-			sum += selfAggressingHist[i];
-			int p = sum * 100 / chains.scanCellCount();
-			log.info("SelfAggressorPortion >= " + i * 10 + "%% for " + sum + " ScanCells (" + p + "%%)");
-		}
-
-		int aggressingHist[] = new int[11];
+	private HashMap<ScanCell, HashSet<Node>> calculateActiveAggressors(ScanChains chains, int[] clocking,
+			HashMap<ScanCell, HashSet<Node>> cell2aggressorSet, HashMap<ScanChain, HashSet<Node>> chain2impactSet) {
+		HashMap<ScanCell, HashSet<Node>> activeAggressors = new HashMap<>();
 
 		int clocks = ArrayTools.max(clocking) + 1;
 
+		// compute sets of possibly active nodes for each staggered clock.
+		ArrayList<HashSet<Node>> clockImpactSets = new ArrayList<>();
 		for (int c = 0; c < clocks; c++) {
+			HashSet<Node> clockImpactSet = new HashSet<>();
 			for (int chainIdx = 0; chainIdx < chains.size(); chainIdx++) {
 				if (clocking[chainIdx] != c)
 					continue;
 				ScanChain chain = chains.get(chainIdx);
-				HashSet<Node> r = reach.get(chain);
-				for (ScanCell cell : chain.cells) {
-					HashSet<Node> intersect = new HashSet<>();
-					for (Node a : aggressors.get(cell)) {
-						for (int chainIdx2 = 0; chainIdx2 < chains.size(); chainIdx2++) {
-							if (clocking[chainIdx2] != c)
-								continue;
-							if (reach.get(chains.get(chainIdx2)).contains(a))
-								intersect.add(a);
-						}
-					}
-					int aggressorCount = aggressors.get(cell).size();
-					int intersectCount = intersect.size();
-					int aggressorPercent = 100 * intersectCount / aggressorCount;
-					aggressingHist[aggressorPercent / 10]++;
-				}
+				clockImpactSet.addAll(chain2impactSet.get(chain));
 			}
+			clockImpactSets.add(clockImpactSet);
 		}
 
-		sum = 0;
-		for (int i = aggressingHist.length - 1; i >= 0; i--) {
-			sum += aggressingHist[i];
-			int p = sum * 100 / chains.scanCellCount();
-			log.info("StaggeredClockingAggressorPortion >= " + i * 10 + "%% for " + sum + " ScanCells (" + p + "%%)");
+		// intersect the computed sets with all sff aggressor sets
+		for (ScanCell sff : cell2aggressorSet.keySet()) {
+			int clk = clocking[sff.chainIdx()];
+			HashSet<Node> agg = new HashSet<>(cell2aggressorSet.get(sff));
+			agg.retainAll(clockImpactSets.get(clk));
+			activeAggressors.put(sff, agg);
 		}
+		return activeAggressors;
+	}
 
+	private HashMap<ScanCell, HashSet<Node>> calculateSelfAggressors(ScanChains chains,
+			HashMap<ScanCell, HashSet<Node>> cell2aggressorSet, HashMap<ScanChain, HashSet<Node>> chain2impactSet) {
+		HashMap<ScanCell, HashSet<Node>> selfAggressors = new HashMap<>();
+
+		// intersect the impact set with all sff aggressor sets
+		for (ScanCell sff : cell2aggressorSet.keySet()) {
+			HashSet<Node> agg = new HashSet<>(cell2aggressorSet.get(sff));
+			agg.retainAll(chain2impactSet.get(chains.get(sff.chainIdx())));
+			selfAggressors.put(sff, agg);
+		}
+		return selfAggressors;
+	}
+
+	private void printSizeHistogram(HashMap<ScanCell, HashSet<Node>> set, HashMap<ScanCell, HashSet<Node>> base) {
+		int hist[] = new int[11];
+		for (ScanCell sff : set.keySet()) {
+			int size = set.get(sff).size();
+			int base_size = base.get(sff).size();
+			int percent = 100 * size / base_size;
+			hist[percent / 10]++;
+		}
+		int sccount = set.size();
+		int sum = 0;
+		for (int i = hist.length - 1; i >= 0; i--) {
+			sum += hist[i];
+			int p = sum * 100 / sccount;
+			log.info("  >= " + i * 10 + "%% for " + sum + " ScanCells (" + p + "%%)");
+		}
 	}
 
 	/**
