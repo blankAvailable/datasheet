@@ -1,11 +1,6 @@
 package jp.ac.kyutech.ci.grouping;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.*;
 import java.util.function.Predicate;
 
@@ -213,8 +208,9 @@ public class Main extends KyupiApp {
 			}
 			log.info("WSA Simulation Finished.");
 
+			double[] chainActivityMax = new double[chains.size()];
 			for (int chainIdx = 0; chainIdx < chains.size(); chainIdx++) {
-				double chainActivityMax = 0.0;
+
 				ScanChain chain = chains.get(chainIdx);
 				int clock_phase = clocking[chainIdx];
 				log.info("Chain " + chainIdx + " ScanInPort " + chain.in.node.queryName());
@@ -231,13 +227,33 @@ public class Main extends KyupiApp {
 					if (gp_correlation != null) {
 						gp_correlation.println("" + cell2activeAggressorSet.get(cell).size() + " " + activityMax);
 					}
-					if (activityMax > chainActivityMax)
-						chainActivityMax = activityMax;
+					if (activityMax > chainActivityMax[chainIdx])
+						chainActivityMax[chainIdx] = activityMax;
 					log.info("  ScanCell " + cell.node.queryName() + " AvgWSA "
 							+ (activitySum/wns.activitySize()) + " MaxWSA "
 							+ activityMax);
 				}
-				log.info("  Chain " + chainIdx + " MaxWSA " + chainActivityMax);
+				log.info("  Chain " + chainIdx + " MaxWSA " + chainActivityMax[chainIdx]);
+			}
+			if (argsParsed().hasOption("d")) {
+				String filename = "./table/" + argsParsed().getOptionValue("d").substring(11, 14) + "_wsa.tex";
+				File wsaTex = new File(filename);
+				String line = null;
+				StringBuffer bufLine = new StringBuffer();
+				int chainIdx = 0;
+				if (wsaTex.exists()) {
+					BufferedReader in = new BufferedReader(new FileReader(filename));
+					while ((line=in.readLine()) != null){
+						line = line.replaceAll(" \\\\\\\\", "");
+						bufLine.append(line).append(" & " + (int)chainActivityMax[chainIdx] + " \\\\\n");
+						chainIdx++;
+					}
+					in.close();
+					BufferedWriter out = new BufferedWriter(new FileWriter(filename));
+					out.write(bufLine.toString());
+					out.flush();
+					out.close();
+				}
 			}
 
 			if (gp_correlation != null) {
@@ -281,10 +297,11 @@ public class Main extends KyupiApp {
 			log.info("  ImpactCellCount " + chain2impactSet.get(chain).size());
 			if (out != null)
 				out.write(chainIdx + " & " + chain2aggressorSet.get(chain).size() + " & "
-						+ chain2impactSet.get(chain).size() + " & " + " & " + " & " + "\\\\" + "\n");
+						+ chain2impactSet.get(chain).size() + " \\\\\n");
 		}
 
 		if (out != null) {
+			out.flush();
 			out.close();
 		}
 	}
