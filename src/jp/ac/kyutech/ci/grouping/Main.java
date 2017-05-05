@@ -236,7 +236,7 @@ public class Main extends KyupiApp {
 				log.info("  Chain " + chainIdx + " MaxWSA " + chainActivityMax[chainIdx]);
 			}
 			if (argsParsed().hasOption("d")) {
-				String filename = "./table/" + argsParsed().getOptionValue("d").substring(11, 14) + "_wsa.tex";
+				String filename = "./table/" + circuit.getName() + "_wsa.tex";
 				File wsaTex = new File(filename);
 				String line = null;
 				StringBuffer bufLine = new StringBuffer();
@@ -251,7 +251,6 @@ public class Main extends KyupiApp {
 					in.close();
 					BufferedWriter out = new BufferedWriter(new FileWriter(filename));
 					out.write(bufLine.toString());
-					out.flush();
 					out.close();
 				}
 			}
@@ -301,7 +300,6 @@ public class Main extends KyupiApp {
 		}
 
 		if (out != null) {
-			out.flush();
 			out.close();
 		}
 	}
@@ -386,8 +384,11 @@ public class Main extends KyupiApp {
 
 	private void printSizeHistogram(HashMap<ScanCell, HashSet<Node>> set, HashMap<ScanCell, HashSet<Node>> base) {
 		int hist[] = new int[11];
+		int maxOverlap = 0;
 		for (ScanCell sff : set.keySet()) {
 			int size = set.get(sff).size();
+			if (size > maxOverlap)
+			    maxOverlap = size;
 			int base_size = base.get(sff).size();
 			int percent = 100 * size / base_size;
 			hist[percent / 10]++;
@@ -399,6 +400,7 @@ public class Main extends KyupiApp {
 			int p = sum * 100 / sccount;
 			log.info("  >= " + i * 10 + "%% for " + sum + " ScanCells (" + p + "%%)");
 		}
+        log.info("  Max size of active aggressor set " + maxOverlap);
 	}
 
 	/**
