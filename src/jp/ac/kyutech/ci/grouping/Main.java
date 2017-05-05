@@ -154,8 +154,14 @@ public class Main extends KyupiApp {
 				gp_correlation
 						.println("set xlabel 'Structural overlap between aggressor region and active impact areas'");
 				gp_correlation.println("set ylabel 'Maximum WSA in aggressor region'");
-				gp_correlation.println("set xrange [0:5000]");
-				gp_correlation.println("set yrange [0:5000]");
+				
+				int maxSize = 0;
+				for (ScanCell cell : cell2aggressorSet.keySet()) {
+					int size = cell2aggressorSet.get(cell).size();
+					maxSize = Math.max(maxSize, size);
+				}
+				gp_correlation.println("set xrange [0:"+maxSize+"]");
+				gp_correlation.println("set yrange [0:"+maxSize+"]");
 				gp_correlation.println("plot '-' w p t 'scan cell'");
 			}
 
@@ -208,21 +214,30 @@ public class Main extends KyupiApp {
 			log.info("WSA Simulation Finished.");
 
 			for (int chainIdx = 0; chainIdx < chains.size(); chainIdx++) {
-				double maxWsa = 0.0;
+				double chainActivityMax = 0.0;
 				ScanChain chain = chains.get(chainIdx);
+				int clock_phase = clocking[chainIdx];
 				log.info("Chain " + chainIdx + " ScanInPort " + chain.in.node.queryName());
 				for (ScanCell cell : chain.cells) {
-					if (gp_correlation != null) {
-						gp_correlation.println("" + cell2activeAggressorSet.get(cell).size() + " "
-								+ aggressor_wns.get(cell).getMaxActivity());
+					double activityMax = 0.0;
+					double activitySum = 0.0;
+					WeightedNodeSet wns = aggressor_wns.get(cell);
+					for (int c = 0; c < wns.activitySize(); c++) {
+						if ((c % clocks) == clock_phase) {
+							activityMax = Math.max(activityMax, wns.getActivity(c));
+							activitySum += wns.getActivity(c);
+						}
 					}
-					if (aggressor_wns.get(cell).getMaxActivity() > maxWsa)
-						maxWsa = aggressor_wns.get(cell).getMaxActivity();
+					if (gp_correlation != null) {
+						gp_correlation.println("" + cell2activeAggressorSet.get(cell).size() + " " + activityMax);
+					}
+					if (activityMax > chainActivityMax)
+						chainActivityMax = activityMax;
 					log.info("  ScanCell " + cell.node.queryName() + " AvgWSA "
-							+ aggressor_wns.get(cell).getAverageActivity() + " MaxWSA "
-							+ aggressor_wns.get(cell).getMaxActivity());
+							+ (activitySum/wns.activitySize()) + " MaxWSA "
+							+ activityMax);
 				}
-				log.info("  Chain " + chainIdx + " MaxWSA " + maxWsa);
+				log.info("  Chain " + chainIdx + " MaxWSA " + chainActivityMax);
 			}
 
 			if (gp_correlation != null) {

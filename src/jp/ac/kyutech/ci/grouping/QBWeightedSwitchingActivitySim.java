@@ -40,6 +40,10 @@ public class QBWeightedSwitchingActivitySim extends QBSource {
 			return activity.get(pattern_idx);
 		}
 		
+		public int activitySize() {
+			return activity.size();
+		}
+		
 		public double getAverageActivity() {
 			double sum = 0.0;
 			for (Double d: activity) {
