@@ -384,13 +384,17 @@ public class Main extends KyupiApp {
 
 	private void printSizeHistogram(HashMap<ScanCell, HashSet<Node>> set, HashMap<ScanCell, HashSet<Node>> base) {
 		int hist[] = new int[11];
-		int maxOverlap = 0;
+		int maxOverlapSize = 0;
+		int maxOverlapRatio = 0;
 		for (ScanCell sff : set.keySet()) {
 			int size = set.get(sff).size();
-			if (size > maxOverlap)
-			    maxOverlap = size;
+			if (size > maxOverlapSize) {
+                maxOverlapSize = size;
+			}
 			int base_size = base.get(sff).size();
 			int percent = 100 * size / base_size;
+			if (percent > maxOverlapRatio)
+				maxOverlapRatio = percent;
 			hist[percent / 10]++;
 		}
 		int sccount = set.size();
@@ -400,7 +404,8 @@ public class Main extends KyupiApp {
 			int p = sum * 100 / sccount;
 			log.info("  >= " + i * 10 + "%% for " + sum + " ScanCells (" + p + "%%)");
 		}
-        log.info("  Max size of active aggressor set " + maxOverlap);
+        log.info("  Max size of active aggressor set " + maxOverlapSize + " Max ratio of active aggressor set "
+				+ maxOverlapRatio);
 	}
 
 	/**
