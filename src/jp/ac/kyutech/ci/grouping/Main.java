@@ -54,6 +54,7 @@ public class Main extends KyupiApp {
 		options.addOption("ary", true, "vertical size of aggressor regions in units of rows.");
 		options.addOption("gp_correlation", true, "output a gnuplot file for correlation between structural and WSA. ");
 		options.addOption("max_overlap", true, "output maximum structural impact/aggressor overlap to given file.");
+		options.addOption("round", true, "input the number of time to run a sim");
 	}
 
 	private Graph circuit;
@@ -134,14 +135,36 @@ public class Main extends KyupiApp {
 		HashMap<ScanCell, HashSet<Node>> cell2activeAggressorSet = calculateActiveAggressors(chains, clocking,
 				cell2aggressorSet, chain2impactSet);
 
-        if (argsParsed().hasOption("max_overlap")) {
-            String fileName = argsParsed().getOptionValue("max_overlap");
-            FileWriter fileWriter = new FileWriter(fileName, true);
-            fileWriter.write(String.valueOf(printSizeHistogram(cell2activeAggressorSet, cell2aggressorSet)));
-            fileWriter.close();
-        }else {
-            printSizeHistogram(cell2activeAggressorSet, cell2aggressorSet);
-        }
+		if (argsParsed().hasOption("max_overlap")) {
+			String fileName = argsParsed().getOptionValue("max_overlap");
+			FileWriter fileWriter = new FileWriter(fileName, true);
+			fileWriter.write(String.valueOf(printSizeHistogram(cell2activeAggressorSet, cell2aggressorSet)) + "\n");
+			fileWriter.close();
+		}else {
+			printSizeHistogram(cell2activeAggressorSet, cell2aggressorSet);
+		}
+
+		if (argsParsed().hasOption("round")) {
+			int round = Integer.parseInt(argsParsed().getOptionValue("round"));
+			long prt_seed = 0;
+			for (int i=1; i<round; i++) {
+				prt_seed = prt_seed + i*5;
+				int clockingRound[] = getClocking(chains, prt_seed);
+				HashMap<ScanCell, HashSet<Node>> cell2activeAggressorSetRound = calculateActiveAggressors(chains, clockingRound,
+						cell2aggressorSet, chain2impactSet);
+
+				if (argsParsed().hasOption("max_overlap")) {
+					String fileName = argsParsed().getOptionValue("max_overlap");
+					FileWriter fileWriter = new FileWriter(fileName, true);
+					fileWriter.write(String.valueOf(printSizeHistogram(cell2activeAggressorSetRound, cell2aggressorSet)) + "\n");
+					fileWriter.close();
+				}else {
+					printSizeHistogram(cell2activeAggressorSetRound, cell2aggressorSet);
+				}
+			}
+		}else{
+
+		}
 
 
 		if (argsParsed().hasOption("sim")) {
@@ -243,25 +266,6 @@ public class Main extends KyupiApp {
 							+ activityMax);
 				}
 				log.info("  Chain " + chainIdx + " MaxWSA " + chainActivityMax[chainIdx]);
-			}
-			if (argsParsed().hasOption("d")) {
-				String filename = "./table/" + circuit.getName() + "_wsa.tex";
-				File wsaTex = new File(filename);
-				String line = null;
-				StringBuffer bufLine = new StringBuffer();
-				int chainIdx = 0;
-				if (wsaTex.exists()) {
-					BufferedReader in = new BufferedReader(new FileReader(filename));
-					while ((line=in.readLine()) != null){
-						line = line.replaceAll(" \\\\\\\\", "");
-						bufLine.append(line).append(" & " + (int)chainActivityMax[chainIdx] + " \\\\\n");
-						chainIdx++;
-					}
-					in.close();
-					BufferedWriter out = new BufferedWriter(new FileWriter(filename));
-					out.write(bufLine.toString());
-					out.close();
-				}
 			}
 
 			if (gp_correlation != null) {
@@ -440,6 +444,23 @@ public class Main extends KyupiApp {
 		return expandedMap;
 	}
 
+	/** another getClocking() method, be used when has -round option*/
+	private int[] getClocking(ScanChains chains, long prt_seed) {
+		int clocking[] = new int[chains.size()];
+		Arrays.fill(clocking, 0);
+		int clocks = 1;
+		if (argsParsed().hasOption("clk")) {
+			clocks = Integer.parseInt(argsParsed().getOptionValue("clk"));
+		}
+		log.info("StaggeredClockCount " + clocks);
+		// do a random partitioning
+		Random rnd = new Random(prt_seed);
+		for (int i = 0; i < clocking.length; i++) {
+			clocking[i] = rnd.nextInt(clocks);
+		}
+		log.info("Partitioning random " + prt_seed);
+		return clocking;
+	}
 	private int[] getClocking(ScanChains chains) {
 		int clocking[] = new int[chains.size()];
 		Arrays.fill(clocking, 0);
