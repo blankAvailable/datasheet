@@ -53,6 +53,7 @@ public class Main extends KyupiApp {
 		options.addOption("arx", true, "horizontal size of aggressor regions in units of NAND2X1 widths.");
 		options.addOption("ary", true, "vertical size of aggressor regions in units of rows.");
 		options.addOption("gp_correlation", true, "output a gnuplot file for correlation between structural and WSA. ");
+		options.addOption("max_overlap", true, "output maximum structural impact/aggressor overlap to given file.");
 	}
 
 	private Graph circuit;
@@ -133,7 +134,15 @@ public class Main extends KyupiApp {
 		HashMap<ScanCell, HashSet<Node>> cell2activeAggressorSet = calculateActiveAggressors(chains, clocking,
 				cell2aggressorSet, chain2impactSet);
 
-		printSizeHistogram(cell2activeAggressorSet, cell2aggressorSet);
+        if (argsParsed().hasOption("max_overlap")) {
+            String fileName = argsParsed().getOptionValue("max_overlap");
+            FileWriter fileWriter = new FileWriter(fileName, true);
+            fileWriter.write(String.valueOf(printSizeHistogram(cell2activeAggressorSet, cell2aggressorSet)));
+            fileWriter.close();
+        }else {
+            printSizeHistogram(cell2activeAggressorSet, cell2aggressorSet);
+        }
+
 
 		if (argsParsed().hasOption("sim")) {
 			int blocks = Integer.parseInt(argsParsed().getOptionValue("sim"));
@@ -382,10 +391,9 @@ public class Main extends KyupiApp {
 		return selfAggressors;
 	}
 
-	private void printSizeHistogram(HashMap<ScanCell, HashSet<Node>> set, HashMap<ScanCell, HashSet<Node>> base) {
+	private int printSizeHistogram(HashMap<ScanCell, HashSet<Node>> set, HashMap<ScanCell, HashSet<Node>> base) {
 		int hist[] = new int[11];
 		int maxOverlapSize = 0;
-		int maxOverlapRatio = 0;
 		for (ScanCell sff : set.keySet()) {
 			int size = set.get(sff).size();
 			if (size > maxOverlapSize) {
@@ -393,8 +401,6 @@ public class Main extends KyupiApp {
 			}
 			int base_size = base.get(sff).size();
 			int percent = 100 * size / base_size;
-			if (percent > maxOverlapRatio)
-				maxOverlapRatio = percent;
 			hist[percent / 10]++;
 		}
 		int sccount = set.size();
@@ -404,8 +410,7 @@ public class Main extends KyupiApp {
 			int p = sum * 100 / sccount;
 			log.info("  >= " + i * 10 + "%% for " + sum + " ScanCells (" + p + "%%)");
 		}
-        log.info("  Max size of active aggressor set " + maxOverlapSize + " Max ratio of active aggressor set "
-				+ maxOverlapRatio);
+		return maxOverlapSize;
 	}
 
 	/**
