@@ -1,4 +1,4 @@
-package jp.ac.kyutech.ci.datasheet;
+package jp.ac.kyutech.ci.datatable;
 
 import org.kyupi.graph.Graph;
 import org.kyupi.graph.Graph.Node;

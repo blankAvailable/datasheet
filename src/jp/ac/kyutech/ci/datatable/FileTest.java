@@ -1,7 +1,4 @@
-package jp.ac.kyutech.ci.datasheet;
-
-import jp.ac.kyutech.ci.grouping.Heuristic;
-import jp.ac.kyutech.ci.grouping.Matrix;
+package jp.ac.kyutech.ci.datatable;
 
 /**
  * Created by ZhangYucong on 2017/3/12.

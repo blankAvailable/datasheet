@@ -1,4 +1,4 @@
-package jp.ac.kyutech.ci.datasheet;
+package jp.ac.kyutech.ci.datatable;
 
 import org.apache.commons.cli.*;
 
@@ -32,7 +32,7 @@ public class CommandProcess {
         }
         if (argInput.hasOption("h")){
             HelpFormatter helpFormatter = new HelpFormatter();
-            helpFormatter.printHelp("datasheet [-s] scan chain number(int) " +
+            helpFormatter.printHelp("datatable [-s] scan chain number(int) " +
                     "[-g] group number(int) [-c] circuit name(String) [-t] threshold value(int) [-h]", options);
         }
         if (argInput.hasOption("s")){

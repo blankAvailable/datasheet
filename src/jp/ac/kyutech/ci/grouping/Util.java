@@ -1,10 +1,9 @@
-package jp.ac.kyutech.ci.datasheet;
+package jp.ac.kyutech.ci.grouping;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.Math.abs;
-import static java.lang.Math.acos;
 
 /**
  * Created by ZhangYucong on 2017/3/20.

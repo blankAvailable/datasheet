@@ -1,4 +1,4 @@
-package jp.ac.kyutech.ci.datasheet;
+package jp.ac.kyutech.ci.datatable;
 
 import java.util.ArrayList;
 import java.util.Iterator;
