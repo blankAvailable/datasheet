@@ -1,7 +1,5 @@
 package jp.ac.kyutech.ci.grouping;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -17,20 +15,10 @@ public class PartitionGeneratorSeq extends PartitionGenerator {
 	public PartitionGeneratorSeq(int set_size, int partition_count) {
 		this.set_size = set_size;
 		this.partition_count = partition_count;
-		BigInteger cnt = sterling(BigInteger.valueOf(set_size), BigInteger.valueOf(partition_count));
-		log.info("PartitionCount " + (new BigDecimal(cnt)).toString());
 		initFirstPartition();
 	}
 	
-	public static BigInteger sterling(BigInteger n, BigInteger k) {
-		if (n.equals(k))
-			return BigInteger.ONE;
-		if (k.compareTo(BigInteger.ZERO) == 0 || n.compareTo(BigInteger.ZERO) == 0)
-			return BigInteger.ZERO;
-		return k.multiply(sterling(n.subtract(BigInteger.ONE), k)
-				.add(sterling(n.subtract(BigInteger.ONE), k.subtract(BigInteger.ONE))));
-	}
-	
+
 	private void initFirstPartition() {
 		int n = set_size;
 		int p = partition_count;

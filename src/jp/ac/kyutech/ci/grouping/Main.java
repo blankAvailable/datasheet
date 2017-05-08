@@ -1,7 +1,22 @@
 package jp.ac.kyutech.ci.grouping;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Locale;
 import java.util.function.Predicate;
 
 import org.junit.Test;
@@ -121,15 +136,25 @@ public class Main extends KyupiApp {
 		HashMap<ScanChain, HashSet<Node>> chain2aggressorSet = new HashMap<>();
 		calculateAggressorSets(chains, placement, arxnm, arynm, cell2aggressorSet, chain2aggressorSet);
 		printAggressorAndImpactStatistics(chains, cell2aggressorSet, chain2aggressorSet, chain2impactSet);
+		
+		int maxAggressors = 0;
+		for (ScanCell cell : cell2aggressorSet.keySet()) {
+			int size = cell2aggressorSet.get(cell).size();
+			maxAggressors = Math.max(maxAggressors, size);
+		}
+		log.info("MaxAggressors " + maxAggressors);
 
 		log.info("Calculating self aggressor sets...");
 		HashMap<ScanCell, HashSet<Node>> cell2selfAggressorSet = calculateSelfAggressors(chains, cell2aggressorSet,
 				chain2impactSet);
-		printSizeHistogram(cell2selfAggressorSet, cell2aggressorSet);
+		int maxSelfAggressors = printSizeHistogram(cell2selfAggressorSet, cell2aggressorSet);
+		log.info("  MaxSelfAggressors " + maxSelfAggressors);
 
 		// read partitioning parameters
 		int clocks = intFromArgsOrDefault("clk", 1);
+		clocks = Math.min(clocks, chains.size());
 		log.info("StaggeredClockCount " + clocks);
+		printPartitionCount(chains.size(), clocks);
 		PartitionGenerator partGen = null;
 		ScanChainGrouper partAlg = null;
 		String prt_method = stringFromArgsOrDefault("prt_method", "seq").toLowerCase();
@@ -195,121 +220,77 @@ public class Main extends KyupiApp {
 			HashMap<ScanCell, HashSet<Node>> cell2activeAggressorSet = calculateActiveAggressors(chains, clocking,
 					cell2aggressorSet, chain2impactSet);
 
-			int maxOverlap = printSizeHistogram(cell2activeAggressorSet, cell2aggressorSet);
-			log.info("  MaxOverlap " + maxOverlap);
+			int maxActiveAggressors = printSizeHistogram(cell2activeAggressorSet, cell2aggressorSet);
+			log.info("  MaxActiveAggressors " + maxActiveAggressors);
 
 			if (argsParsed().hasOption("max_overlap")) {
 				String fileName = argsParsed().getOptionValue("max_overlap");
 				FileWriter fileWriter = new FileWriter(fileName, true);
-				fileWriter.write("" + maxOverlap + "\n");
+				fileWriter.write("" + maxActiveAggressors + "\n");
 				fileWriter.close();
 			}
 
-			if (argsParsed().hasOption("sim")) {
-				int blocks = Integer.parseInt(argsParsed().getOptionValue("sim"));
+			if (!argsParsed().hasOption("sim"))
+				continue; // to next case
 
-				PrintWriter gp_correlation = null;
-				if (argsParsed().hasOption("gp_correlation")) {
-					String fn = argsParsed().getOptionValue("gp_correlation");
-					gp_correlation = new PrintWriter(new File(fn));
-					gp_correlation.println("set terminal png size 1024,1024");
-					gp_correlation.println("set output '" + fn + ".png'");
-					gp_correlation.println("set title 'Correlation between structural overlap and maximum WSA. "
-							+ circuit.getName() + " " + (blocks * 32) + " shifts, " + clocks + " clock(s)'");
-					gp_correlation.println(
-							"set xlabel 'Structural overlap between aggressor region and active impact areas'");
-					gp_correlation.println("set ylabel 'Maximum WSA in aggressor region'");
+			int blocks = Integer.parseInt(argsParsed().getOptionValue("sim"));
 
-					int maxSize = 0;
-					for (ScanCell cell : cell2aggressorSet.keySet()) {
-						int size = cell2aggressorSet.get(cell).size();
-						maxSize = Math.max(maxSize, size);
-					}
-					gp_correlation.println("set xrange [0:" + maxSize + "]");
-					gp_correlation.println("set yrange [0:" + maxSize + "]");
-					gp_correlation.println("plot '-' w p t 'scan cell'");
+			PrintWriter gp_correlation = null;
+			if (argsParsed().hasOption("gp_correlation")) {
+				gp_correlation = newGpCorrelationFileWithHeader(maxAggressors, clocks, blocks);
+				if (prt_cases > 1)
+					log.warn("only one gp correlation plot file will be generated!");
+			}
+
+			log.info("WSA Simulation Setup...");
+			QBSource shifts = prepareExpandedRandomPatterns(chains, clocking);
+			QBWeightedSwitchingActivitySim sim = new QBWeightedSwitchingActivitySim(circuit, shifts);
+			HashMap<ScanCell, WeightedNodeSet> aggressor_wns = new HashMap<>();
+			for (ScanCell sc : cell2aggressorSet.keySet()) {
+				WeightedNodeSet wns = sim.new WeightedNodeSet();
+				for (Node n : cell2aggressorSet.get(sc)) {
+					wns.add(n, 1.0);
 				}
+				aggressor_wns.put(sc, wns);
+			}
+			log.info("WSA Simulation Start...");
+			for (int i = 0; i < blocks; i++) {
+				sim.next();
+			}
+			log.info("WSA Simulation Finished.");
 
-				log.info("WSA Simulation Setup...");
-				int stimuliExpansionMap[][] = expandForWsa(chains.scanInMapping(clocking));
-				int responseExpansionMap[][] = expandForWsa(chains.scanOutMapping(clocking));
-				BBSource stimuli = BBSource.random(circuit.accessInterface().length, 42);
-				BBSource responses = BBPlainSim.from(stimuli);
-				// FIXME pad responses with leading zero pattern for proper
-				// pattern alignment
-				QVSource stimuliExpanded = new QVExpander(QVSource.from(stimuli), stimuliExpansionMap);
-				QVSource responsesExpanded = new QVExpander(QVSource.from(responses), responseExpansionMap);
+			double overallActivityMax = 0.0;
+			for (int chainIdx = 0; chainIdx < chains.size(); chainIdx++) {
 
-				QVSource shifts = new QVSource(stimuli.length()) {
-
-					@Override
-					public void reset() {
-						stimuliExpanded.reset();
-						responsesExpanded.reset();
-					}
-
-					@Override
-					protected QVector compute() {
-						if (!stimuliExpanded.hasNext() || !responsesExpanded.hasNext())
-							return null;
-						QVector combined = pool.alloc();
-						QVector s = stimuliExpanded.next();
-						s.copyTo(0, combined);
-						s.free();
-						QVector r = responsesExpanded.next();
-						combined.or(r);
-						r.free();
-						return combined;
-					}
-				};
-
-				QBWeightedSwitchingActivitySim sim = new QBWeightedSwitchingActivitySim(circuit, QBSource.from(shifts));
-				HashMap<ScanCell, WeightedNodeSet> aggressor_wns = new HashMap<>();
-				for (ScanCell sc : cell2aggressorSet.keySet()) {
-					WeightedNodeSet wns = sim.new WeightedNodeSet();
-					for (Node n : cell2aggressorSet.get(sc)) {
-						wns.add(n, 1.0);
-					}
-					aggressor_wns.put(sc, wns);
-				}
-				log.info("WSA Simulation Start...");
-				for (int i = 0; i < blocks; i++) {
-					sim.next();
-				}
-				log.info("WSA Simulation Finished.");
-
-				double[] chainActivityMax = new double[chains.size()];
-				for (int chainIdx = 0; chainIdx < chains.size(); chainIdx++) {
-
-					ScanChain chain = chains.get(chainIdx);
-					int clock_phase = clocking[chainIdx];
-					log.info("Chain " + chainIdx + " ScanInPort " + chain.in.node.queryName());
-					for (ScanCell cell : chain.cells) {
-						double activityMax = 0.0;
-						double activitySum = 0.0;
-						WeightedNodeSet wns = aggressor_wns.get(cell);
-						for (int c = 0; c < wns.activitySize(); c++) {
-							if ((c % clocks) == clock_phase) {
-								activityMax = Math.max(activityMax, wns.getActivity(c));
-								activitySum += wns.getActivity(c);
-							}
+				ScanChain chain = chains.get(chainIdx);
+				int clock_phase = clocking[chainIdx];
+				log.info("Chain " + chainIdx + " ScanInPort " + chain.in.node.queryName());
+				double chainActivityMax = 0.0;
+				for (ScanCell cell : chain.cells) {
+					double activityMax = 0.0;
+					double activitySum = 0.0;
+					WeightedNodeSet wns = aggressor_wns.get(cell);
+					for (int c = 0; c < wns.activitySize(); c++) {
+						if ((c % clocks) == clock_phase) {
+							activityMax = Math.max(activityMax, wns.getActivity(c));
+							activitySum += wns.getActivity(c);
 						}
-						if (gp_correlation != null) {
-							gp_correlation.println("" + cell2activeAggressorSet.get(cell).size() + " " + activityMax);
-						}
-						if (activityMax > chainActivityMax[chainIdx])
-							chainActivityMax[chainIdx] = activityMax;
-						log.info("  ScanCell " + cell.node.queryName() + " AvgWSA " + (activitySum / wns.activitySize())
-								+ " MaxWSA " + activityMax);
 					}
-					log.info("  Chain " + chainIdx + " MaxWSA " + chainActivityMax[chainIdx]);
+					if (gp_correlation != null) {
+						gp_correlation.println("" + cell2activeAggressorSet.get(cell).size() + " " + activityMax);
+					}
+					chainActivityMax = Math.max(chainActivityMax, activityMax);
+					overallActivityMax = Math.max(overallActivityMax, activityMax);
+					log.info("  ScanCell " + cell.node.queryName() + " AvgWSA " + (activitySum / wns.activitySize())
+							+ " MaxWSA " + activityMax);
 				}
+				log.info("  Chain " + chainIdx + " MaxWSA " + chainActivityMax);
+			}
+			log.info("OverallMaxWSA " + overallActivityMax);
 
-				if (gp_correlation != null) {
-					gp_correlation.println("e");
-					gp_correlation.close();
-				}
-
+			if (gp_correlation != null) {
+				gp_correlation.println("e");
+				gp_correlation.close();
 			}
 
 		} // case_idx loop
@@ -492,6 +473,22 @@ public class Main extends KyupiApp {
 		return selfAggressors;
 	}
 
+	private void printPartitionCount(int size, int clocks) {
+		BigInteger cnt = sterling(BigInteger.valueOf(size), BigInteger.valueOf(clocks));
+		NumberFormat formatter = new DecimalFormat("0.###E0", DecimalFormatSymbols.getInstance(Locale.ROOT));
+
+		log.info("PartitionCount " + formatter.format(cnt));
+	}
+
+	public static BigInteger sterling(BigInteger n, BigInteger k) {
+		if (n.equals(k))
+			return BigInteger.ONE;
+		if (k.compareTo(BigInteger.ZERO) == 0 || n.compareTo(BigInteger.ZERO) == 0)
+			return BigInteger.ZERO;
+		return k.multiply(sterling(n.subtract(BigInteger.ONE), k)
+				.add(sterling(n.subtract(BigInteger.ONE), k.subtract(BigInteger.ONE))));
+	}
+
 	private HashMap<ScanCell, HashSet<Node>> calculateActiveAggressors(ScanChains chains, int[] clocking,
 			HashMap<ScanCell, HashSet<Node>> cell2aggressorSet, HashMap<ScanChain, HashSet<Node>> chain2impactSet) {
 		HashMap<ScanCell, HashSet<Node>> activeAggressors = new HashMap<>();
@@ -523,12 +520,10 @@ public class Main extends KyupiApp {
 
 	private int printSizeHistogram(HashMap<ScanCell, HashSet<Node>> set, HashMap<ScanCell, HashSet<Node>> base) {
 		int hist[] = new int[11];
-		int maxOverlapSize = 0;
+		int maxActiveAggressors = 0;
 		for (ScanCell sff : set.keySet()) {
 			int size = set.get(sff).size();
-			if (size > maxOverlapSize) {
-				maxOverlapSize = size;
-			}
+			maxActiveAggressors = Math.max(size, maxActiveAggressors);
 			int base_size = base.get(sff).size();
 			int percent = 100 * size / base_size;
 			hist[percent / 10]++;
@@ -540,7 +535,61 @@ public class Main extends KyupiApp {
 			int p = sum * 100 / sccount;
 			log.info("  >= " + i * 10 + "%% for " + sum + " ScanCells (" + p + "%%)");
 		}
-		return maxOverlapSize;
+		return maxActiveAggressors;
+	}
+
+	private QBSource prepareExpandedRandomPatterns(ScanChains chains, int[] clocking) {
+		int stimuliExpansionMap[][] = expandForWsa(chains.scanInMapping(clocking));
+		int responseExpansionMap[][] = expandForWsa(chains.scanOutMapping(clocking));
+		BBSource stimuli = BBSource.random(circuit.accessInterface().length, 42);
+		BBSource responses = BBPlainSim.from(stimuli);
+		// FIXME remove first pattern from stimuli for proper alignment
+		QVSource stimuliExpanded = new QVExpander(QVSource.from(stimuli), stimuliExpansionMap);
+		QVSource responsesExpanded = new QVExpander(QVSource.from(responses), responseExpansionMap);
+	
+		QVSource shifts = new QVSource(stimuli.length()) {
+	
+			@Override
+			public void reset() {
+				stimuliExpanded.reset();
+				responsesExpanded.reset();
+			}
+	
+			@Override
+			protected QVector compute() {
+				if (!stimuliExpanded.hasNext() || !responsesExpanded.hasNext())
+					return null;
+				QVector combined = pool.alloc();
+				QVector s = stimuliExpanded.next();
+				s.copyTo(0, combined);
+				s.free();
+				QVector r = responsesExpanded.next();
+				combined.or(r);
+				r.free();
+				return combined;
+			}
+		};
+		return QBSource.from(shifts);
+	}
+
+	private PrintWriter newGpCorrelationFileWithHeader(int maxSize, int clocks,
+			int blocks) throws FileNotFoundException {
+		PrintWriter gp_correlation;
+		String fn = argsParsed().getOptionValue("gp_correlation");
+		gp_correlation = new PrintWriter(new File(fn));
+		gp_correlation.println("set terminal png size 1024,1024");
+		gp_correlation.println("set output '" + fn + ".png'");
+		gp_correlation.println("set title 'Correlation between structural overlap and maximum WSA. "
+				+ circuit.getName() + " " + (blocks * 32) + " shifts, " + clocks + " clock(s)'");
+		gp_correlation
+				.println("set xlabel 'Structural overlap between aggressor region and active impact areas'");
+		gp_correlation.println("set ylabel 'Maximum WSA in aggressor region'");
+	
+	
+		gp_correlation.println("set xrange [0:" + maxSize + "]");
+		gp_correlation.println("set yrange [0:" + maxSize + "]");
+		gp_correlation.println("plot '-' w p t 'scan cell'");
+		return gp_correlation;
 	}
 
 	/**
