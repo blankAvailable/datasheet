@@ -159,7 +159,7 @@ public class Main extends KyupiApp {
 					String fileName = argsParsed().getOptionValue("max_overlap");
 					FileWriter fileWriter = new FileWriter(fileName, true);
 					fileWriter.write(String.valueOf(printSizeHistogram(cell2activeAggressorSetRound, cell2aggressorSet)) + "\n");
-					log.info("  max structural impact/aggressor overlap: " + printSizeHistogram(cell2activeAggressorSetRound, cell2aggressorSet));
+					log.info("  max_overlap: " + printSizeHistogram(cell2activeAggressorSetRound, cell2aggressorSet));
 					fileWriter.close();
 				}else {
 					printSizeHistogram(cell2activeAggressorSetRound, cell2aggressorSet);
