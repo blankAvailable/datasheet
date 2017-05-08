@@ -54,7 +54,7 @@ public class Main extends KyupiApp {
 		options.addOption("ary", true, "vertical size of aggressor regions in units of rows.");
 		options.addOption("gp_correlation", true, "output a gnuplot file for correlation between structural and WSA. ");
 		options.addOption("max_overlap", true, "output maximum structural impact/aggressor overlap to given file.");
-		options.addOption("round", true, "input the number of time to run a sim");
+		options.addOption("prt_count", true, "input the number of time to calculate structural impact/aggressor overlap under random partition. ");
 	}
 
 	private Graph circuit;
@@ -144,11 +144,13 @@ public class Main extends KyupiApp {
 			printSizeHistogram(cell2activeAggressorSet, cell2aggressorSet);
 		}
 
-		if (argsParsed().hasOption("round")) {
-			int round = Integer.parseInt(argsParsed().getOptionValue("round"));
+		if (argsParsed().hasOption("prt_count")) {
+			int prt_count = Integer.parseInt(argsParsed().getOptionValue("prt_count"));
 			long prt_seed = 0;
-			for (int i=1; i<round; i++) {
-				prt_seed = prt_seed + i*5;
+			if (argsParsed().hasOption("prt_seed"))
+				prt_count = Integer.parseInt(argsParsed().getOptionValue("prt_count"));
+			for (int i=1; i<prt_count; i++) {
+				prt_seed = prt_seed + i*2;
 				int clockingRound[] = getClocking(chains, prt_seed);
 				HashMap<ScanCell, HashSet<Node>> cell2activeAggressorSetRound = calculateActiveAggressors(chains, clockingRound,
 						cell2aggressorSet, chain2impactSet);
@@ -157,6 +159,7 @@ public class Main extends KyupiApp {
 					String fileName = argsParsed().getOptionValue("max_overlap");
 					FileWriter fileWriter = new FileWriter(fileName, true);
 					fileWriter.write(String.valueOf(printSizeHistogram(cell2activeAggressorSetRound, cell2aggressorSet)) + "\n");
+					log.info("  max structural impact/aggressor overlap: " + printSizeHistogram(cell2activeAggressorSetRound, cell2aggressorSet));
 					fileWriter.close();
 				}else {
 					printSizeHistogram(cell2activeAggressorSetRound, cell2aggressorSet);
@@ -444,7 +447,7 @@ public class Main extends KyupiApp {
 		return expandedMap;
 	}
 
-	/** another getClocking() method, be used when has -round option*/
+	/** another getClocking() method, be used when has -prt_count option*/
 	private int[] getClocking(ScanChains chains, long prt_seed) {
 		int clocking[] = new int[chains.size()];
 		Arrays.fill(clocking, 0);
