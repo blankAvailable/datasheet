@@ -20,7 +20,7 @@ public class PartitionGeneratorTest {
 
 
 	public void runTestWith(int set_size, int partition_count) {
-		PartitionGenerator gen = new PartitionGenerator(set_size, partition_count);
+		PartitionGeneratorSeq gen = new PartitionGeneratorSeq(set_size, partition_count);
 
 		HashSet<int[]> unique = new HashSet<>();
 		for (int[] partition : gen) {
