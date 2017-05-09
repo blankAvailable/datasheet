@@ -7,7 +7,6 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -136,7 +135,7 @@ public class Main extends KyupiApp {
 		HashMap<ScanChain, HashSet<Node>> chain2aggressorSet = new HashMap<>();
 		calculateAggressorSets(chains, placement, arxnm, arynm, cell2aggressorSet, chain2aggressorSet);
 		printAggressorAndImpactStatistics(chains, cell2aggressorSet, chain2aggressorSet, chain2impactSet);
-		
+
 		int maxAggressors = 0;
 		for (ScanCell cell : cell2aggressorSet.keySet()) {
 			int size = cell2aggressorSet.get(cell).size();
@@ -217,7 +216,7 @@ public class Main extends KyupiApp {
 			}
 			log.info("Calculating active aggressor sets...");
 
-			HashMap<ScanCell, HashSet<Node>> cell2activeAggressorSet = calculateActiveAggressors(chains, clocking,
+			HashMap<ScanCell, HashSet<Node>> cell2activeAggressorSet = calculateMaxActiveAggressors(chains, clocking,
 					cell2aggressorSet, chain2impactSet);
 
 			int maxActiveAggressors = printSizeHistogram(cell2activeAggressorSet, cell2aggressorSet);
@@ -263,26 +262,27 @@ public class Main extends KyupiApp {
 			for (int chainIdx = 0; chainIdx < chains.size(); chainIdx++) {
 
 				ScanChain chain = chains.get(chainIdx);
-				int clock_phase = clocking[chainIdx];
+				// int clock_phase = clocking[chainIdx];
 				log.info("Chain " + chainIdx + " ScanInPort " + chain.in.node.queryName());
 				double chainActivityMax = 0.0;
 				for (ScanCell cell : chain.cells) {
-					double activityMax = 0.0;
-					double activitySum = 0.0;
 					WeightedNodeSet wns = aggressor_wns.get(cell);
-					for (int c = 0; c < wns.activitySize(); c++) {
-						if ((c % clocks) == clock_phase) {
-							activityMax = Math.max(activityMax, wns.getActivity(c));
-							activitySum += wns.getActivity(c);
-						}
-					}
+					double activityMax = wns.getMaxActivity();
+					double activityAvg = wns.getAverageActivity();
+					// double activitySum = 0.0;
+					// for (int c = 0; c < wns.activitySize(); c++) {
+					// if ((c % clocks) == clock_phase) {
+					// activityMax = Math.max(activityMax, wns.getActivity(c));
+					// activitySum += wns.getActivity(c);
+					// }
+					// }
 					if (gp_correlation != null) {
 						gp_correlation.println("" + cell2activeAggressorSet.get(cell).size() + " " + activityMax);
 					}
 					chainActivityMax = Math.max(chainActivityMax, activityMax);
 					overallActivityMax = Math.max(overallActivityMax, activityMax);
-					log.info("  ScanCell " + cell.node.queryName() + " AvgWSA " + (activitySum / wns.activitySize())
-							+ " MaxWSA " + activityMax);
+					log.info("  ScanCell " + cell.node.queryName() + " AvgWSA " + (activityAvg) + " MaxWSA "
+							+ activityMax);
 				}
 				log.info("  Chain " + chainIdx + " MaxWSA " + chainActivityMax);
 			}
@@ -489,7 +489,7 @@ public class Main extends KyupiApp {
 				.add(sterling(n.subtract(BigInteger.ONE), k.subtract(BigInteger.ONE))));
 	}
 
-	private HashMap<ScanCell, HashSet<Node>> calculateActiveAggressors(ScanChains chains, int[] clocking,
+	private HashMap<ScanCell, HashSet<Node>> calculateMaxActiveAggressors(ScanChains chains, int[] clocking,
 			HashMap<ScanCell, HashSet<Node>> cell2aggressorSet, HashMap<ScanChain, HashSet<Node>> chain2impactSet) {
 		HashMap<ScanCell, HashSet<Node>> activeAggressors = new HashMap<>();
 
@@ -510,10 +510,15 @@ public class Main extends KyupiApp {
 
 		// intersect the computed sets with all sff aggressor sets
 		for (ScanCell sff : cell2aggressorSet.keySet()) {
-			int clk = clocking[sff.chainIdx()];
-			HashSet<Node> agg = new HashSet<>(cell2aggressorSet.get(sff));
-			agg.retainAll(clockImpactSets.get(clk));
-			activeAggressors.put(sff, agg);
+			HashSet<Node> aggMax = new HashSet<>();
+			for (int c = 0; c < clocks; c++) {
+				// int clk = clocking[sff.chainIdx()];
+				HashSet<Node> agg = new HashSet<>(cell2aggressorSet.get(sff));
+				agg.retainAll(clockImpactSets.get(c));
+				if (agg.size() > aggMax.size())
+					aggMax = agg;
+			}
+			activeAggressors.put(sff, aggMax);
 		}
 		return activeAggressors;
 	}
@@ -546,15 +551,15 @@ public class Main extends KyupiApp {
 		// FIXME remove first pattern from stimuli for proper alignment
 		QVSource stimuliExpanded = new QVExpander(QVSource.from(stimuli), stimuliExpansionMap);
 		QVSource responsesExpanded = new QVExpander(QVSource.from(responses), responseExpansionMap);
-	
+
 		QVSource shifts = new QVSource(stimuli.length()) {
-	
+
 			@Override
 			public void reset() {
 				stimuliExpanded.reset();
 				responsesExpanded.reset();
 			}
-	
+
 			@Override
 			protected QVector compute() {
 				if (!stimuliExpanded.hasNext() || !responsesExpanded.hasNext())
@@ -572,20 +577,18 @@ public class Main extends KyupiApp {
 		return QBSource.from(shifts);
 	}
 
-	private PrintWriter newGpCorrelationFileWithHeader(int maxSize, int clocks,
-			int blocks) throws FileNotFoundException {
+	private PrintWriter newGpCorrelationFileWithHeader(int maxSize, int clocks, int blocks)
+			throws FileNotFoundException {
 		PrintWriter gp_correlation;
 		String fn = argsParsed().getOptionValue("gp_correlation");
 		gp_correlation = new PrintWriter(new File(fn));
 		gp_correlation.println("set terminal png size 1024,1024");
 		gp_correlation.println("set output '" + fn + ".png'");
-		gp_correlation.println("set title 'Correlation between structural overlap and maximum WSA. "
-				+ circuit.getName() + " " + (blocks * 32) + " shifts, " + clocks + " clock(s)'");
-		gp_correlation
-				.println("set xlabel 'Structural overlap between aggressor region and active impact areas'");
+		gp_correlation.println("set title 'Correlation between structural overlap and maximum WSA. " + circuit.getName()
+				+ " " + (blocks * 32) + " shifts, " + clocks + " clock(s)'");
+		gp_correlation.println("set xlabel 'Structural overlap between aggressor region and active impact areas'");
 		gp_correlation.println("set ylabel 'Maximum WSA in aggressor region'");
-	
-	
+
 		gp_correlation.println("set xrange [0:" + maxSize + "]");
 		gp_correlation.println("set yrange [0:" + maxSize + "]");
 		gp_correlation.println("plot '-' w p t 'scan cell'");
