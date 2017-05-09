@@ -16,8 +16,6 @@ public class ScanChainGrouperAlgZ1 extends ScanChainGrouper {
 		Util util = new Util();
 		Matrix matrix = new Matrix(chains, cell2aggressorSet, chain2impactSet);
 
-		List<Integer> maxImpact = new ArrayList<>();
-
 		/** initialize all available clk groups */
 		List<List<Integer>> scGroup = new ArrayList<>();
 		for (int i=0; i<clockCount; i++){
@@ -39,6 +37,7 @@ public class ScanChainGrouperAlgZ1 extends ScanChainGrouper {
 			}
 
 			if (curruntStatus == 2) {
+				List<Integer> maxImpact = new ArrayList<>();
 				for (int j=0; j<clkGroupStatus.length; j++){
 					scGroup.get(j).add(i);
 					maxImpact.add(matrix.groupEvaluate(scGroup));
@@ -47,6 +46,7 @@ public class ScanChainGrouperAlgZ1 extends ScanChainGrouper {
 				System.out.println("All clk group numbers used up, group " + util.findMin(maxImpact) + " generate " +
 						"smallest structure overlap");
 				scGroup.get(util.findMin(maxImpact)).add(i);
+				System.out.println(scGroup);
 				maxImpact.clear();
 				continue;
 			}
@@ -60,27 +60,36 @@ public class ScanChainGrouperAlgZ1 extends ScanChainGrouper {
 				//calculate max impacted weight for all used clk group
 				for (int j=0; j<clkGroupStatus.length; j++){
 					if (clkGroupStatus[j] == 1) {
+						System.out.println("An used clk group: " + (j+1));
 						scGroup.get(j).add(i);
 						System.out.println(scGroup);
-						maxImpact.add(matrix.groupEvaluate(scGroup));
+						if (minImpactUsed == 0) {
+							minImpactUsed = matrix.groupEvaluate(scGroup);
+							minUsedIdx = j;
+						} else if (minImpactUsed > matrix.groupEvaluate(scGroup)) {
+							minImpactUsed = matrix.groupEvaluate(scGroup);
+							minUsedIdx = j;
+						}
 						scGroup.get(j).remove(scGroup.get(j).size()-1);
 					}
 				}
-				minUsedIdx = util.findMin(maxImpact);
-				minImpactUsed = maxImpact.get(minUsedIdx);
-				maxImpact.clear();
 
 				//calculate max impacted weight for all empty clk group
 				for (int j=0; j<clkGroupStatus.length; j++){
 					if (clkGroupStatus[j] == 0) {
+						System.out.println("An empty clk group: " + j);
 						scGroup.get(j).add(i);
-						maxImpact.add(matrix.groupEvaluate(scGroup));
+						if (minImpactEmpty == 0) {
+							minImpactEmpty = matrix.groupEvaluate(scGroup);
+							minEmptyIdx = j;
+						} else if (minImpactEmpty > matrix.groupEvaluate(scGroup)) {
+							minImpactEmpty = matrix.groupEvaluate(scGroup);
+							minUsedIdx = j;
+						}
 						scGroup.get(j).remove(scGroup.get(j).size()-1);
 					}
 				}
-				minEmptyIdx = util.findMin(maxImpact);
-				minImpactEmpty = maxImpact.get(minEmptyIdx);
-				maxImpact.clear();
+
 				if (minImpactUsed < minImpactEmpty) {
 					System.out.println("reuse an used clk group number: " + minUsedIdx);
 					scGroup.get(minUsedIdx).add(i);

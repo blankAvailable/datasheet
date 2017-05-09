@@ -34,22 +34,26 @@ public class Matrix {
                 ScanChains.ScanChain chain = chains.get(chainIdx);
                 group2impactSet.addAll(chain2impactSet.get(chain));
             }
+            System.out.println("Size of group impact set: " + group2impactSet.size());
+
             //get reachable aggressor set of one scan chain group
             HashSet<Graph.Node> tempAggressorSet = new HashSet<>();
             for (int chainIdx=0; chainIdx<scGroup.get(i).size(); chainIdx++){
                 ScanChains.ScanChain chain = chains.get(chainIdx);
                 for (ScanChains.ScanCell cell : chain.cells){
                    tempAggressorSet =  cell2aggressorSet.get(cell);
+                   System.out.println("Size of cell aggressor set: " + tempAggressorSet.size());
                    tempAggressorSet.retainAll(group2impactSet);
-                   for (Graph.Node node : tempAggressorSet){
-                       if (node.countOuts() > maxImpact)
-                           maxImpact = node.countOuts();
-                   }
+
+                   //calculate the max impacted weight for every scan cell
+                    maxImpact = Math.max(tempAggressorSet.size(), maxImpact);
+                    tempAggressorSet.clear();
                 }
             }
 
         }
         //return the biggest impacted weight of one scan chain grouping
+        System.out.println("maxImpact= " + maxImpact);
         return maxImpact;
     }
 }
