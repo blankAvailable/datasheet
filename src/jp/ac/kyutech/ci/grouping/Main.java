@@ -295,6 +295,8 @@ public class Main extends KyupiApp {
 
 		} // case_idx loop
 
+		printGoodbye();
+		
 		return null;
 	}
 

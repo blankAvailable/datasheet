@@ -4,11 +4,14 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import org.kyupi.graph.Graph.Node;
+import org.apache.log4j.Logger;
 import org.kyupi.graph.ScanChains;
 import org.kyupi.graph.ScanChains.ScanCell;
 import org.kyupi.graph.ScanChains.ScanChain;
 
 public abstract class ScanChainGrouper {
+
+	protected static Logger log = Logger.getLogger(ScanChainGrouper.class);
 
 	protected ScanChains chains;
 	protected HashMap<ScanCell, HashSet<Node>> cell2aggressorSet;
