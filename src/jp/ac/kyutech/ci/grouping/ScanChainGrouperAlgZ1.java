@@ -1,6 +1,5 @@
 package jp.ac.kyutech.ci.grouping;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -14,7 +13,7 @@ public class ScanChainGrouperAlgZ1 extends ScanChainGrouper {
 		int clkGroupStatus[] = new int[clockCount];
 		int clocking[] = new int[chains.size()];
 		Util util = new Util();
-		Matrix matrix = new Matrix(chains, cell2aggressorSet, chain2impactSet);
+		MatrixZ1 matrixZ1 = new MatrixZ1(chains, cell2aggressorSet, chain2impactSet);
 
 		/** initialize all available clk groups */
 		List<List<Integer>> scGroup = new ArrayList<>();
@@ -40,7 +39,7 @@ public class ScanChainGrouperAlgZ1 extends ScanChainGrouper {
 				List<Integer> maxImpact = new ArrayList<>();
 				for (int j=0; j<clkGroupStatus.length; j++){
 					scGroup.get(j).add(i);
-					maxImpact.add(matrix.groupEvaluate(scGroup));
+					maxImpact.add(matrixZ1.groupEvaluate(scGroup));
 					scGroup.get(j).remove(scGroup.get(j).size()-1);
 				}
 				System.out.println("All clk group numbers used up, group " + util.findMin(maxImpact) + " generate " +
@@ -64,10 +63,10 @@ public class ScanChainGrouperAlgZ1 extends ScanChainGrouper {
 						scGroup.get(j).add(i);
 						System.out.println(scGroup);
 						if (minImpactUsed == 0) {
-							minImpactUsed = matrix.groupEvaluate(scGroup);
+							minImpactUsed = matrixZ1.groupEvaluate(scGroup);
 							minUsedIdx = j;
-						} else if (minImpactUsed > matrix.groupEvaluate(scGroup)) {
-							minImpactUsed = matrix.groupEvaluate(scGroup);
+						} else if (minImpactUsed >= matrixZ1.groupEvaluate(scGroup)) {
+							minImpactUsed = matrixZ1.groupEvaluate(scGroup);
 							minUsedIdx = j;
 						}
 						scGroup.get(j).remove(scGroup.get(j).size()-1);
@@ -80,10 +79,10 @@ public class ScanChainGrouperAlgZ1 extends ScanChainGrouper {
 						System.out.println("An empty clk group: " + j);
 						scGroup.get(j).add(i);
 						if (minImpactEmpty == 0) {
-							minImpactEmpty = matrix.groupEvaluate(scGroup);
+							minImpactEmpty = matrixZ1.groupEvaluate(scGroup);
 							minEmptyIdx = j;
-						} else if (minImpactEmpty > matrix.groupEvaluate(scGroup)) {
-							minImpactEmpty = matrix.groupEvaluate(scGroup);
+						} else if (minImpactEmpty >= matrixZ1.groupEvaluate(scGroup)) {
+							minImpactEmpty = matrixZ1.groupEvaluate(scGroup);
 							minUsedIdx = j;
 						}
 						scGroup.get(j).remove(scGroup.get(j).size()-1);

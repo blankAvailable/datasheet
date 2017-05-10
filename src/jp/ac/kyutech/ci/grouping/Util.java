@@ -45,11 +45,21 @@ public class Util {
         int tempMin = needToSearch.get(0);
         int index = 0;
         for (int i=0; i<needToSearch.size(); i++){
-            if (needToSearch.get(i)<tempMin){
+            if (needToSearch.get(i) <= tempMin){
                 tempMin = needToSearch.get(i);
                 index = i;
             }
         }
         return index;
+    }
+
+    public int findMax(int[] needToSearch){
+        int max = 0;
+        for (int i=0; i<needToSearch.length; i++){
+            if (needToSearch[i]>max) {
+                max = needToSearch[i];
+            }
+        }
+        return max;
     }
 }

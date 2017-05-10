@@ -5,18 +5,17 @@ import org.kyupi.graph.ScanChains;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 
 /**
  * Created by ZhangYucong on 2017/3/22.
  */
-public class Matrix {
+public class MatrixZ1 {
     private ScanChains chains;
     private HashMap<ScanChains.ScanCell, HashSet<Graph.Node>> cell2aggressorSet;
     private HashMap<ScanChains.ScanChain, HashSet<Graph.Node>> chain2impactSet;
 
-    public Matrix(ScanChains chains, HashMap cell2aggressorSet, HashMap chain2impactSet){
+    public MatrixZ1(ScanChains chains, HashMap cell2aggressorSet, HashMap chain2impactSet){
         this.chains = chains;
         this.cell2aggressorSet = cell2aggressorSet;
         this.chain2impactSet = chain2impactSet;
@@ -24,36 +23,38 @@ public class Matrix {
 
     /** calculate the biggest impacted weight in one grouping */
     public int groupEvaluate(List<List<Integer>> scGroup){
-        int maxImpact = 0;
+        int[] maxImpact = new int[scGroup.size()];
+
+        HashSet<Graph.Node> group2impactSet = new HashSet<>();
+        HashSet<Graph.Node> tempAggressorSet = new HashSet<>();
+
+        Util util = new Util();
 
         for (int i=0; i<scGroup.size(); i++){
 
             //calculate the impact node set of one scan chain group
-            HashSet<Graph.Node> group2impactSet = new HashSet<>();
             for (int chainIdx=0; chainIdx<scGroup.get(i).size(); chainIdx++){
                 ScanChains.ScanChain chain = chains.get(chainIdx);
                 group2impactSet.addAll(chain2impactSet.get(chain));
             }
-            System.out.println("Size of group impact set: " + group2impactSet.size());
 
             //get reachable aggressor set of one scan chain group
-            HashSet<Graph.Node> tempAggressorSet = new HashSet<>();
             for (int chainIdx=0; chainIdx<scGroup.get(i).size(); chainIdx++){
                 ScanChains.ScanChain chain = chains.get(chainIdx);
                 for (ScanChains.ScanCell cell : chain.cells){
-                   tempAggressorSet =  cell2aggressorSet.get(cell);
-                   System.out.println("Size of cell aggressor set: " + tempAggressorSet.size());
+                   tempAggressorSet.addAll(cell2aggressorSet.get(cell));
                    tempAggressorSet.retainAll(group2impactSet);
 
                    //calculate the max impacted weight for every scan cell
-                    maxImpact = Math.max(tempAggressorSet.size(), maxImpact);
+                    maxImpact[i] = Math.max(tempAggressorSet.size(), maxImpact[i]);
                     tempAggressorSet.clear();
                 }
             }
+            group2impactSet.clear();
 
         }
         //return the biggest impacted weight of one scan chain grouping
-        System.out.println("maxImpact= " + maxImpact);
-        return maxImpact;
+        System.out.println("maxAvtiveAggressor set size: " + util.findMax(maxImpact));
+        return util.findMax(maxImpact);
     }
 }
