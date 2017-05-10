@@ -5,6 +5,7 @@ import org.kyupi.graph.ScanChains;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -25,9 +26,8 @@ public class MatrixZ1 {
     public int groupEvaluate(List<List<Integer>> scGroup){
         int[] maxImpact = new int[scGroup.size()];
 
-        HashSet<Graph.Node> group2impactSet = new HashSet<>();
-        HashSet<Graph.Node> tempAggressorSet = new HashSet<>();
-
+        HashSet<Integer> group2impactSet = new HashSet<>();
+        HashSet<Integer> tempAggressorSet = new HashSet<>();
         Util util = new Util();
 
         for (int i=0; i<scGroup.size(); i++){
@@ -35,16 +35,21 @@ public class MatrixZ1 {
             //calculate the impact node set of one scan chain group
             for (int chainIdx=0; chainIdx<scGroup.get(i).size(); chainIdx++){
                 ScanChains.ScanChain chain = chains.get(chainIdx);
-                group2impactSet.addAll(chain2impactSet.get(chain));
+                for (Iterator<Graph.Node> iterator = chain2impactSet.get(chain).iterator(); iterator.hasNext();){
+                    int idx = iterator.next().id();
+                    group2impactSet.add(idx);
+                }
             }
 
             //get reachable aggressor set of one scan chain group
             for (int chainIdx=0; chainIdx<scGroup.get(i).size(); chainIdx++){
                 ScanChains.ScanChain chain = chains.get(chainIdx);
                 for (ScanChains.ScanCell cell : chain.cells){
-                   tempAggressorSet.addAll(cell2aggressorSet.get(cell));
-                   tempAggressorSet.retainAll(group2impactSet);
-
+                    for (Iterator<Graph.Node> iterator = cell2aggressorSet.get(cell).iterator(); iterator.hasNext();){
+                        int idx = iterator.next().id();
+                        tempAggressorSet.add(idx);
+                    }
+                    tempAggressorSet.retainAll(group2impactSet);
                    //calculate the max impacted weight for every scan cell
                     maxImpact[i] = Math.max(tempAggressorSet.size(), maxImpact[i]);
                     tempAggressorSet.clear();

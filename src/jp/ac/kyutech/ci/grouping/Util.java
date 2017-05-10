@@ -1,7 +1,8 @@
 package jp.ac.kyutech.ci.grouping;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.kyupi.graph.Graph;
+
+import java.util.*;
 
 import static java.lang.Math.abs;
 
@@ -14,6 +15,15 @@ public class Util {
         List<Integer> destination = new ArrayList<>();
         for (int i=0; i<source.size(); i++){
             destination.add(source.get(i));
+        }
+        return destination;
+    }
+
+    /** deep clone the source set */
+    public HashSet clone(HashSet<Graph.Node> source){
+        HashSet<Object> destination = new HashSet<>();
+        for (Iterator iterator = source.iterator(); iterator.hasNext();){
+            destination.add(iterator.next());
         }
         return destination;
     }

@@ -13,7 +13,7 @@ public class ScanChainGrouperAlgZ1 extends ScanChainGrouper {
 		int clkGroupStatus[] = new int[clockCount];
 		int clocking[] = new int[chains.size()];
 		Util util = new Util();
-		MatrixZ1 matrixZ1 = new MatrixZ1(chains, cell2aggressorSet, chain2impactSet);
+		FastCostFunction matrixZ1 = new FastCostFunction(chain2impactSet, cell2aggressorSet);
 
 		/** initialize all available clk groups */
 		List<List<Integer>> scGroup = new ArrayList<>();
@@ -39,7 +39,7 @@ public class ScanChainGrouperAlgZ1 extends ScanChainGrouper {
 				List<Integer> maxImpact = new ArrayList<>();
 				for (int j=0; j<clkGroupStatus.length; j++){
 					scGroup.get(j).add(i);
-					maxImpact.add(matrixZ1.groupEvaluate(scGroup));
+					maxImpact.add(matrixZ1.evaluate(ListToArray(scGroup), clockCount));
 					scGroup.get(j).remove(scGroup.get(j).size()-1);
 				}
 				System.out.println("All clk group numbers used up, group " + util.findMin(maxImpact) + " generate " +
@@ -63,10 +63,10 @@ public class ScanChainGrouperAlgZ1 extends ScanChainGrouper {
 						scGroup.get(j).add(i);
 						System.out.println(scGroup);
 						if (minImpactUsed == 0) {
-							minImpactUsed = matrixZ1.groupEvaluate(scGroup);
+							minImpactUsed = matrixZ1.evaluate(ListToArray(scGroup), clockCount);
 							minUsedIdx = j;
-						} else if (minImpactUsed >= matrixZ1.groupEvaluate(scGroup)) {
-							minImpactUsed = matrixZ1.groupEvaluate(scGroup);
+						} else if (minImpactUsed >= matrixZ1.evaluate(ListToArray(scGroup), clockCount)) {
+							minImpactUsed = matrixZ1.evaluate(ListToArray(scGroup), clockCount);
 							minUsedIdx = j;
 						}
 						scGroup.get(j).remove(scGroup.get(j).size()-1);
@@ -79,10 +79,10 @@ public class ScanChainGrouperAlgZ1 extends ScanChainGrouper {
 						System.out.println("An empty clk group: " + j);
 						scGroup.get(j).add(i);
 						if (minImpactEmpty == 0) {
-							minImpactEmpty = matrixZ1.groupEvaluate(scGroup);
+							minImpactEmpty = matrixZ1.evaluate(ListToArray(scGroup), clockCount);
 							minEmptyIdx = j;
-						} else if (minImpactEmpty >= matrixZ1.groupEvaluate(scGroup)) {
-							minImpactEmpty = matrixZ1.groupEvaluate(scGroup);
+						} else if (minImpactEmpty >= matrixZ1.evaluate(ListToArray(scGroup), clockCount)) {
+							minImpactEmpty = matrixZ1.evaluate(ListToArray(scGroup), clockCount);
 							minUsedIdx = j;
 						}
 						scGroup.get(j).remove(scGroup.get(j).size()-1);
@@ -113,6 +113,16 @@ public class ScanChainGrouperAlgZ1 extends ScanChainGrouper {
 
 		// FIXME implement algorithm
 
+		return ListToArray(scGroup);
+	}
+
+	private int[] ListToArray(List<List<Integer>> scGroup){
+		int[] clocking = new int[chains.size()];
+		for (int i=0; i<scGroup.size(); i++){
+			for (int chainIdx=0; chainIdx<scGroup.get(i).size(); chainIdx++){
+				clocking[chainIdx] = i;
+			}
+		}
 		return clocking;
 	}
 }
