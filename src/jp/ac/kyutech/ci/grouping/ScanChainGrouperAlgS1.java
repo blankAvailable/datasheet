@@ -46,8 +46,13 @@ public class ScanChainGrouperAlgS1 extends ScanChainGrouper {
 
 		for (int i = 0; i < 10; i++) {
 			int chain = findWorstChain(clocking, clockCount);
-			tweakChain(clocking, clockCount, chain);
+			int diff = tweakChain(clocking, clockCount, chain);
+			if (diff == 0)
+				break;
 		}
+
+		log.info("Cost after optimizing: " + cost(clocking, clockCount));
+
 		return clocking;
 	}
 
@@ -86,7 +91,7 @@ public class ScanChainGrouperAlgS1 extends ScanChainGrouper {
 		clocking[chain_idx] = best_clk;
 
 		log.debug("Chain " + chain_idx + " move from " + old_clk + " to " + best_clk + " gaining " + highest_cost_diff);
-		return best_clk;
+		return highest_cost_diff;
 	}
 
 	private BitSet[] clk_impacts;
@@ -106,18 +111,22 @@ public class ScanChainGrouperAlgS1 extends ScanChainGrouper {
 		int maxSize = 0;
 		for (int chain_idx = 0; chain_idx < aregions.length; chain_idx++) {
 			for (int cell_idx = 0; cell_idx < aregions[chain_idx].length; cell_idx++) {
-				int overlap = 0;
-				for (int agg_idx = 0; agg_idx < aregions[chain_idx][cell_idx].length; agg_idx++) {
-					if (clocking[chain_idx] >= 0
-							&& clk_impacts[clocking[chain_idx]].get(aregions[chain_idx][cell_idx][agg_idx])) {
-						overlap++;
+				int[] ar = aregions[chain_idx][cell_idx];
+				for (int clk = 0; clk < clocks; clk++) {
+					BitSet ci = clk_impacts[clk];
+					int overlap = 0;
+					for (int agg_idx = 0; agg_idx < ar.length; agg_idx++) {
+						if (ci.get(ar[agg_idx]))
+							overlap++;
 					}
+					maxSize = Math.max(maxSize, overlap);
 				}
-				maxSize = Math.max(maxSize, overlap);
 			}
 		}
 		return maxSize;
 	}
+
+	// data structures setup
 
 	private void ensure_clk_impacts(int clocks) {
 		if (clk_impacts == null || clk_impacts.length != clocks) {
@@ -129,8 +138,6 @@ public class ScanChainGrouperAlgS1 extends ScanChainGrouper {
 				clk_impacts[i].clear();
 		}
 	}
-
-	// data structures setup
 
 	private void ensure_aregions() {
 		if (aregions != null)
@@ -157,6 +164,8 @@ public class ScanChainGrouperAlgS1 extends ScanChainGrouper {
 				}
 			}
 		}
+		ensure_impacts();
+
 	}
 
 	private void ensure_impacts() {

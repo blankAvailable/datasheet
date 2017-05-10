@@ -493,7 +493,7 @@ public class Main extends KyupiApp {
 
 	private HashMap<ScanCell, HashSet<Node>> calculateMaxActiveAggressors(ScanChains chains, int[] clocking,
 			HashMap<ScanCell, HashSet<Node>> cell2aggressorSet, HashMap<ScanChain, HashSet<Node>> chain2impactSet) {
-		HashMap<ScanCell, HashSet<Node>> activeAggressors = new HashMap<>();
+		HashMap<ScanCell, HashSet<Node>> maxActiveAggressors = new HashMap<>();
 
 		int clocks = ArrayTools.max(clocking) + 1;
 
@@ -514,15 +514,14 @@ public class Main extends KyupiApp {
 		for (ScanCell sff : cell2aggressorSet.keySet()) {
 			HashSet<Node> aggMax = new HashSet<>();
 			for (int c = 0; c < clocks; c++) {
-				// int clk = clocking[sff.chainIdx()];
 				HashSet<Node> agg = new HashSet<>(cell2aggressorSet.get(sff));
 				agg.retainAll(clockImpactSets.get(c));
 				if (agg.size() > aggMax.size())
 					aggMax = agg;
 			}
-			activeAggressors.put(sff, aggMax);
+			maxActiveAggressors.put(sff, aggMax);
 		}
-		return activeAggressors;
+		return maxActiveAggressors;
 	}
 
 	private int printSizeHistogram(HashMap<ScanCell, HashSet<Node>> set, HashMap<ScanCell, HashSet<Node>> base) {
