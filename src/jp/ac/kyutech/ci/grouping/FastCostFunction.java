@@ -55,6 +55,12 @@ public class FastCostFunction {
 
 	private BitSet impactUnion = new BitSet();
 
+	private int last_chain_idx = 0;
+	
+	private int last_cell_idx = 0;
+	
+	private int last_clock_idx = 0;
+	
 	public int evaluate(int[] clocking, int clocks) {
 
 		int maxCost = 0;
@@ -73,11 +79,22 @@ public class FastCostFunction {
 						if (impactUnion.get(aregions[chain_idx][cell_idx][agg_idx]))
 							cost++;
 					}
-					maxCost = Math.max(maxCost, cost);
+					if (cost > maxCost) {
+						maxCost = cost;
+						last_chain_idx = chain_idx;
+						last_cell_idx = cell_idx;
+						last_clock_idx = c;
+					}
 				}
 			}
 		}
 		return maxCost;
 	}
+	
+	public int getLastWorstClockIdx() {
+		return last_clock_idx;
+	}
+	
+	
 
 }

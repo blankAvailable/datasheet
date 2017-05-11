@@ -178,6 +178,9 @@ public class Main extends KyupiApp {
 		} else if (prt_method.startsWith("s1")) {
 			log.info("PartitionMethod S1");
 			partAlg = new ScanChainGrouperAlgS1();
+		} else if (prt_method.startsWith("s2")) {
+			log.info("PartitionMethod S2");
+			partAlg = new ScanChainGrouperAlgS2();
 		} else if (prt_method.startsWith("z1")) {
 			log.info("PartitionMethod Z1");
 			partAlg = new ScanChainGrouperAlgZ1();
