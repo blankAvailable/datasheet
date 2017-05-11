@@ -5,124 +5,98 @@ import java.util.List;
 import java.util.Random;
 
 public class ScanChainGrouperAlgZ1 extends ScanChainGrouper {
-	/** save the status of all clk groups, if all groups are empty,
-	 * curruntStatus - 1; if no group is empty, curruntStatus = 2;
-	 * if not all groups are empty, curruntStatus = 3. */
-	private int curruntStatus = 1;
+	private static final int RANDOM_CASES = 64;
+	private FastCostFunction cost;
+
 	public int[] calculateClocking(int clockCount) {
-		int clkGroupStatus[] = new int[clockCount];
+		int maxCost = Integer.MAX_VALUE;
+
 		int clocking[] = new int[chains.size()];
-		Util util = new Util();
-		FastCostFunction matrixZ1 = new FastCostFunction(chain2impactSet, cell2aggressorSet);
+		int tempClocking[] = new int[chains.size()];
 
-		/** initialize all available clk groups */
-		List<List<Integer>> scGroup = new ArrayList<>();
-		for (int i=0; i<clockCount; i++){
-			List<Integer> oneGroup = new ArrayList<>();
-			scGroup.add(oneGroup);
-		}
+		cost = new FastCostFunction(chain2impactSet, cell2aggressorSet);
 
-		for (int i=0; i<chains.size(); i++){
-			if (curruntStatus == 1) {
-				Random random = new Random();
-				int randomG = random.nextInt(clkGroupStatus.length);
-				scGroup.get(randomG).add(i);
-				clkGroupStatus[randomG] = 1;
-				if (util.arraySum(clkGroupStatus) != clkGroupStatus.length && util.arraySum(clkGroupStatus) > 0) {
-					curruntStatus = 3;
-				}else
-					curruntStatus = 2;
-				continue;
-			}
-
-			if (curruntStatus == 2) {
-				List<Integer> maxImpact = new ArrayList<>();
-				for (int j=0; j<clkGroupStatus.length; j++){
-					scGroup.get(j).add(i);
-					maxImpact.add(matrixZ1.evaluate(ListToArray(scGroup), clockCount));
-					scGroup.get(j).remove(scGroup.get(j).size()-1);
-				}
-				System.out.println("All clk group numbers used up, group " + util.findMin(maxImpact) + " generate " +
-						"smallest structure overlap");
-				scGroup.get(util.findMin(maxImpact)).add(i);
-				System.out.println(scGroup);
-				maxImpact.clear();
-				continue;
-			}
-
-			if (curruntStatus == 3) {
-				int minUsedIdx = 0;
-				int minEmptyIdx = 0;
-				int minImpactUsed = 0;
-				int minImpactEmpty = 0;
-
-				//calculate max impacted weight for all used clk group
-				for (int j=0; j<clkGroupStatus.length; j++){
-					if (clkGroupStatus[j] == 1) {
-						System.out.println("An used clk group: " + (j+1));
-						scGroup.get(j).add(i);
-						System.out.println(scGroup);
-						if (minImpactUsed == 0) {
-							minImpactUsed = matrixZ1.evaluate(ListToArray(scGroup), clockCount);
-							minUsedIdx = j;
-						} else if (minImpactUsed >= matrixZ1.evaluate(ListToArray(scGroup), clockCount)) {
-							minImpactUsed = matrixZ1.evaluate(ListToArray(scGroup), clockCount);
-							minUsedIdx = j;
-						}
-						scGroup.get(j).remove(scGroup.get(j).size()-1);
-					}
-				}
-
-				//calculate max impacted weight for all empty clk group
-				for (int j=0; j<clkGroupStatus.length; j++){
-					if (clkGroupStatus[j] == 0) {
-						System.out.println("An empty clk group: " + j);
-						scGroup.get(j).add(i);
-						if (minImpactEmpty == 0) {
-							minImpactEmpty = matrixZ1.evaluate(ListToArray(scGroup), clockCount);
-							minEmptyIdx = j;
-						} else if (minImpactEmpty >= matrixZ1.evaluate(ListToArray(scGroup), clockCount)) {
-							minImpactEmpty = matrixZ1.evaluate(ListToArray(scGroup), clockCount);
-							minUsedIdx = j;
-						}
-						scGroup.get(j).remove(scGroup.get(j).size()-1);
-					}
-				}
-
-				if (minImpactUsed < minImpactEmpty) {
-					System.out.println("reuse an used clk group number: " + minUsedIdx);
-					scGroup.get(minUsedIdx).add(i);
-				}else{
-					System.out.println("use a new clk group number: " + minEmptyIdx);
-					scGroup.get(minEmptyIdx).add(i);
-					clkGroupStatus[minEmptyIdx] = 1;
-				}
-				if (util.arraySum(clkGroupStatus) == clkGroupStatus.length)
-					curruntStatus = 2;
-				continue;
-
-			}
-
-		}
-
-		for (int i=0; i<scGroup.size(); i++){
-			for (int chainIdx=0; chainIdx<scGroup.get(i).size(); chainIdx++){
-				clocking[chainIdx] = i;
+		for (int counter=0; counter<RANDOM_CASES; counter++){
+			tempClocking = randomGrouping(tempClocking, clockCount);
+			if (cost.evaluate(tempClocking, clockCount) < maxCost) {
+				maxCost = cost.evaluate(tempClocking, clockCount);
+				System.arraycopy(tempClocking, 0, clocking, 0, clocking.length);
+				counter = counter/2;
 			}
 		}
 
-		// FIXME implement algorithm
+		log.info("  Best grouping from random partition " + arrayToList(clocking, clockCount));
+		log.info("  Best cost from random partition " + maxCost);
 
-		return ListToArray(scGroup);
+		for (int counter=0; counter<16; counter++) {
+            if (clocking[findWorstChain(clocking, clockCount)]  ==
+                    switchGroup(clocking, clockCount, findWorstChain(clocking, clockCount), maxCost))
+                break;
+        }
+
+        log.info("  Best grouping from optimize " + arrayToList(clocking, clockCount));
+		return clocking;
 	}
 
-	private int[] ListToArray(List<List<Integer>> scGroup){
-		int[] clocking = new int[chains.size()];
-		for (int i=0; i<scGroup.size(); i++){
-			for (int chainIdx=0; chainIdx<scGroup.get(i).size(); chainIdx++){
-				clocking[chainIdx] = i;
-			}
+	private int switchGroup(int[] clocking, int clockCount, int chainIdx, int maxCost){
+	    int bestClkIdx = 0;
+	    int[] tempCost = new int[clockCount];
+	    tempCost[clocking[chainIdx]] = maxCost;
+	    for (int clkIdx=0; clkIdx<clockCount; clkIdx++){
+	        if (clkIdx == clocking[chainIdx])
+	            continue;
+
+	        clocking[chainIdx] = clkIdx;
+	        tempCost[clkIdx] =  cost.evaluate(clocking, clockCount);
+        }
+        int tempMin = 0;
+        for (int clkIdx=0; clkIdx<clockCount; clkIdx++){
+            tempMin = tempCost[0];
+            if (tempCost[clkIdx] < tempMin)
+                bestClkIdx =  clkIdx;
+        }
+
+        log.info("  Switch chain " + chainIdx + " to group " + clocking[chainIdx] + " get highest gain");
+        log.info("  Grouping now is " + arrayToList(clocking, clockCount));
+	    return bestClkIdx;
+    }
+
+    private int findWorstChain(int[] clocking, int clockCount) {
+        int worst_chainIdx = -1;
+        int highest_cost_diff = 0;
+        int base_cost = cost.evaluate(clocking, clockCount);
+        for (int chain_idx = 0; chain_idx < clocking.length; chain_idx++) {
+            int clk = clocking[chain_idx];
+            clocking[chain_idx] = -1;
+            int cost_diff = base_cost - cost.evaluate(clocking, clockCount);
+            clocking[chain_idx] = clk;
+            if (cost_diff > highest_cost_diff) {
+                worst_chainIdx = chain_idx;
+                highest_cost_diff = cost_diff;
+            }
+
+        }
+        log.debug("Worst chain " + worst_chainIdx + " with diff " + highest_cost_diff);
+        return worst_chainIdx;
+    }
+
+	private int[] randomGrouping(int[] clocking, int clockCount){
+		Random random = new Random();
+		for (int clkIdx=0; clkIdx<clocking.length; clkIdx++){
+			clocking[clkIdx] = random.nextInt(clockCount);
 		}
 		return clocking;
 	}
+
+	private List<List<Integer>> arrayToList (int[] clocking, int clockCount){
+	    List<List<Integer>> scGrouping = new ArrayList<>();
+        for (int clkIdx=0; clkIdx<clockCount; clkIdx++){
+            List<Integer> oneGroup = new ArrayList<>();
+            scGrouping.add(oneGroup);
+        }
+
+	    for (int chainIdx=0; chainIdx<clocking.length; chainIdx++)
+	        scGrouping.get(clocking[chainIdx]).add(chainIdx);
+	    return scGrouping;
+    }
 }
