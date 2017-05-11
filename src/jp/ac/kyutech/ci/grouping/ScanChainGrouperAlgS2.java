@@ -1,13 +1,10 @@
 package jp.ac.kyutech.ci.grouping;
 
 import java.util.Arrays;
-import java.util.HashSet;
 
 public class ScanChainGrouperAlgS2 extends ScanChainGrouper {
 
 	private FastCostFunction cost;
-
-	private int[][] paircost;
 
 	public int[] calculateClocking(int clockCount) {
 
@@ -26,151 +23,131 @@ public class ScanChainGrouperAlgS2 extends ScanChainGrouper {
 		int lowerBound = cost.evaluate(clocking, clocking.length);
 		log.info("LowerBound (by c=∞) " + lowerBound);
 
-		paircost = new int[clocking.length][clocking.length];
-		Arrays.fill(clocking, -1);
-		int[] chain_min_pair_cost = new int[clocking.length];
-		Arrays.fill(chain_min_pair_cost, Integer.MAX_VALUE);
-		for (int i = 0; i < clocking.length; i++) {
-			log.debug("PairCost calculation " + i + " of " + clocking.length + " ...");
-			clocking[i] = 0;
-			for (int j = i + 1; j < clocking.length; j++) {
-				clocking[j] = 0;
-				paircost[i][j] = cost.evaluate(clocking, 1);
-				chain_min_pair_cost[i] = Math.min(chain_min_pair_cost[i], paircost[i][j]);
-				chain_min_pair_cost[j] = Math.min(chain_min_pair_cost[j], paircost[i][j]);
-				clocking[j] = -1;
-			}
-			clocking[i] = -1;
-		}
+		int[][] pairCost = calculatePairCost(clocking);
 
-		// for (int i = 0; i < clocking.length; i++)
-		// lowerBound = Math.max(lowerBound, chain_min_pair_cost[i] + 1);
-		// log.info("LowerBound (after pair) " + lowerBound);
+		lowerBound = Math.max(lowerBound, searchLowerBound(lowerBound, upperBound, clockCount, pairCost, clocking));
+		log.info("LowerBound (after pair coloring) " + lowerBound);
 
-		int lower_bound_clique = recursiveColorizableBoundSearch(lowerBound, upperBound, clocking, clockCount);
-		lowerBound = Math.max(lowerBound, lower_bound_clique);
-		log.info("LowerBound (after clique) " + lowerBound);
+		GraphColorizer g = makeGraphColorizer(clockCount, pairCost, lowerBound);
+		clocking = g.colorize();
+		int bestKnown = cost.evaluate(clocking, clockCount);
+		log.info("BestKnownSolution (after pair coloring) " + bestKnown);
 
-		int solution_cost = cost.evaluate(clocking, clockCount);
-		log.info("BestKnownSolution (after clique) " + solution_cost);
-
-		if (lowerBound == solution_cost) {
+		if (lowerBound == bestKnown) {
 			log.info("Returning best possible solution.");
 			return clocking;
 		}
 
-		GraphColorizer g = new GraphColorizer(clocking.length, clockCount);
-		for (int i = 0; i < clocking.length; i++) {
-			for (int j = i + 1; j < clocking.length; j++) {
-				if (paircost[i][j] > lowerBound)
-					g.addEdge(i, j);
-			}
-		}
-		log.info("graph size nodes " + g.size() + " edges " + g.countEdges());
-		clocking = g.colorize();
-
-		if (clocking == null) {
-			log.error("can't verify last clique solution!");
-			return null;
-		}
-
-		solution_cost = cost.evaluate(clocking, clockCount);
-
 		int[] edge = new int[chains.size()];
-		int[] clocking_tmp = new int[chains.size()];
-
-		int best_cost = solution_cost;
+		int[] clocking_tmp = new int[clocking.length];
+		System.arraycopy(clocking, 0, clocking_tmp, 0, clocking.length);
 
 		while (true) {
-
 			int worstClk = cost.getLastWorstClockIdx();
-
-			HashSet<Integer> conflictChains = new HashSet<>();
-			StringBuffer buf = new StringBuffer();
-
-			int constraint_size = 0;
-			for (int c = 0; c < clocking.length; c++) {
-				clocking_tmp[c] = -1;
-				if (clocking[c] == worstClk) {
-					conflictChains.add(c);
-					buf.append(" " + c);
-					clocking_tmp[c] = 0;
-					constraint_size++;
-				}
-			}
-			
-			int nchains = constraint_size;
-
-			int last_chain = 0;
-			while (last_chain < clocking_tmp.length && constraint_size > 3) {
-				int chain = last_chain;
-				while (chain < clocking_tmp.length && clocking_tmp[chain] < 0)
-					chain++;
-				if (chain >= clocking_tmp.length || clocking_tmp[chain] == -1)
-					break;
-				clocking_tmp[chain] = -1;
-				int cost_tmp = cost.evaluate(clocking_tmp, 1);
-				// log.info("cost " + cost_tmp);
-				if (solution_cost == cost_tmp) {
-					// log.info("remove " + chain);
-					conflictChains.remove(chain);
-					constraint_size--;
-				} else {
-					// log.info("keep " + chain);
-					clocking_tmp[chain] = 0;
-				}
-				last_chain = chain + 1;
-			}
-			log.info("Last worst clock: " + worstClk + " containing " + nchains + " chains. adding constraint of size " + constraint_size);
-
-			int edgeSize = 0;
-			for (Integer cidx : conflictChains) {
-				edge[edgeSize++] = cidx;
-			}
+			int edgeSize = makeEdgeForClockIdx(worstClk, clocking_tmp, edge);
 			g.addEdge(edge, edgeSize);
-			//log.info("graph size nodes " + g.size() + " edges " + g.countEdges());
-			int[] new_sol = g.colorize();
-			if (new_sol == null) {
-				log.info("no new solution");
-				log.info("LowerBound " + solution_cost);
-				log.info("BestKnownSolution " + solution_cost);
-				log.info("returning best possible solution");
+			clocking_tmp = g.colorize();
+			if (clocking_tmp == null) {
+				lowerBound = bestKnown;
+				log.info("LowerBound " + lowerBound);
 				return clocking;
 			}
-			clocking = new_sol;
-			solution_cost = cost.evaluate(clocking, clockCount);
-			//log.info("this solution " + solution_cost);
-			best_cost = Math.min(best_cost, solution_cost);
-			log.info("BestKnownSolution " + best_cost);
+			int newCost = cost.evaluate(clocking_tmp, clockCount);
+			if (newCost < bestKnown) {
+				System.arraycopy(clocking_tmp, 0, clocking, 0, clocking.length);
+				bestKnown = newCost;
+				log.info("BestKnownSolution " + bestKnown);
+			}
 		}
 
 	}
 
-	private int recursiveColorizableBoundSearch(int lb, int ub, int[] solution, int colorCount) {
-		int middle = (ub - lb) / 2 + lb;
-		log.info("trying " + lb + " " + middle + " " + ub);
-		GraphColorizer g = new GraphColorizer(solution.length, colorCount);
-		for (int i = 0; i < solution.length; i++) {
-			for (int j = i + 1; j < solution.length; j++) {
-				if (paircost[i][j] > middle)
-					g.addEdge(i, j);
+	private int[][] calculatePairCost(int[] clocking) {
+		int[][] pairCost = new int[clocking.length][clocking.length];
+		Arrays.fill(clocking, -1);
+		int pairCount = clocking.length * clocking.length / 2;
+		int pairIdx = 0;
+		int progressLast = -1;
+		for (int i = 0; i < clocking.length; i++) {
+			clocking[i] = 0;
+			for (int j = i + 1; j < clocking.length; j++) {
+				clocking[j] = 0;
+				pairCost[i][j] = cost.evaluate(clocking, 1);
+				clocking[j] = -1;
+				pairIdx++;
+				int progress = 100 * pairIdx / pairCount;
+				if (progress % 10 == 0 && progress != progressLast) {
+					log.debug("PairCost calculation " + progress + "%% ...");
+					progressLast = progress;
+				}
 			}
+			clocking[i] = -1;
 		}
-		log.info("graph size nodes " + g.size() + " edges " + g.countEdges());
+		return pairCost;
+	}
+
+	private int searchLowerBound(int lb, int ub, int clockCount, int[][] pairCost, int[] solution) {
+		int middle = (ub - lb) / 2 + lb;
+		GraphColorizer g = makeGraphColorizer(clockCount, pairCost, middle);
 		int[] s = g.colorize();
 		if (s != null) {
 			System.arraycopy(s, 0, solution, 0, solution.length);
-			log.info("solution for " + middle);
+			log.info("Solution for " + middle + " (" + g.countEdges() + " constraints on " + g.size() + " chains)");
 			if (middle > lb)
-				return recursiveColorizableBoundSearch(lb, middle, solution, colorCount);
+				return searchLowerBound(lb, middle, clockCount, pairCost, solution);
 			else
 				return middle;
 		} else {
-			log.info("impossible for " + middle);
+			log.info("Conflict for " + middle + " (" + g.countEdges() + " constraints on " + g.size() + " chains)");
 			if (middle < (ub - 1))
-				return recursiveColorizableBoundSearch(middle, ub, solution, colorCount);
+				return searchLowerBound(middle, ub, clockCount, pairCost, solution);
 			else
 				return middle + 1;
 		}
 	}
+
+	private GraphColorizer makeGraphColorizer(int clockCount, int[][] pairCost, int costThreshold) {
+		GraphColorizer g = new GraphColorizer(chains.size(), clockCount);
+		for (int i = 0; i < chains.size(); i++)
+			for (int j = i + 1; j < chains.size(); j++)
+				if (pairCost[i][j] > costThreshold)
+					g.addEdge(i, j);
+		return g;
+	}
+
+	private int makeEdgeForClockIdx(int clock, int[] clocking, int[] edge) {
+
+		int[] clocking_tmp = new int[chains.size()];
+		int chainCount = 0;
+		for (int c = 0; c < clocking.length; c++) {
+			clocking_tmp[c] = -1;
+			if (clocking[c] == clock) {
+				clocking_tmp[c] = 0;
+				chainCount++;
+			}
+		}
+
+		int base = cost.evaluate(clocking_tmp, 1);
+		int edgeSize = chainCount;
+		for (int chain = 0; chain < clocking_tmp.length; chain++) {
+			if (clocking_tmp[chain] == -1)
+				continue;
+			clocking_tmp[chain] = -1;
+			if (cost.evaluate(clocking_tmp, 1) == base)
+				edgeSize--;
+			else
+				clocking_tmp[chain] = 0;
+
+		}
+		log.info("Last worst clock: " + clock + " containing " + chainCount + " chains. adding constraint of size "
+				+ edgeSize);
+
+		edgeSize = 0;
+		for (int c = 0; c < clocking_tmp.length; c++)
+			if (clocking_tmp[c] == 0)
+				edge[edgeSize++] = c;
+
+		return edgeSize;
+	}
+
 }

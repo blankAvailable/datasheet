@@ -11,7 +11,6 @@ public class GraphColorizer {
 
 	protected static Logger log = Logger.getLogger(GraphColorizer.class);
 
-	// private BitSet adjacency = new BitSet();
 	private final int vertexCount;
 	private final int colorCount;
 	private int edgeCount;
@@ -68,14 +67,12 @@ public class GraphColorizer {
 			edgeCount++;
 		} catch (ContradictionException e) {
 			log.warn("Contradiction in SAT instance generation during addEdge.");
-			// e.printStackTrace();
 		}
 	}
 
 	public void addEdge(int[] vs, int edgeSize) {
 		if (vs.length < edgeSize)
 			throw new IllegalArgumentException("vs too short");
-
 		try {
 			// connected vertices cannot have the same color
 			int[] cls = new int[edgeSize];
@@ -89,18 +86,8 @@ public class GraphColorizer {
 			edgeCount++;
 		} catch (ContradictionException e) {
 			log.warn("Contradiction in SAT instance generation during addEdge (hyper).");
-			// e.printStackTrace();
 		}
 	}
-
-	// public boolean hasEdge(int v1, int v2) {
-	// if (v1 < v2)
-	// return hasEdge(v2, v1);
-	// // from here on: v1 >= v2
-	// if (v1 >= vertexCount || v2 < 0)
-	// throw new IllegalArgumentException("vertex index out of bounds");
-	// return adjacency.get(v2 * vertexCount + v1);
-	// }
 
 	private int v(int vertex, int col) {
 		if (vertex < 0 || vertex >= vertexCount)
@@ -127,15 +114,11 @@ public class GraphColorizer {
 					}
 				}
 				return colors;
-			} else {
-				log.info("UnSAT.");
-				return null;
 			}
 		} catch (TimeoutException e) {
 			log.warn("Timeout in SAT solving.");
-			// e.printStackTrace();
-			return null;
 		}
+		return null;
 	}
 
 	public int countEdges() {
