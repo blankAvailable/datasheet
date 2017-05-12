@@ -29,8 +29,7 @@ public class ScanChainGrouperAlgZ1 extends ScanChainGrouper {
 		log.info("  Best cost from random partition " + maxCost);
 
 		for (int counter=0; counter<16; counter++) {
-            if (clocking[findWorstChain(clocking, clockCount)]  ==
-                    switchGroup(clocking, clockCount, findWorstChain(clocking, clockCount), maxCost))
+            if (switchGroup(clocking, clockCount, findWorstChain(clocking, clockCount),maxCost))
                 break;
         }
 
@@ -38,27 +37,33 @@ public class ScanChainGrouperAlgZ1 extends ScanChainGrouper {
 		return clocking;
 	}
 
-	private int switchGroup(int[] clocking, int clockCount, int chainIdx, int maxCost){
+	private boolean switchGroup(int[] clocking, int clockCount, int chainIdx, int maxCost){
+	    boolean stopper = false;
 	    int bestClkIdx = 0;
 	    int[] tempCost = new int[clockCount];
 	    tempCost[clocking[chainIdx]] = maxCost;
 	    for (int clkIdx=0; clkIdx<clockCount; clkIdx++){
 	        if (clkIdx == clocking[chainIdx])
 	            continue;
-
 	        clocking[chainIdx] = clkIdx;
 	        tempCost[clkIdx] =  cost.evaluate(clocking, clockCount);
         }
         int tempMin = 0;
         for (int clkIdx=0; clkIdx<clockCount; clkIdx++){
             tempMin = tempCost[0];
-            if (tempCost[clkIdx] < tempMin)
-                bestClkIdx =  clkIdx;
+            if (tempCost[clkIdx] < tempMin) {
+                bestClkIdx = clkIdx;
+                clocking[chainIdx] = bestClkIdx;
+            }
         }
 
-        log.info("  Switch chain " + chainIdx + " to group " + clocking[chainIdx] + " get highest gain");
+        log.info("  Switch chain " + chainIdx + " to group " + bestClkIdx + " get highest gain");
         log.info("  Grouping now is " + arrayToList(clocking, clockCount));
-	    return bestClkIdx;
+        if (bestClkIdx == clocking[chainIdx]) {
+            log.info("  ");
+            stopper = true;
+        }
+	    return stopper;
     }
 
     private int findWorstChain(int[] clocking, int clockCount) {

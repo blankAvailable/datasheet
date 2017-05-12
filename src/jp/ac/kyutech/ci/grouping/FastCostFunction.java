@@ -70,6 +70,7 @@ public class FastCostFunction {
 			impactUnion.clear();
 			for (int chainIdx = 0; chainIdx < impacts.length; chainIdx++) {
 				if (clocking[chainIdx] == c)
+					//copy impacts[chainIdx] to bitset impactUnion
 					impactUnion.or(impacts[chainIdx]);
 			}
 			for (int chain_idx = 0; chain_idx < aregions.length; chain_idx++) {
