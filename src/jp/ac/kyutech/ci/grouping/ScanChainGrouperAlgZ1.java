@@ -29,7 +29,8 @@ public class ScanChainGrouperAlgZ1 extends ScanChainGrouper {
 		log.info("  Best cost from random partition " + maxCost);
 
 		for (int counter=0; counter<16; counter++) {
-            if (switchGroup(clocking, clockCount, findWorstChain(clocking, clockCount),maxCost))
+            if (clocking[findWorstChain(clocking, clockCount)] ==
+					switchGroup(clocking, clockCount, findWorstChain(clocking, clockCount),maxCost))
                 break;
         }
 
@@ -37,8 +38,7 @@ public class ScanChainGrouperAlgZ1 extends ScanChainGrouper {
 		return clocking;
 	}
 
-	private boolean switchGroup(int[] clocking, int clockCount, int chainIdx, int maxCost){
-	    boolean stopper = false;
+	private int switchGroup(int[] clocking, int clockCount, int chainIdx, int maxCost){
 	    int bestClkIdx = 0;
 	    int[] tempCost = new int[clockCount];
 	    tempCost[clocking[chainIdx]] = maxCost;
@@ -51,19 +51,15 @@ public class ScanChainGrouperAlgZ1 extends ScanChainGrouper {
         int tempMin = 0;
         for (int clkIdx=0; clkIdx<clockCount; clkIdx++){
             tempMin = tempCost[0];
-            if (tempCost[clkIdx] < tempMin) {
+            if (tempCost[clkIdx] < tempMin)
                 bestClkIdx = clkIdx;
-                clocking[chainIdx] = bestClkIdx;
-            }
+            clocking[chainIdx] = bestClkIdx;
+
         }
 
         log.info("  Switch chain " + chainIdx + " to group " + bestClkIdx + " get highest gain");
         log.info("  Grouping now is " + arrayToList(clocking, clockCount));
-        if (bestClkIdx == clocking[chainIdx]) {
-            log.info("  ");
-            stopper = true;
-        }
-	    return stopper;
+	    return bestClkIdx;
     }
 
     private int findWorstChain(int[] clocking, int clockCount) {
