@@ -22,5 +22,6 @@
     </orderEntry>
     <orderEntry type="library" name="org.sat4j.core" level="project" />
     <orderEntry type="library" name="commons-cli-1.0 (2)" level="project" />
+    <orderEntry type="library" name="jfreechart-1.0.19" level="project" />
   </component>
 </module>

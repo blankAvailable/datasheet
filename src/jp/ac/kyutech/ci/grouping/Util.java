@@ -5,25 +5,17 @@ import org.kyupi.graph.Graph;
 import java.util.*;
 
 import static java.lang.Math.abs;
+import static java.lang.Math.max;
 
 /**
  * Created by ZhangYucong on 2017/3/20.
  */
 public class Util {
     /** deep clone the source list */
-    public List<Integer> clone(List<Integer> source){
+    public List<Integer> clone(List<Integer> source) {
         List<Integer> destination = new ArrayList<>();
-        for (int i=0; i<source.size(); i++){
+        for (int i = 0; i < source.size(); i++) {
             destination.add(source.get(i));
-        }
-        return destination;
-    }
-
-    /** deep clone the source set */
-    public HashSet clone(HashSet<Graph.Node> source){
-        HashSet<Object> destination = new HashSet<>();
-        for (Iterator iterator = source.iterator(); iterator.hasNext();){
-            destination.add(iterator.next());
         }
         return destination;
     }
@@ -63,6 +55,7 @@ public class Util {
         return index;
     }
 
+    /** find the max value in the needToSearch[] array */
     public int findMax(int[] needToSearch){
         int max = 0;
         for (int i=0; i<needToSearch.length; i++){
@@ -71,5 +64,57 @@ public class Util {
             }
         }
         return max;
+    }
+
+    /** calculate the standard deviation of the given list of scan chain group */
+    public double coefficientOfDispersion(List<Integer> oneGroup){
+        double coeff = 0.0;
+        int[] groupArray = new int[oneGroup.size()];
+        for (int i=0; i<oneGroup.size(); i++){
+            groupArray[i] = oneGroup.get(i) + 1;
+        }
+        coeff = Math.sqrt(Math.abs(variance(groupArray)))/average(groupArray);
+        return coeff;
+    }
+
+    /** calculate the average value of the given array */
+    public double average(int[] needToCalculate){
+        int sum = 0;
+        double avg;
+        for (int i=0; i<needToCalculate.length; i++)
+            sum = sum + needToCalculate[i];
+        return sum/needToCalculate.length;
+    }
+
+    /** calculate the square sum of the given array */
+    public double squareSum(int[] needToCalculate){
+        double squareSum = 0;
+        for (int i=0; i<needToCalculate.length; i++){
+            squareSum = squareSum + Math.pow(needToCalculate[i], 2);
+        }
+        return squareSum;
+    }
+
+    /** calculate the variance of the given array */
+    public double variance(int[] needToCalculate){
+        double variance = 0.0;
+
+        double sqrSum = squareSum(needToCalculate);
+        double average = average(needToCalculate);
+
+        variance = (sqrSum - needToCalculate.length * Math.pow(average, 2))/needToCalculate.length;
+        return variance;
+    }
+
+    public List<List<Integer>> arrayToList (int[] clocking, int clockCount){
+        List<List<Integer>> scGrouping = new ArrayList<>();
+        for (int clkIdx=0; clkIdx<clockCount; clkIdx++){
+            List<Integer> oneGroup = new ArrayList<>();
+            scGrouping.add(oneGroup);
+        }
+
+        for (int chainIdx=0; chainIdx<clocking.length; chainIdx++)
+            scGrouping.get(clocking[chainIdx]).add(chainIdx);
+        return scGrouping;
     }
 }
