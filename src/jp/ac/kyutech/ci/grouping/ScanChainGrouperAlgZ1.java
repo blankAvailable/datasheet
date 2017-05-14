@@ -48,13 +48,13 @@ public class ScanChainGrouperAlgZ1 extends ScanChainGrouper {
 	        clocking[chainIdx] = clkIdx;
 	        tempCost[clkIdx] =  cost.evaluate(clocking, clockCount);
         }
-        int tempMin = 0;
+        int tempMin = Integer.MAX_VALUE;
         for (int clkIdx=0; clkIdx<clockCount; clkIdx++){
-            tempMin = tempCost[0];
-            if (tempCost[clkIdx] < tempMin)
-                bestClkIdx = clkIdx;
-            clocking[chainIdx] = bestClkIdx;
-
+            if (tempCost[clkIdx] < tempMin) {
+				bestClkIdx = clkIdx;
+				tempMin = tempCost[clkIdx];
+				clocking[chainIdx] = bestClkIdx;
+			}
         }
 
         log.info("  Switch chain " + chainIdx + " to group " + bestClkIdx + " get highest gain");
