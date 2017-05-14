@@ -318,6 +318,7 @@ public class Main extends KyupiApp {
 					fileWriter.write(dispersion[caseIdx][i] + " ");
 				}
 				fileWriter.write("\n");
+
 			}
 			fileWriter.close();
 		}
