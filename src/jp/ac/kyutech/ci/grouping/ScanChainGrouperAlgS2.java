@@ -1,6 +1,8 @@
 package jp.ac.kyutech.ci.grouping;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 
 public class ScanChainGrouperAlgS2 extends ScanChainGrouper {
 
@@ -22,6 +24,11 @@ public class ScanChainGrouperAlgS2 extends ScanChainGrouper {
 			clocking[i] = i;
 		int lowerBound = cost.evaluate(clocking, clocking.length);
 		log.info("LowerBound (by c=∞) " + lowerBound);
+
+		int[] singleCost = calculateSingleCost(clocking);
+		log.debug("SingleCost " + Arrays.toString(singleCost));
+		int[] costOrder = calculateCostOrder(singleCost);
+		log.debug("CostOrder " + Arrays.toString(costOrder));
 
 		int[][] pairCost = calculatePairCost(clocking);
 
@@ -46,7 +53,7 @@ public class ScanChainGrouperAlgS2 extends ScanChainGrouper {
 
 		while (true) {
 			int worstClk = cost.getLastWorstClockIdx();
-			int edgeSize = makeEdgeForClockIdx(worstClk, clocking_tmp, edge);
+			int edgeSize = makeEdgeForClockIdx(worstClk, clocking_tmp, costOrder, edge);
 			g.addEdge(edge, edgeSize);
 			if (gRelaxed != null)
 				gRelaxed.addEdge(edge, edgeSize);
@@ -72,6 +79,51 @@ public class ScanChainGrouperAlgS2 extends ScanChainGrouper {
 			}
 		}
 
+	}
+
+	private int[] calculateSingleCost(int[] clocking) {
+		int[] singleCost = new int[clocking.length];
+		Arrays.fill(clocking, -1);
+		for (int i = 0; i < clocking.length; i++) {
+			clocking[i] = 0;
+			singleCost[i] = cost.evaluate(clocking, 1);
+			clocking[i] = -1;
+		}
+		return singleCost;
+	}
+
+	private int[] calculateCostOrder(int[] singleCost) {
+		class P {
+			int idx;
+			int cost;
+
+			P(int i, int c) {
+				idx = i;
+				cost = c;
+			}
+		}
+		ArrayList<P> arr = new ArrayList<>();
+		int i = 0;
+		for (int c : singleCost) {
+			arr.add(new P(i++, c));
+		}
+		arr.sort(new Comparator<P>() {
+
+			@Override
+			public int compare(P o1, P o2) {
+				if (o1.cost > o2.cost)
+					return 1;
+				if (o1.cost < o2.cost)
+					return -1;
+				return 0;
+			}
+		});
+		int[] costOrder = new int[singleCost.length];
+		i = 0;
+		for (P p : arr) {
+			costOrder[i++] = p.idx;
+		}
+		return costOrder;
 	}
 
 	private int[][] calculatePairCost(int[] clocking) {
@@ -126,7 +178,7 @@ public class ScanChainGrouperAlgS2 extends ScanChainGrouper {
 					g.addEdge(i, j);
 	}
 
-	private int makeEdgeForClockIdx(int clock, int[] clocking, int[] edge) {
+	private int makeEdgeForClockIdx(int clock, int[] clocking, int[] costOrder, int[] edge) {
 
 		int[] clocking_tmp = new int[chains.size()];
 		int chainCount = 0;
@@ -140,7 +192,8 @@ public class ScanChainGrouperAlgS2 extends ScanChainGrouper {
 
 		int base = cost.evaluate(clocking_tmp, 1);
 		int edgeSize = chainCount;
-		for (int chain = 0; chain < clocking_tmp.length; chain++) {
+		for (int chainIdx = 0; chainIdx < clocking_tmp.length; chainIdx++) {
+			int chain = costOrder[chainIdx];
 			if (clocking_tmp[chain] == -1)
 				continue;
 			clocking_tmp[chain] = -1;
