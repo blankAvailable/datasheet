@@ -69,7 +69,8 @@ public class Main extends KyupiApp {
 		options.addOption("table", true, "output a data table for latex into given file");
 		options.addOption("gp_correlation", true, "output a gnuplot file for correlation between structural and WSA");
 		options.addOption("max_overlap", true, "output maximum structural impact/aggressor overlap to given file");
-		options.addOption("dispersion", true, "output coefficient of dispersion for every scan chain group to given file");
+		options.addOption("dispersion", true,
+				"output coefficient of dispersion for every scan chain group to given file");
 
 	}
 
@@ -225,13 +226,15 @@ public class Main extends KyupiApp {
 			int maxActiveAggressors = printSizeHistogram(cell2activeAggressorSet, cell2aggressorSet);
 			log.info("  MaxActiveAggressors " + maxActiveAggressors);
 			maxOverlap[case_idx] = maxActiveAggressors;
+			log.info("Clocking "
+					+ Arrays.toString(clocking).replaceAll("\\[", "").replaceAll("\\]", "").replaceAll(",", ""));
 			List<List<Integer>> scGrouping = new ArrayList<>();
 			scGrouping = util.arrayToList(clocking, clocks);
-			System.out.println(scGrouping);
-			for (int clkIdx=0; clkIdx<clocks; clkIdx++) {
-				if (scGrouping.get(clkIdx).isEmpty()){
+			log.info("Groups " + scGrouping);
+			for (int clkIdx = 0; clkIdx < clocks; clkIdx++) {
+				if (scGrouping.get(clkIdx).isEmpty()) {
 					continue;
-				}else {
+				} else {
 					dispersion[case_idx][clkIdx] = util.coefficientOfDispersion(scGrouping.get(clkIdx));
 				}
 			}
@@ -312,9 +315,9 @@ public class Main extends KyupiApp {
 		if (argsParsed().hasOption("dispersion")) {
 			String fileName = argsParsed().getOptionValue("dispersion");
 			FileWriter fileWriter = new FileWriter(fileName, true);
-			for (int caseIdx=0; caseIdx<maxOverlap.length; caseIdx++){
+			for (int caseIdx = 0; caseIdx < maxOverlap.length; caseIdx++) {
 				fileWriter.write(maxOverlap[caseIdx] + " ");
-				for (int i=0; i<dispersion[caseIdx].length; i++){
+				for (int i = 0; i < dispersion[caseIdx].length; i++) {
 					fileWriter.write(dispersion[caseIdx][i] + " ");
 				}
 				fileWriter.write("\n");
@@ -324,7 +327,7 @@ public class Main extends KyupiApp {
 		}
 
 		printGoodbye();
-		
+
 		return null;
 	}
 

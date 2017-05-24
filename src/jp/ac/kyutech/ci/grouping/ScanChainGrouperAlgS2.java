@@ -28,7 +28,9 @@ public class ScanChainGrouperAlgS2 extends ScanChainGrouper {
 		lowerBound = Math.max(lowerBound, searchLowerBound(lowerBound, upperBound, clockCount, pairCost, clocking));
 		log.info("LowerBound (after pair coloring) " + lowerBound);
 
-		GraphColorizer g = makeGraphColorizer(clockCount, pairCost, lowerBound);
+		GraphColorizer gRelaxed = new GraphColorizer(chains.size(), clockCount);
+		GraphColorizer g = new GraphColorizer(chains.size(), clockCount);
+		addPairConstraints(g, pairCost, lowerBound);
 		clocking = g.colorize();
 		int bestKnown = cost.evaluate(clocking, clockCount);
 		log.info("BestKnownSolution (after pair coloring) " + bestKnown);
@@ -46,7 +48,17 @@ public class ScanChainGrouperAlgS2 extends ScanChainGrouper {
 			int worstClk = cost.getLastWorstClockIdx();
 			int edgeSize = makeEdgeForClockIdx(worstClk, clocking_tmp, edge);
 			g.addEdge(edge, edgeSize);
+			if (gRelaxed != null)
+				gRelaxed.addEdge(edge, edgeSize);
 			clocking_tmp = g.colorize();
+			if (clocking_tmp == null && gRelaxed != null) {
+				log.info("Uncolorable graph with " + g.countEdges() + " constraints.");
+				addPairConstraints(gRelaxed, pairCost, bestKnown);
+				g = gRelaxed;
+				gRelaxed = null;
+				log.info("Continuing with " + g.countEdges() + " constraints of cost threshold " + bestKnown);
+				clocking_tmp = g.colorize();
+			}
 			if (clocking_tmp == null) {
 				lowerBound = bestKnown;
 				log.info("LowerBound " + lowerBound);
@@ -88,7 +100,8 @@ public class ScanChainGrouperAlgS2 extends ScanChainGrouper {
 
 	private int searchLowerBound(int lb, int ub, int clockCount, int[][] pairCost, int[] solution) {
 		int middle = (ub - lb) / 2 + lb;
-		GraphColorizer g = makeGraphColorizer(clockCount, pairCost, middle);
+		GraphColorizer g = new GraphColorizer(chains.size(), clockCount);
+		addPairConstraints(g, pairCost, middle);
 		int[] s = g.colorize();
 		if (s != null) {
 			System.arraycopy(s, 0, solution, 0, solution.length);
@@ -106,13 +119,11 @@ public class ScanChainGrouperAlgS2 extends ScanChainGrouper {
 		}
 	}
 
-	private GraphColorizer makeGraphColorizer(int clockCount, int[][] pairCost, int costThreshold) {
-		GraphColorizer g = new GraphColorizer(chains.size(), clockCount);
+	private void addPairConstraints(GraphColorizer g, int[][] pairCost, int costThreshold) {
 		for (int i = 0; i < chains.size(); i++)
 			for (int j = i + 1; j < chains.size(); j++)
 				if (pairCost[i][j] > costThreshold)
 					g.addEdge(i, j);
-		return g;
 	}
 
 	private int makeEdgeForClockIdx(int clock, int[] clocking, int[] edge) {
