@@ -184,9 +184,16 @@ public class Main extends KyupiApp {
 			log.info("PartitionMethod Z1");
 			partAlg = new ScanChainGrouperAlgZ1();
 		} else {
-			log.error("unknown partitioning method: " + prt_method);
-			printGoodbye();
-			return null;
+			File f = new File(prt_method);
+			if (!f.canRead()) {
+				log.error("File does not exist or not readable: " + prt_method);
+				log.error("unknown partitioning method: " + prt_method);
+				printGoodbye();
+				return null;
+			}
+			PartitionGeneratorFile partGenFile = new PartitionGeneratorFile(f);
+			clocks = partGenFile.clocks();
+			partGen = partGenFile;
 		}
 
 		// set algorithm parameters, if an algorithm is selected
