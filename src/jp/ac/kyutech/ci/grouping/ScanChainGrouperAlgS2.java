@@ -53,7 +53,7 @@ public class ScanChainGrouperAlgS2 extends ScanChainGrouper {
 
 		while (true) {
 			int worstClk = cost.getLastWorstClockIdx();
-			int edgeSize = makeEdgeForClockIdx(worstClk, clocking_tmp, costOrder, edge);
+			int edgeSize = makeEdgeForClockIdx(worstClk, clocking_tmp, bestKnown, costOrder, edge);
 			g.addEdge(edge, edgeSize);
 			if (gRelaxed != null)
 				gRelaxed.addEdge(edge, edgeSize);
@@ -178,7 +178,7 @@ public class ScanChainGrouperAlgS2 extends ScanChainGrouper {
 					g.addEdge(i, j);
 	}
 
-	private int makeEdgeForClockIdx(int clock, int[] clocking, int[] costOrder, int[] edge) {
+	private int makeEdgeForClockIdx(int clock, int[] clocking, int base, int[] costOrder, int[] edge) {
 
 		int[] clocking_tmp = new int[chains.size()];
 		int chainCount = 0;
@@ -190,21 +190,21 @@ public class ScanChainGrouperAlgS2 extends ScanChainGrouper {
 			}
 		}
 
-		int base = cost.evaluate(clocking_tmp, 1);
+		//base = cost.evaluate(clocking_tmp, 1);
 		int edgeSize = chainCount;
 		for (int chainIdx = 0; chainIdx < clocking_tmp.length; chainIdx++) {
 			int chain = costOrder[chainIdx];
 			if (clocking_tmp[chain] == -1)
 				continue;
 			clocking_tmp[chain] = -1;
-			if (cost.evaluate(clocking_tmp, 1) == base)
+			if (cost.evaluate(clocking_tmp, 1) >= base)
 				edgeSize--;
 			else
 				clocking_tmp[chain] = 0;
 
 		}
 		log.info("Last worst clock: " + clock + " containing " + chainCount + " chains. adding constraint of size "
-				+ edgeSize);
+				+ edgeSize + " for cost >= " + base);
 
 		edgeSize = 0;
 		for (int c = 0; c < clocking_tmp.length; c++)
