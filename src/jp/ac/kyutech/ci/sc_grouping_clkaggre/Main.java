@@ -1,4 +1,4 @@
-package jp.ac.kyutech.ci.ｓｃ_grouping_clkaggre;
+package jp.ac.kyutech.ci.sc_grouping_clkaggre;
 
 import org.kyupi.graph.Graph;
 import org.kyupi.graph.Graph.Node;
