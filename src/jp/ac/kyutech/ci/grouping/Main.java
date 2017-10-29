@@ -1,14 +1,34 @@
 package jp.ac.kyutech.ci.grouping;
 
-import jp.ac.kyutech.ci.grouping.QBWeightedSwitchingActivitySim.WeightedNodeSet;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.math.BigInteger;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
+import java.util.*;
+import java.util.function.Predicate;
+
 import org.junit.Test;
 import org.kyupi.data.QVExpander;
 import org.kyupi.data.item.QVector;
 import org.kyupi.data.source.BBSource;
 import org.kyupi.data.source.QBSource;
 import org.kyupi.data.source.QVSource;
-import org.kyupi.graph.*;
+import org.kyupi.graph.FormatVerilog;
+import org.kyupi.graph.Graph;
 import org.kyupi.graph.Graph.Node;
+import org.kyupi.graph.GraphTools;
+import org.kyupi.graph.Library;
+import org.kyupi.graph.LibraryOldSAED;
+import org.kyupi.graph.LibrarySAED;
+import org.kyupi.graph.Placement;
+import org.kyupi.graph.ScanChains;
 import org.kyupi.graph.ScanChains.ScanCell;
 import org.kyupi.graph.ScanChains.ScanChain;
 import org.kyupi.misc.ArrayTools;
@@ -16,13 +36,7 @@ import org.kyupi.misc.KyupiApp;
 import org.kyupi.misc.StringFilter;
 import org.kyupi.sim.BBPlainSim;
 
-import java.io.*;
-import java.math.BigInteger;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.text.NumberFormat;
-import java.util.*;
-import java.util.function.Predicate;
+import jp.ac.kyutech.ci.grouping.QBWeightedSwitchingActivitySim.WeightedNodeSet;
 
 public class Main extends KyupiApp {
 
@@ -55,6 +69,8 @@ public class Main extends KyupiApp {
 		options.addOption("table", true, "output a data table for latex into given file");
 		options.addOption("gp_correlation", true, "output a gnuplot file for correlation between structural and WSA");
 		options.addOption("max_overlap", true, "output maximum structural impact/aggressor overlap to given file");
+		options.addOption("dispersion", true,
+				"output coefficient of dispersion for every scan chain group to given file");
 
 	}
 
@@ -65,6 +81,7 @@ public class Main extends KyupiApp {
 
 		printWelcome();
 
+		Util util = new Util();
 		// load circuit and print basic statistics
 		setLib(new LibraryOldSAED());
 		circuit = loadCircuitFromArgs();
@@ -167,9 +184,16 @@ public class Main extends KyupiApp {
 			log.info("PartitionMethod Z1");
 			partAlg = new ScanChainGrouperAlgZ1();
 		} else {
-			log.error("unknown partitioning method: " + prt_method);
-			printGoodbye();
-			return null;
+			File f = new File(prt_method);
+			if (!f.canRead()) {
+				log.error("File does not exist or not readable: " + prt_method);
+				log.error("unknown partitioning method: " + prt_method);
+				printGoodbye();
+				return null;
+			}
+			PartitionGeneratorFile partGenFile = new PartitionGeneratorFile(f);
+			clocks = partGenFile.clocks();
+			partGen = partGenFile;
 		}
 
 		// set algorithm parameters, if an algorithm is selected
@@ -185,6 +209,8 @@ public class Main extends KyupiApp {
 			prt_start = 0;
 		}
 
+		int[] maxOverlap = new int[(int) prt_cases];
+		double[][] dispersion = new double[(int) prt_cases][clocks];
 		for (int case_idx = 0; case_idx < prt_cases; case_idx++) {
 			log.info("PartitioningCase " + case_idx);
 			int clocking[];
@@ -206,6 +232,19 @@ public class Main extends KyupiApp {
 
 			int maxActiveAggressors = printSizeHistogram(cell2activeAggressorSet, cell2aggressorSet);
 			log.info("  MaxActiveAggressors " + maxActiveAggressors);
+			maxOverlap[case_idx] = maxActiveAggressors;
+			log.info("Clocking "
+					+ Arrays.toString(clocking).replaceAll("\\[", "").replaceAll("\\]", "").replaceAll(",", ""));
+			List<List<Integer>> scGrouping = new ArrayList<>();
+			scGrouping = util.arrayToList(clocking, clocks);
+			log.info("Groups " + scGrouping);
+			for (int clkIdx = 0; clkIdx < clocks; clkIdx++) {
+				if (scGrouping.get(clkIdx).isEmpty()) {
+					continue;
+				} else {
+					dispersion[case_idx][clkIdx] = util.coefficientOfDispersion(scGrouping.get(clkIdx));
+				}
+			}
 
 			if (argsParsed().hasOption("max_overlap")) {
 				String fileName = argsParsed().getOptionValue("max_overlap");
@@ -280,8 +319,22 @@ public class Main extends KyupiApp {
 
 		} // case_idx loop
 
+		if (argsParsed().hasOption("dispersion")) {
+			String fileName = argsParsed().getOptionValue("dispersion");
+			FileWriter fileWriter = new FileWriter(fileName, true);
+			for (int caseIdx = 0; caseIdx < maxOverlap.length; caseIdx++) {
+				fileWriter.write(maxOverlap[caseIdx] + " ");
+				for (int i = 0; i < dispersion[caseIdx].length; i++) {
+					fileWriter.write(dispersion[caseIdx][i] + " ");
+				}
+				fileWriter.write("\n");
+
+			}
+			fileWriter.close();
+		}
+
 		printGoodbye();
-		
+
 		return null;
 	}
 
@@ -617,7 +670,7 @@ public class Main extends KyupiApp {
 		assertEquals(32, circuit.countOutputs());
 	}
 
-	public class CBInfo {
+	class CBInfo {
 		public HashSet<Node> all_clock_buffers = new HashSet<>();
 		public HashMap<Node, HashSet<Node>> sff_to_clock_buffer_set = new HashMap<>();
 	}

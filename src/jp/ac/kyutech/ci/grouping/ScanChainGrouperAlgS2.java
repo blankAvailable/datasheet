@@ -1,6 +1,8 @@
 package jp.ac.kyutech.ci.grouping;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 
 public class ScanChainGrouperAlgS2 extends ScanChainGrouper {
 
@@ -23,12 +25,19 @@ public class ScanChainGrouperAlgS2 extends ScanChainGrouper {
 		int lowerBound = cost.evaluate(clocking, clocking.length);
 		log.info("LowerBound (by c=∞) " + lowerBound);
 
+		int[] singleCost = calculateSingleCost(clocking);
+		log.debug("SingleCost " + Arrays.toString(singleCost));
+		int[] costOrder = calculateCostOrder(singleCost);
+		log.debug("CostOrder " + Arrays.toString(costOrder));
+
 		int[][] pairCost = calculatePairCost(clocking);
 
 		lowerBound = Math.max(lowerBound, searchLowerBound(lowerBound, upperBound, clockCount, pairCost, clocking));
 		log.info("LowerBound (after pair coloring) " + lowerBound);
 
-		GraphColorizer g = makeGraphColorizer(clockCount, pairCost, lowerBound);
+		GraphColorizer gRelaxed = new GraphColorizer(chains.size(), clockCount);
+		GraphColorizer g = new GraphColorizer(chains.size(), clockCount);
+		addPairConstraints(g, pairCost, lowerBound);
 		clocking = g.colorize();
 		int bestKnown = cost.evaluate(clocking, clockCount);
 		log.info("BestKnownSolution (after pair coloring) " + bestKnown);
@@ -44,9 +53,19 @@ public class ScanChainGrouperAlgS2 extends ScanChainGrouper {
 
 		while (true) {
 			int worstClk = cost.getLastWorstClockIdx();
-			int edgeSize = makeEdgeForClockIdx(worstClk, clocking_tmp, edge);
+			int edgeSize = makeEdgeForClockIdx(worstClk, clocking_tmp, bestKnown, costOrder, edge);
 			g.addEdge(edge, edgeSize);
+			if (gRelaxed != null)
+				gRelaxed.addEdge(edge, edgeSize);
 			clocking_tmp = g.colorize();
+			if (clocking_tmp == null && gRelaxed != null) {
+				log.info("Uncolorable graph with " + g.countEdges() + " constraints.");
+				addPairConstraints(gRelaxed, pairCost, bestKnown);
+				g = gRelaxed;
+				gRelaxed = null;
+				log.info("Continuing with " + g.countEdges() + " constraints of cost threshold " + bestKnown);
+				clocking_tmp = g.colorize();
+			}
 			if (clocking_tmp == null) {
 				lowerBound = bestKnown;
 				log.info("LowerBound " + lowerBound);
@@ -60,6 +79,51 @@ public class ScanChainGrouperAlgS2 extends ScanChainGrouper {
 			}
 		}
 
+	}
+
+	private int[] calculateSingleCost(int[] clocking) {
+		int[] singleCost = new int[clocking.length];
+		Arrays.fill(clocking, -1);
+		for (int i = 0; i < clocking.length; i++) {
+			clocking[i] = 0;
+			singleCost[i] = cost.evaluate(clocking, 1);
+			clocking[i] = -1;
+		}
+		return singleCost;
+	}
+
+	private int[] calculateCostOrder(int[] singleCost) {
+		class P {
+			int idx;
+			int cost;
+
+			P(int i, int c) {
+				idx = i;
+				cost = c;
+			}
+		}
+		ArrayList<P> arr = new ArrayList<>();
+		int i = 0;
+		for (int c : singleCost) {
+			arr.add(new P(i++, c));
+		}
+		arr.sort(new Comparator<P>() {
+
+			@Override
+			public int compare(P o1, P o2) {
+				if (o1.cost > o2.cost)
+					return 1;
+				if (o1.cost < o2.cost)
+					return -1;
+				return 0;
+			}
+		});
+		int[] costOrder = new int[singleCost.length];
+		i = 0;
+		for (P p : arr) {
+			costOrder[i++] = p.idx;
+		}
+		return costOrder;
 	}
 
 	private int[][] calculatePairCost(int[] clocking) {
@@ -88,7 +152,8 @@ public class ScanChainGrouperAlgS2 extends ScanChainGrouper {
 
 	private int searchLowerBound(int lb, int ub, int clockCount, int[][] pairCost, int[] solution) {
 		int middle = (ub - lb) / 2 + lb;
-		GraphColorizer g = makeGraphColorizer(clockCount, pairCost, middle);
+		GraphColorizer g = new GraphColorizer(chains.size(), clockCount);
+		addPairConstraints(g, pairCost, middle);
 		int[] s = g.colorize();
 		if (s != null) {
 			System.arraycopy(s, 0, solution, 0, solution.length);
@@ -106,16 +171,14 @@ public class ScanChainGrouperAlgS2 extends ScanChainGrouper {
 		}
 	}
 
-	private GraphColorizer makeGraphColorizer(int clockCount, int[][] pairCost, int costThreshold) {
-		GraphColorizer g = new GraphColorizer(chains.size(), clockCount);
+	private void addPairConstraints(GraphColorizer g, int[][] pairCost, int costThreshold) {
 		for (int i = 0; i < chains.size(); i++)
 			for (int j = i + 1; j < chains.size(); j++)
 				if (pairCost[i][j] > costThreshold)
 					g.addEdge(i, j);
-		return g;
 	}
 
-	private int makeEdgeForClockIdx(int clock, int[] clocking, int[] edge) {
+	private int makeEdgeForClockIdx(int clock, int[] clocking, int base, int[] costOrder, int[] edge) {
 
 		int[] clocking_tmp = new int[chains.size()];
 		int chainCount = 0;
@@ -127,20 +190,21 @@ public class ScanChainGrouperAlgS2 extends ScanChainGrouper {
 			}
 		}
 
-		int base = cost.evaluate(clocking_tmp, 1);
+		//base = cost.evaluate(clocking_tmp, 1);
 		int edgeSize = chainCount;
-		for (int chain = 0; chain < clocking_tmp.length; chain++) {
+		for (int chainIdx = 0; chainIdx < clocking_tmp.length; chainIdx++) {
+			int chain = costOrder[chainIdx];
 			if (clocking_tmp[chain] == -1)
 				continue;
 			clocking_tmp[chain] = -1;
-			if (cost.evaluate(clocking_tmp, 1) == base)
+			if (cost.evaluate(clocking_tmp, 1) >= base)
 				edgeSize--;
 			else
 				clocking_tmp[chain] = 0;
 
 		}
 		log.info("Last worst clock: " + clock + " containing " + chainCount + " chains. adding constraint of size "
-				+ edgeSize);
+				+ edgeSize + " for cost >= " + base);
 
 		edgeSize = 0;
 		for (int c = 0; c < clocking_tmp.length; c++)
