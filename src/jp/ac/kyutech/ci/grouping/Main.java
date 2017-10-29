@@ -1,38 +1,14 @@
 package jp.ac.kyutech.ci.grouping;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.math.BigInteger;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.function.Predicate;
-
+import jp.ac.kyutech.ci.grouping.QBWeightedSwitchingActivitySim.WeightedNodeSet;
 import org.junit.Test;
 import org.kyupi.data.QVExpander;
 import org.kyupi.data.item.QVector;
 import org.kyupi.data.source.BBSource;
 import org.kyupi.data.source.QBSource;
 import org.kyupi.data.source.QVSource;
-import org.kyupi.graph.FormatVerilog;
-import org.kyupi.graph.Graph;
+import org.kyupi.graph.*;
 import org.kyupi.graph.Graph.Node;
-import org.kyupi.graph.GraphTools;
-import org.kyupi.graph.Library;
-import org.kyupi.graph.LibraryOldSAED;
-import org.kyupi.graph.LibrarySAED;
-import org.kyupi.graph.Placement;
-import org.kyupi.graph.ScanChains;
 import org.kyupi.graph.ScanChains.ScanCell;
 import org.kyupi.graph.ScanChains.ScanChain;
 import org.kyupi.misc.ArrayTools;
@@ -40,7 +16,13 @@ import org.kyupi.misc.KyupiApp;
 import org.kyupi.misc.StringFilter;
 import org.kyupi.sim.BBPlainSim;
 
-import jp.ac.kyutech.ci.grouping.QBWeightedSwitchingActivitySim.WeightedNodeSet;
+import java.io.*;
+import java.math.BigInteger;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
+import java.util.*;
+import java.util.function.Predicate;
 
 public class Main extends KyupiApp {
 
@@ -635,7 +617,7 @@ public class Main extends KyupiApp {
 		assertEquals(32, circuit.countOutputs());
 	}
 
-	class CBInfo {
+	public class CBInfo {
 		public HashSet<Node> all_clock_buffers = new HashSet<>();
 		public HashMap<Node, HashSet<Node>> sff_to_clock_buffer_set = new HashMap<>();
 	}
