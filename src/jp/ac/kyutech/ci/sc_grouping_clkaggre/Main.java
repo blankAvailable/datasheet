@@ -1,43 +1,16 @@
 package jp.ac.kyutech.ci.sc_grouping_clkaggre;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.lang.reflect.Array;
-import java.math.BigInteger;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.text.NumberFormat;
-import java.util.*;
-import java.util.function.Predicate;
-
-import org.junit.Test;
-import org.kyupi.data.QVExpander;
-import org.kyupi.data.item.QVector;
-import org.kyupi.data.source.BBSource;
-import org.kyupi.data.source.QBSource;
-import org.kyupi.data.source.QVSource;
-import org.kyupi.graph.FormatVerilog;
-import org.kyupi.graph.Graph;
+import org.kyupi.graph.*;
 import org.kyupi.graph.Graph.Node;
-import org.kyupi.graph.GraphTools;
-import org.kyupi.graph.Library;
-import org.kyupi.graph.LibraryOldSAED;
-import org.kyupi.graph.LibrarySAED;
-import org.kyupi.graph.Placement;
-import org.kyupi.graph.ScanChains;
 import org.kyupi.graph.ScanChains.ScanCell;
 import org.kyupi.graph.ScanChains.ScanChain;
-import org.kyupi.misc.ArrayTools;
 import org.kyupi.misc.KyupiApp;
-import org.kyupi.misc.StringFilter;
-import org.kyupi.sim.BBPlainSim;
 
-import jp.ac.kyutech.ci.grouping.QBWeightedSwitchingActivitySim.WeightedNodeSet;
+import java.io.FileOutputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.function.Predicate;
 
 
 public class Main extends KyupiApp {
@@ -94,6 +67,22 @@ public class Main extends KyupiApp {
         CBInfo cbinfo = collectClockBuffers(circuit, chains);
         log.info("ScanChainCount " + chains.size());
         log.info("MaxChainLength " + chains.maxChainLength());
+
+        // realize sep_clk operation. Exits here if executed.
+        if(argsParsed().hasOption("sep_clk")){
+            String filename = argsParsed().getOptionValue("sep_clk");
+            separateClks(chains, cbinfo);
+            FileOutputStream output = new FileOutputStream(filename);
+            FormatVerilog.save(output, circuit);
+            output.close();
+            printGoodbye();
+            return null;
+        }
+
+        log.info("Calculating impact sets...");
+        HashMap<ScanChain, HashSet<Node>> chain2impactset = new HashMap<>();
+        calculateImpactSets(chains, cbinfo, chain2impactset);
+
 
         return null;
     }
@@ -166,6 +155,38 @@ public class Main extends KyupiApp {
             }
         } else {
             return collectClockBuffers(head.in(0), tail);
+        }
+    }
+
+    private void separateClks(ScanChains chains, CBInfo cbinfo){
+        Node oriClk = circuit.searchNode("clock");
+        oriClk.remove();
+        int intfNodeIdx = circuit.accessInterface().length;
+        for(int chainId = 0; chainId < chains.size(); chainId++){
+            ScanChain chain = chains.get(chainId);
+            Node clk = circuit.new Node(String.format("clk%03d", chainId), LibrarySAED.TYPE_BUF | Library.FLAG_INPUT);
+            clk.setIntfPosition(intfNodeIdx++);
+            for(ScanCell cell : chain.cells){
+                circuit.connect(clk, -1, cell.node, circuit.library().getClockPin(cell.node.type()));
+            }
+        }
+    }
+
+    private void calculateImpactSets(ScanChains chains, CBInfo cbinfo, HashMap<ScanChain, HashSet<Node>> chain2impactset){
+        for(int chainId = 0; chainId < chains.size(); chainId++){
+            ScanChain chain = chains.get(chainId);
+            HashSet<Node> impactset = new HashSet<Node>();
+            chain2impactset.put(chain, impactset);
+            for(ScanCell cell : chain.cells){
+                impactset.add(cell.node);
+                impactset.addAll(GraphTools.collectCombinationalOutputCone(cell.node));
+                if (cbinfo.sff_to_clock_buffer_set.get(cell) != null)
+                    impactset.addAll(cbinfo.sff_to_clock_buffer_set.get(cell));
+            }
+            impactset.removeIf(new Predicate<Node>() {
+                @Override
+                public boolean test(Node node) { return node.isPseudo(); }
+            });
         }
     }
 
