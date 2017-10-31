@@ -48,7 +48,7 @@ public class Main extends KyupiApp {
     private Graph circuit;
     /**
      * Computes a result, or throws an exception if unable to do so.
-     *
+     * balance clock aggressor number through scan chain grouping
      * @return computed result
      * @throws Exception if unable to compute a result
      */
