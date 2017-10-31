@@ -2,6 +2,7 @@ package jp.ac.kyutech.ci.sc_grouping_clkaggre;
 
 import org.kyupi.graph.Graph.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 

@@ -110,6 +110,7 @@ public class Main extends KyupiApp {
         HashMap<ScanChain, HashSet<Node>> chain2aggressorSet = new HashMap<>();
         calculateAggressorSets(cbinfo, chains, placement, arxnm, arynm, cbuf2aggressorSet, cell2aggressorSet,
                 chain2aggressorSet);
+        printAggressorAndImpactInfo(chains, cell2aggressorSet, chain2aggressorSet, chain2impactset);
 
         return null;
     }
@@ -228,7 +229,7 @@ public class Main extends KyupiApp {
             for (ScanCell cell : chain.cells){
                 HashSet<Node> saffaggressors = new HashSet<>();
                 cell2aggressorSet.put(cell, saffaggressors);
-                for (Node n : cbInfo.sff_to_clock_buffer_set.get(cell)){
+                for (Node n : cbInfo.sff_to_clock_buffer_set.get(cell.node)){
                     int x = placement.getX(n);
                     int y = placement.getY(n);
                     cbuf2aggressorSet.put(n, placement.getRectangle(x - arxnm / 2, y - arynm / 2, x + arxnm / 2,
