@@ -1,12 +1,14 @@
 package jp.ac.kyutech.ci.sc_grouping_clkaggre;
 
+import com.sun.xml.internal.ws.encoding.HasEncoding;
 import org.kyupi.graph.*;
 import org.kyupi.graph.Graph.Node;
 import org.kyupi.graph.ScanChains.ScanCell;
 import org.kyupi.graph.ScanChains.ScanChain;
 import org.kyupi.misc.KyupiApp;
+import org.kyupi.misc.StringFilter;
 
-import java.io.FileOutputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -79,10 +81,35 @@ public class Main extends KyupiApp {
             return null;
         }
 
+        // extract impact area/set
         log.info("Calculating impact sets...");
         HashMap<ScanChain, HashSet<Node>> chain2impactset = new HashMap<>();
         calculateImpactSets(chains, cbinfo, chain2impactset);
 
+        // load placement info from .def file
+        Placement placement = new Placement(circuit);
+        if (argsParsed().hasOption("def")){
+            String filename = argsParsed().getOptionValue("def");
+            placement.parseDefFile(filename, new StringFilter() {
+                @Override
+                public String filter(String source) { return source.replaceAll("\\\\", ""); }
+            });
+        }
+
+        // read aggressor region size parameters
+        double arx = doubleFromArgsOrDefault("arx", 600);
+        double ary = doubleFromArgsOrDefault("ary", 14);
+        int arxnm = (int) (arx * NAND_WIDTH);
+        int arynm = (int) (ary * ROW_HEIGHT);
+        log.info("AggressorRegionSize X " + arx + " Y " + ary);
+        log.info("AggressorRegionSizeNM X " + arxnm + " Y " + arynm);
+
+        // extract clock aggressor sets
+        HashMap<Node, HashSet<Node>> cbuf2aggressorSet = new HashMap<>();
+        HashMap<ScanCell, HashSet<Node>> cell2aggressorSet = new HashMap<>();
+        HashMap<ScanChain, HashSet<Node>> chain2aggressorSet = new HashMap<>();
+        calculateAggressorSets(cbinfo, chains, placement, arxnm, arynm, cbuf2aggressorSet, cell2aggressorSet,
+                chain2aggressorSet);
 
         return null;
     }
@@ -190,4 +217,62 @@ public class Main extends KyupiApp {
         }
     }
 
+    // need test
+    private void calculateAggressorSets(CBInfo cbInfo, ScanChains chains, Placement placement, int arxnm, int arynm, HashMap<Node,
+            HashSet<Node>> cbuf2aggressorSet, HashMap<ScanCell, HashSet<Node>> cell2aggressorSet, HashMap<ScanChain,
+            HashSet<Node>> chain2aggressorSet){
+        for (int chainId = 0; chainId < chains.size(); chainId++){
+            ScanChain chain = chains.get(chainId);
+            HashSet<Node> chainaggressors = new HashSet<>();
+            chain2aggressorSet.put(chain, chainaggressors);
+            for (ScanCell cell : chain.cells){
+                HashSet<Node> saffaggressors = new HashSet<>();
+                cell2aggressorSet.put(cell, saffaggressors);
+                for (Node n : cbInfo.sff_to_clock_buffer_set.get(cell)){
+                    int x = placement.getX(n);
+                    int y = placement.getY(n);
+                    cbuf2aggressorSet.put(n, placement.getRectangle(x - arxnm / 2, y - arynm / 2, x + arxnm / 2,
+                            y+ arynm / 2));
+                    saffaggressors.addAll(cbuf2aggressorSet.get(n));
+                }
+                chainaggressors.addAll(saffaggressors);
+            }
+        }
+    }
+
+    // need test
+    private void printAggressorAndImpactInfo(ScanChains chains, HashMap<ScanCell, HashSet<Node>> cell2aggressorSet, HashMap<ScanChain,
+            HashSet<Node>> chain2aggressorSet, HashMap<ScanChain, HashSet<Node>> chain2impactSet) throws IOException {
+        BufferedWriter out = null;
+        if (argsParsed().hasOption("table")){
+            String filename = argsParsed().getOptionValue("table");
+            File tableWriter = new File(filename);
+            tableWriter.createNewFile();
+            out = new BufferedWriter(new FileWriter(tableWriter));
+        }
+        for (int chainId = 0; chainId < chains.size(); chainId++){
+            ScanChain chain = chains.get(chainId);
+            log.info("Chain " + chainId + " ScanInPort " + chain.in.node.queryName());
+            log.info("  ChainLength " + chain.cells.size());
+            int aggmin = Integer.MAX_VALUE;
+            int aggmax = 0;
+            int aggsum = 0;
+            for (ScanCell saff : chain.cells){
+                int aggsize = cell2aggressorSet.get(saff).size();
+                aggmin = Math.min(aggmin, aggsize);
+                aggmax = Math.max(aggmax, aggsize);
+                aggsum += aggsize;
+            }
+            int aggavg = aggsum / chain.cells.size();
+            log.info(" AggressorsPerScanCell Min" + aggmin + " Avg " + aggavg + " Max " + aggmax);
+            log.info(" AggressorsForChain SimpleSum " + aggsum + " UniqueAggressorCount " + chain2aggressorSet.get
+                    (chain).size());
+            log.info(" ImpactCellCount " + chain2impactSet.get(chain).size());
+            if (out != null)
+                out.write(chainId + " & " + chain2aggressorSet.get(chain).size() + " & " + chain2impactSet.get
+                        (chain).size() + "\\\\\n");
+        }
+        if (out != null)
+            out.close();
+    }
 }
