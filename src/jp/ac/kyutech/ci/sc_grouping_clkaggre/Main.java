@@ -1,6 +1,5 @@
 package jp.ac.kyutech.ci.sc_grouping_clkaggre;
 
-import com.sun.xml.internal.ws.encoding.HasEncoding;
 import org.kyupi.graph.*;
 import org.kyupi.graph.Graph.Node;
 import org.kyupi.graph.ScanChains.ScanCell;
