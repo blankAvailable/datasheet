@@ -269,8 +269,7 @@ public class Main extends KyupiApp {
                     (chain).size());
             log.info(" ImpactCellCount " + chain2impactSet.get(chain).size());
             if (out != null)
-                out.write(chainId + " & " + chain2aggressorSet.get(chain).size() + " & " + chain2impactSet.get
-                        (chain).size() + "\\\\\n");
+                out.write(chainId + " & " + chain2aggressorSet.get(chain).size() + " & " + aggmin + " & " + aggavg + " & " + aggmax + "\\\\\n");
         }
         if (out != null)
             out.close();
