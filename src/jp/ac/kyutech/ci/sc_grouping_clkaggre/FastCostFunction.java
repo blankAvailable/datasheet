@@ -59,8 +59,41 @@ public class FastCostFunction {
 
     private int last_clock_id = 0;
 
+    // need test
     public int evaluate(int[] clocking, int clocks){
         int maxcost = 0;
+
+        for (int c = 0; c < clocks; c++){
+            // compute sets of possibly active nodes of current group
+            impactUnion.clear();
+            for (int chainId = 0; chainId < impacts.length; chainId++){
+                if (clocking[chainId] == c)
+                    impactUnion.or(impacts[chainId]);
+            }
+            for (int chainId = 0; chainId < aregions.length; chainId++){
+                for (int cellId = 0; cellId < aregions[chainId].length; cellId++){
+                    int cost = 0;
+                    int cost_predecessor = 0;
+                    for (int aggId = 0; aggId < aregions[chainId][cellId].length; aggId++){
+                        if (impactUnion.get(aregions[chainId][cellId][aggId]))
+                            cost++;
+                    }
+                    if (cost_predecessor == 0){
+                        cost_predecessor = cost;
+                        continue;
+                    }else if (Math.abs(cost_predecessor - cost) > maxcost){
+                        maxcost = Math.abs(cost_predecessor - cost);
+                        cost_predecessor = cost;
+                        last_chain_id = chainId;
+                        last_cell_id = cellId;
+                        last_clock_id = c;
+                    }
+                }
+            }
+        }
+
         return maxcost;
     }
+
+    public int getLastWorstClockId(){ return last_clock_id; }
 }

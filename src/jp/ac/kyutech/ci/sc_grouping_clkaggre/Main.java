@@ -217,7 +217,6 @@ public class Main extends KyupiApp {
         }
     }
 
-    // need test
     private void calculateAggressorSets(CBInfo cbInfo, ScanChains chains, Placement placement, int arxnm, int arynm, HashMap<Node,
             HashSet<Node>> cbuf2aggressorSet, HashMap<ScanCell, HashSet<Node>> cell2aggressorSet, HashMap<ScanChain,
             HashSet<Node>> chain2aggressorSet){
@@ -240,7 +239,6 @@ public class Main extends KyupiApp {
         }
     }
 
-    // need test
     private void printAggressorAndImpactInfo(ScanChains chains, HashMap<ScanCell, HashSet<Node>> cell2aggressorSet, HashMap<ScanChain,
             HashSet<Node>> chain2aggressorSet, HashMap<ScanChain, HashSet<Node>> chain2impactSet) throws IOException {
         BufferedWriter out = null;
