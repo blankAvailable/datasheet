@@ -9,6 +9,7 @@ import org.kyupi.misc.StringFilter;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.function.Predicate;
@@ -111,6 +112,40 @@ public class Main extends KyupiApp {
                 chain2aggressorSet);
         printAggressorAndImpactInfo(chains, cell2aggressorSet, chain2aggressorSet, chain2impactset);
 
+        // read in grouping paremeters
+        int clocks = intFromArgsOrDefault("clk", 1);
+        clocks = Math.min(clocks, chains.size());
+        log.info("AvailableGroupCount " + clocks);
+        ScanChainGrouping grouping = null;
+        String groupingMethod = stringFromArgsOrDefault("prt_method", "random").toLowerCase();
+        long randomSeed = longFromArgsOrDefault("prt_start", 0);
+        long groupingCases = longFromArgsOrDefault("prt_cases", 1);
+        if (groupingMethod.startsWith("r")){
+            log.info("GroupingMethod Random");
+            log.info("GroupingStart " + randomSeed);
+            grouping = new RandomGrouping(chains.size(), clocks, randomSeed);
+        }else {
+            log.info("unknown grouping method: " + groupingMethod);
+            printGoodbye();
+            return null;
+        }
+
+        //start grouping
+        for (int caseId = 0; caseId < groupingCases; caseId++){
+            log.info("GroupingCase " + caseId);
+            int clocking[];
+            if (!grouping.hasNext()){
+                log.error("prt_start+caseId out of bounds, starting over");
+                grouping.iterator();
+            }
+            clocking = grouping.next();
+
+            FastCostFunction cost = new FastCostFunction(chain2impactset, cell2aggressorSet);
+            // print grouping info and grouping cost
+            log.info("Clocking " + Arrays.toString(clocking).replaceAll("\\[", "").replaceAll("\\]", "")
+                    .replaceAll(",", ""));
+            log.info("Cost " + cost.evaluate(clocking, clocks));
+        } // caseId loop
         return null;
     }
 

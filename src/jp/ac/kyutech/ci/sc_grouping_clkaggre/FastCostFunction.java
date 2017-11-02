@@ -71,9 +71,9 @@ public class FastCostFunction {
                     impactUnion.or(impacts[chainId]);
             }
             for (int chainId = 0; chainId < aregions.length; chainId++){
+                int cost_predecessor = 0;
                 for (int cellId = 0; cellId < aregions[chainId].length; cellId++){
                     int cost = 0;
-                    int cost_predecessor = 0;
                     for (int aggId = 0; aggId < aregions[chainId][cellId].length; aggId++){
                         if (impactUnion.get(aregions[chainId][cellId][aggId]))
                             cost++;
@@ -81,8 +81,8 @@ public class FastCostFunction {
                     if (cost_predecessor == 0){
                         cost_predecessor = cost;
                         continue;
-                    }else if (Math.abs(cost_predecessor - cost) > maxcost){
-                        maxcost = Math.abs(cost_predecessor - cost);
+                    }else if (Math.abs((cost_predecessor - cost)) > maxcost){
+                        maxcost = Math.abs((cost_predecessor - cost));
                         cost_predecessor = cost;
                         last_chain_id = chainId;
                         last_cell_id = cellId;
