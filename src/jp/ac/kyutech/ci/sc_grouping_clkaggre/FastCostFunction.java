@@ -4,6 +4,10 @@ import org.kyupi.graph.Graph.Node;
 import org.kyupi.graph.ScanChains.ScanCell;
 import org.kyupi.graph.ScanChains.ScanChain;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.BitSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -71,19 +75,19 @@ public class FastCostFunction {
                     impactUnion.or(impacts[chainId]);
             }
             for (int chainId = 0; chainId < aregions.length; chainId++){
-                int cost_predecessor = 0;
+                int costPredecessor = 0;
                 for (int cellId = 0; cellId < aregions[chainId].length; cellId++){
                     int cost = 0;
                     for (int aggId = 0; aggId < aregions[chainId][cellId].length; aggId++){
                         if (impactUnion.get(aregions[chainId][cellId][aggId]))
                             cost++;
                     }
-                    if (cost_predecessor == 0){
-                        cost_predecessor = cost;
+                    if (costPredecessor == 0){
+                        costPredecessor = cost;
                         continue;
-                    }else if (Math.abs((cost_predecessor - cost)) > maxcost){
-                        maxcost = Math.abs((cost_predecessor - cost));
-                        cost_predecessor = cost;
+                    }else if (Math.abs((costPredecessor - cost)) > maxcost){
+                        maxcost = Math.abs((costPredecessor - cost));
+                        costPredecessor = cost;
                         last_chain_id = chainId;
                         last_cell_id = cellId;
                         last_clock_id = c;
@@ -93,6 +97,46 @@ public class FastCostFunction {
         }
 
         return maxcost;
+    }
+
+    public int evaluate(int[] clocking, int clocks, String filename, int caseId) throws IOException {
+        int maxcostDiff = 0;
+
+        File plotWriter = new File(filename + "_grouping" + caseId);
+        plotWriter.createNewFile();
+        BufferedWriter plot = new BufferedWriter(new FileWriter(plotWriter));
+
+        for (int c = 0; c < clocks; c++){
+            // compute sets of possibly active nodes of current group
+            impactUnion.clear();
+            for (int chainId = 0; chainId < impacts.length; chainId++){
+                if (clocking[chainId] == c)
+                    impactUnion.or(impacts[chainId]);
+            }
+            for (int chainId = 0; chainId < aregions.length; chainId++){
+                int costPredecessor = 0;
+                for (int cellId = 0; cellId < aregions[chainId].length; cellId++){
+                    int cost = 0;
+                    for (int aggId = 0; aggId < aregions[chainId][cellId].length; aggId++){
+                        if (impactUnion.get(aregions[chainId][cellId][aggId]))
+                            cost++;
+                    }
+                    plot.write(cellId + " & " + cost + "\n");
+                    if (costPredecessor == 0){
+                        costPredecessor = cost;
+                        continue;
+                    }else if (Math.abs((costPredecessor - cost)) > maxcostDiff){
+                        maxcostDiff = Math.abs((costPredecessor - cost));
+                        costPredecessor = cost;
+                        last_chain_id = chainId;
+                        last_cell_id = cellId;
+                        last_clock_id = c;
+                    }
+                }
+            }
+        }
+        plot.close();
+        return maxcostDiff;
     }
 
     public int getLastWorstClockId(){ return last_clock_id; }

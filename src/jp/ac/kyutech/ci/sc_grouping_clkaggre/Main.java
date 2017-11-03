@@ -44,6 +44,8 @@ public class Main extends KyupiApp {
 
         // output control parameters
         options.addOption("table", true, "output a data table for latex into given file");
+        // output data for excel
+        options.addOption("plot", true, "output a data table for latex into given file");
     }
 
     private Graph circuit;
@@ -141,10 +143,17 @@ public class Main extends KyupiApp {
             clocking = grouping.next();
 
             FastCostFunction cost = new FastCostFunction(chain2impactset, cell2aggressorSet);
+
+            if (argsParsed().hasOption("plot")){
+                String filename = argsParsed().getOptionValue("plot");
+                log.info("CostDifference " + cost.evaluate(clocking, clocks, filename, caseId));
+            }else{
+                log.info("CostDifference " + cost.evaluate(clocking, clocks));
+            }
+
             // print grouping info and grouping cost
             log.info("Clocking " + Arrays.toString(clocking).replaceAll("\\[", "").replaceAll("\\]", "")
                     .replaceAll(",", ""));
-            log.info("Cost " + cost.evaluate(clocking, clocks));
         } // caseId loop
         return null;
     }
@@ -276,12 +285,19 @@ public class Main extends KyupiApp {
 
     private void printAggressorAndImpactInfo(ScanChains chains, HashMap<ScanCell, HashSet<Node>> cell2aggressorSet, HashMap<ScanChain,
             HashSet<Node>> chain2aggressorSet, HashMap<ScanChain, HashSet<Node>> chain2impactSet) throws IOException {
-        BufferedWriter out = null;
+        BufferedWriter table = null;
+        BufferedWriter plot = null;
         if (argsParsed().hasOption("table")){
             String filename = argsParsed().getOptionValue("table");
             File tableWriter = new File(filename);
             tableWriter.createNewFile();
-            out = new BufferedWriter(new FileWriter(tableWriter));
+            table = new BufferedWriter(new FileWriter(tableWriter));
+        }
+        if (argsParsed().hasOption("plot")){
+            String filename = argsParsed().getOptionValue("plot");
+            File plotWriter = new File(filename);
+            plotWriter.createNewFile();
+            plot = new BufferedWriter(new FileWriter(plotWriter));
         }
         for (int chainId = 0; chainId < chains.size(); chainId++){
             ScanChain chain = chains.get(chainId);
@@ -290,21 +306,38 @@ public class Main extends KyupiApp {
             int aggmin = Integer.MAX_VALUE;
             int aggmax = 0;
             int aggsum = 0;
+            int aggsizePredecessor = 0;
+            int maxAggDiff = 0;
+            int cellCount = 0;
             for (ScanCell saff : chain.cells){
                 int aggsize = cell2aggressorSet.get(saff).size();
+                if (plot != null){
+                    plot.write(cellCount + " & " + aggsize + "\n");
+                    cellCount++;
+                }
                 aggmin = Math.min(aggmin, aggsize);
                 aggmax = Math.max(aggmax, aggsize);
                 aggsum += aggsize;
+                if (aggsizePredecessor == 0){
+                    aggsizePredecessor = aggsize;
+                    continue;
+                }else if (Math.abs((aggsizePredecessor - aggsize)) > maxAggDiff){
+                    maxAggDiff = Math.abs((aggsizePredecessor - aggsize));
+                    aggsizePredecessor = aggsize;
+                }
             }
             int aggavg = aggsum / chain.cells.size();
-            log.info(" AggressorsPerScanCell Min" + aggmin + " Avg " + aggavg + " Max " + aggmax);
+            log.info(" AggressorsPerScanCell Min" + aggmin + " Avg " + aggavg + " Max " + aggmax + " MaxDifference "
+                    + maxAggDiff);
             log.info(" AggressorsForChain SimpleSum " + aggsum + " UniqueAggressorCount " + chain2aggressorSet.get
                     (chain).size());
             log.info(" ImpactCellCount " + chain2impactSet.get(chain).size());
-            if (out != null)
-                out.write(chainId + " & " + chain2aggressorSet.get(chain).size() + " & " + aggmin + " & " + aggavg + " & " + aggmax + "\\\\\n");
+            if (table != null)
+                table.write(chainId + " & " + " & " + aggavg + " & " + maxAggDiff + "\\\\\n");
         }
-        if (out != null)
-            out.close();
+        if (table != null)
+            table.close();
+        if (plot != null)
+            plot.close();
     }
 }
