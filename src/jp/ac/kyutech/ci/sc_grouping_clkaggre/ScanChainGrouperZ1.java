@@ -20,7 +20,7 @@ public class ScanChainGrouperZ1 extends ScanChainGrouper {
 
         ScanChainGrouping randGrouping = new RandomGrouping(chains.size(), groupCount, 4);
 
-        int cand_clking[] = new int[clocking.length];
+        int cand_clking[];
         int cand_cost = Integer.MAX_VALUE;
         int randTries = 0;
         while (randTries < RANDOM_TIMEOUT){

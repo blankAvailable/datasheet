@@ -8,10 +8,7 @@ import org.kyupi.misc.KyupiApp;
 import org.kyupi.misc.StringFilter;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.*;
 import java.util.function.Predicate;
 
 
@@ -114,6 +111,7 @@ public class Main extends KyupiApp {
                 chain2aggressorSet);
         printAggressorAndImpactInfo(chains, cell2aggressorSet, chain2aggressorSet, chain2impactset);
 
+        FastCostFunction cost = new FastCostFunction(chain2impactset, cell2aggressorSet);
         // read in grouping paremeters
         int clocks = intFromArgsOrDefault("clk", 1);
         clocks = Math.min(clocks, chains.size());
@@ -155,7 +153,7 @@ public class Main extends KyupiApp {
             int clocking[];
             if (grouper != null){
                 log.info("ScanChainGrouping start with " + clocks +" available groups... ");
-                clocking = grouper.calculateClocking(clocks);
+                clocking = this.scanChainGrouperZ1(chains, clocks, chain2impactset, cell2aggressorSet, cost);
                 log.info("ScanChainGrouping finished.");
             }else{
                 if (!grouping.hasNext()){
@@ -164,8 +162,6 @@ public class Main extends KyupiApp {
                 }
                 clocking = grouping.next();
             }
-
-            FastCostFunction cost = new FastCostFunction(chain2impactset, cell2aggressorSet);
 
             if (argsParsed().hasOption("plot")){
                 String filename = argsParsed().getOptionValue("plot");
@@ -362,5 +358,58 @@ public class Main extends KyupiApp {
             table.close();
         if (plot != null)
             plot.close();
+    }
+
+    private int[] scanChainGrouperZ1(ScanChains chains, int groupCount,HashMap<ScanChain, HashSet<Node>>
+            chain2ImpactSet, HashMap<ScanCell, HashSet<Node>> cell2aggressorSet, FastCostFunction cost){
+        int clocking[] = new int[chains.size()];
+        Random r = new Random(4);
+        int candClocking[] = new int [clocking.length];
+        int candCost = Integer.MAX_VALUE;
+        int randomTries = 0;
+        while (randomTries < 64){
+            randomTries++;
+            for (int c = 0; c < clocking.length; c++){
+                candClocking[c] = r.nextInt(groupCount);
+            }
+            int thisCost = cost.evaluate(candClocking, groupCount);
+            if (thisCost < candCost){
+                System.arraycopy(candClocking, 0 , clocking, 0, clocking.length);
+                candCost = thisCost;
+                log.info("Better guess " + candCost + " found after " + randomTries + " tries.");
+                randomTries = 0;
+            }
+        }
+
+        log.info("Best after random search: " + candCost);
+
+        for (int i = 0; i < 16; i++){
+            int diff = SwapWorstChain(clocking, groupCount, cost);
+            if (diff <= 0)
+                break;
+        }
+
+        log.info("Cost after optimizing: " + cost.evaluate(clocking, groupCount));
+        return clocking;
+    }
+
+    private int SwapWorstChain(int[] clocking, int clockCount, FastCostFunction cost){
+        int worstChain = -1;
+        int highest_cost_diff = 0;
+        int base_cost = cost.evaluate(clocking, clockCount);
+        for (int chainId = 0; chainId < clocking.length; chainId++){
+            int group = clocking[chainId];
+            for (int groupId = 0; groupId < clockCount; groupId++){
+                clocking[chainId] = groupId;
+                int cost_diff = base_cost - cost.evaluate(clocking, clockCount);
+                clocking[chainId] = group;
+                if (cost_diff > highest_cost_diff){
+                    worstChain = chainId;
+                    highest_cost_diff = cost_diff;
+                }
+            }
+        }
+        log.debug("Worst chain " + worstChain + " with diff " + highest_cost_diff);
+        return highest_cost_diff;
     }
 }
