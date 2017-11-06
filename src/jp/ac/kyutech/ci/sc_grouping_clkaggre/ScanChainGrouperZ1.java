@@ -9,16 +9,11 @@ public class ScanChainGrouperZ1 extends ScanChainGrouper {
 
     private FastCostFunction cost;
 
-    public int[] calculateClocking(int groupCount) {
+    public int[] calculateClocking(int groupCount, FastCostFunction cost) {
 
-        if (cost == null){
-            cost = new FastCostFunction(chain2impactSet, cell2aggressorSet);
-            log.info("Setup finished.");
-        }
+        int clocking[] = new int[chainSize];
 
-        int clocking[] = new int[chains.size()];
-
-        ScanChainGrouping randGrouping = new RandomGrouping(chains.size(), groupCount, 4);
+        ScanChainGrouping randGrouping = new RandomGrouping(chainSize, groupCount, 4);
 
         int cand_clking[];
         int cand_cost = Integer.MAX_VALUE;
@@ -42,7 +37,7 @@ public class ScanChainGrouperZ1 extends ScanChainGrouper {
         log.info("Best after random search: " + cand_cost);
 
         for (int i = 0; i< 128; i++){
-            int diff = SwapWorstChain(clocking, groupCount);
+            int diff = SwapWorstChain(clocking, groupCount, cost);
             if (diff <= 0)
                 break;
         }
@@ -52,8 +47,9 @@ public class ScanChainGrouperZ1 extends ScanChainGrouper {
         return clocking;
     }
 
-    private int SwapWorstChain(int[] clocking, int clockCount){
+    private int SwapWorstChain(int[] clocking, int clockCount, FastCostFunction cost){
         int worstChain = -1;
+        int bestGroup = 0;
         int highest_cost_diff = 0;
         int base_cost = cost.evaluate(clocking, clockCount);
         for (int chainId = 0; chainId < clocking.length; chainId++){
@@ -62,12 +58,14 @@ public class ScanChainGrouperZ1 extends ScanChainGrouper {
                 clocking[chainId] = groupId;
                 int cost_diff = base_cost - cost.evaluate(clocking, clockCount);
                 clocking[chainId] = group;
-                if (cost_diff > highest_cost_diff){
+                if (cost_diff >= highest_cost_diff){
                     worstChain = chainId;
                     highest_cost_diff = cost_diff;
+                    bestGroup = groupId;
                 }
             }
         }
+        clocking[worstChain] = bestGroup;
         log.debug("Worst chain " + worstChain + " with diff " + highest_cost_diff);
         return highest_cost_diff;
     }

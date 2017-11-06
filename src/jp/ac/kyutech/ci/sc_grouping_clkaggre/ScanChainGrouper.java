@@ -13,21 +13,11 @@ public abstract class ScanChainGrouper {
 
     protected static Logger log = Logger.getLogger(ScanChainGrouper.class);
 
-    protected ScanChains chains;
-    protected HashMap<ScanCell, HashSet<Node>> cell2aggressorSet;
-    protected HashMap<ScanChain, HashSet<Node>> chain2impactSet;
+    protected int chainSize = 0;
 
-    public void setChains(ScanChains chains) {
-        this.chains = chains;
+    public void setChainSize(int chainSize){
+        this.chainSize = chainSize;
     }
 
-    public void setCell2aggressorSet(HashMap<ScanCell, HashSet<Node>> cell2aggressorSet) {
-        this.cell2aggressorSet = cell2aggressorSet;
-    }
-
-    public void setChain2impactSet(HashMap<ScanChain, HashSet<Node>> chain2impactSet) {
-        this.chain2impactSet = chain2impactSet;
-    }
-
-    public abstract int[] calculateClocking(int groupCount);
+    public abstract int[] calculateClocking(int groupCount, FastCostFunction cost);
 }
