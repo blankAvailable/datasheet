@@ -1,5 +1,6 @@
 package jp.ac.kyutech.ci.grouping;
 
+import java.util.Arrays;
 import java.util.Random;
 
 public class ScanChainGrouperAlgS1 extends ScanChainGrouper {
@@ -83,8 +84,6 @@ public class ScanChainGrouperAlgS1 extends ScanChainGrouper {
 			}
 		}
 		clocking[chain_idx] = best_clk;
-
-		log.debug("Chain " + chain_idx + " move from " + old_clk + " to " + best_clk + " gaining " + highest_cost_diff);
 		return highest_cost_diff;
 	}
 

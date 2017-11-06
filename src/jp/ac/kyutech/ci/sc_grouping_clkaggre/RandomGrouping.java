@@ -6,7 +6,7 @@ import java.util.Random;
 
 public class RandomGrouping extends ScanChainGrouping{
 
-    private int groupingCount;
+    private int groupCount;
     private long seed;
     private long initSeed;
 
@@ -14,7 +14,7 @@ public class RandomGrouping extends ScanChainGrouping{
 
     public RandomGrouping(int setSize, int groupingCount, long initSeed){
         this.prt = new int[setSize];
-        this.groupingCount = groupingCount;
+        this.groupCount = groupingCount;
         this.initSeed = initSeed;
         seed = initSeed;
 
@@ -52,7 +52,7 @@ public class RandomGrouping extends ScanChainGrouping{
     public int[] next() {
         Random random = new Random(seed);
         for (int i = 0; i < prt.length; i++){
-            prt[i] = random.nextInt(groupingCount);
+            prt[i] = random.nextInt(groupCount);
         }
         seed++;
         return prt;

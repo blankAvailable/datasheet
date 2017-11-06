@@ -119,6 +119,7 @@ public class Main extends KyupiApp {
         clocks = Math.min(clocks, chains.size());
         log.info("AvailableGroupCount " + clocks);
         ScanChainGrouping grouping = null;
+        ScanChainGrouper grouper = null;
         String groupingMethod = stringFromArgsOrDefault("prt_method", "random").toLowerCase();
         long randomSeed = longFromArgsOrDefault("prt_start", 0);
         long groupingCases = longFromArgsOrDefault("prt_cases", 1);
@@ -126,21 +127,43 @@ public class Main extends KyupiApp {
             log.info("GroupingMethod Random");
             log.info("GroupingStart " + randomSeed);
             grouping = new RandomGrouping(chains.size(), clocks, randomSeed);
-        }else {
+        }else if(groupingMethod.startsWith("z1")){
+            log.info("GroupingMethod Z1");
+            grouper = new ScanChainGrouperZ1();
+        } else {
             log.info("unknown grouping method: " + groupingMethod);
             printGoodbye();
             return null;
+        }
+
+        // set algorithm parameters, if an algorithm is selected
+        if (grouper != null){
+            grouper.setChains(chains);
+            grouper.setCell2aggressorSet(cell2aggressorSet);
+            grouper.setChain2impactSet(chain2aggressorSet);
+            if (groupingCases > 1)
+                log.warn("prt_cases is ignored, only a sigle grouping is evaluated.");
+            if (randomSeed > 0)
+                log.warn("prt_start is ignored, only a sigle grouping is evaluated");
+            groupingCases = 1;
+            randomSeed = 0;
         }
 
         //start grouping
         for (int caseId = 0; caseId < groupingCases; caseId++){
             log.info("GroupingCase " + caseId);
             int clocking[];
-            if (!grouping.hasNext()){
-                log.error("prt_start+caseId out of bounds, starting over");
-                grouping.iterator();
+            if (grouper != null){
+                log.info("ScanChainGrouping start with " + clocks +" available groups... ");
+                clocking = grouper.calculateClocking(clocks);
+                log.info("ScanChainGrouping finished.");
+            }else{
+                if (!grouping.hasNext()){
+                    log.error("prt_start+caseId out of bounds, starting over");
+                    grouping.iterator();
+                }
+                clocking = grouping.next();
             }
-            clocking = grouping.next();
 
             FastCostFunction cost = new FastCostFunction(chain2impactset, cell2aggressorSet);
 
