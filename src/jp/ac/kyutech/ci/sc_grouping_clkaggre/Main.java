@@ -1,16 +1,23 @@
 package jp.ac.kyutech.ci.sc_grouping_clkaggre;
 
+import org.kyupi.data.QVExpander;
+import org.kyupi.data.item.QVector;
+import org.kyupi.data.source.BBSource;
+import org.kyupi.data.source.QBSource;
+import org.kyupi.data.source.QVSource;
 import org.kyupi.graph.*;
 import org.kyupi.graph.Graph.Node;
 import org.kyupi.graph.ScanChains.ScanCell;
 import org.kyupi.graph.ScanChains.ScanChain;
 import org.kyupi.misc.KyupiApp;
 import org.kyupi.misc.StringFilter;
+import org.kyupi.sim.BBPlainSim;
 
 import java.io.*;
 import java.util.*;
 import java.util.function.Predicate;
 
+import jp.ac.kyutech.ci.sc_grouping_clkaggre.QBWeightedSwitchingActivitySim.WeightedNodeSet;
 
 public class Main extends KyupiApp {
 
@@ -171,6 +178,29 @@ public class Main extends KyupiApp {
             // print grouping info and grouping cost
             log.info("Clocking " + Arrays.toString(clocking).replaceAll("\\[", "").replaceAll("\\]", "")
                     .replaceAll(",", ""));
+
+            if (!argsParsed().hasOption("sim"))
+                continue;
+
+            int blocks = Integer.parseInt(argsParsed().getOptionValue("sim"));
+            log.info("WSA simulation setup... ");
+            QBSource shifts = prepareExpandedRandomPatterns(chains, clocking);
+            QBWeightedSwitchingActivitySim sim = new QBWeightedSwitchingActivitySim(circuit, shifts);
+            HashMap<ScanCell, WeightedNodeSet> aggressorWNSet = new HashMap<>();
+            for (ScanCell saff : cell2aggressorSet.keySet()){
+                WeightedNodeSet wnSet = sim.new WeightedNodeSet();
+                for (Node n : cell2aggressorSet.get(saff)){
+                    wnSet.add(n, 1.0);
+                }
+                aggressorWNSet.put(saff, wnSet);
+            }
+            log.info("WSA simulation started... ");
+            for (int i = 0; i < blocks; i++)
+                sim.next();
+            log.info("WSA simulation finished.");
+
+
+
         } // caseId loop
         return null;
     }
@@ -358,4 +388,64 @@ public class Main extends KyupiApp {
             plot.close();
     }
 
+    private QBSource prepareExpandedRandomPatterns(ScanChains chains, int[] clocking) {
+        int stimuliExpansionMap[][] = expandForWsa(chains.scanInMapping(clocking));
+        int responseExpansionMap[][] = expandForWsa(chains.scanOutMapping(clocking));
+        BBSource stimuli = BBSource.random(circuit.accessInterface().length, 42);
+        BBSource responses = BBPlainSim.from(stimuli);
+        // FIXME remove first pattern from stimuli for proper alignment
+        QVSource stimuliExpanded = new QVExpander(QVSource.from(stimuli), stimuliExpansionMap);
+        QVSource responsesExpanded = new QVExpander(QVSource.from(responses), responseExpansionMap);
+
+        QVSource shifts = new QVSource(stimuli.length()) {
+
+            @Override
+            public void reset() {
+                stimuliExpanded.reset();
+                responsesExpanded.reset();
+            }
+
+            @Override
+            protected QVector compute() {
+                if (!stimuliExpanded.hasNext() || !responsesExpanded.hasNext())
+                    return null;
+                QVector combined = pool.alloc();
+                QVector s = stimuliExpanded.next();
+                s.copyTo(0, combined);
+                s.free();
+                QVector r = responsesExpanded.next();
+                combined.or(r);
+                r.free();
+                return combined;
+            }
+        };
+        return QBSource.from(shifts);
+    }
+
+    /**
+     * WSA simulator always calculates WSA between pattern pairs 0~1, 2~3, 4~5,
+     * and so on. This function doubles the appropriate rows in a scan mapping
+     * for shift-cycle WSA.
+     *
+     * a b -> a b
+     *
+     * a b c -> a b b c
+     *
+     * a b c d -> a b b c c d
+     *
+     * @param map
+     * @return
+     */
+    private int[][] expandForWsa(int[][] map) {
+        int expandedMap[][] = new int[(map.length - 1) * 2][];
+        for (int i = 0; i < map.length; i++) {
+            if (expandedMap.length > i * 2) {
+                expandedMap[i * 2] = Arrays.copyOf(map[i], map[i].length);
+            }
+            if (i > 0) {
+                expandedMap[i * 2 - 1] = Arrays.copyOf(map[i], map[i].length);
+            }
+        }
+        return expandedMap;
+    }
 }

@@ -20,4 +20,5 @@ public abstract class ScanChainGrouper {
     }
 
     public abstract int[] calculateClocking(int groupCount, FastCostFunction cost);
+
 }
