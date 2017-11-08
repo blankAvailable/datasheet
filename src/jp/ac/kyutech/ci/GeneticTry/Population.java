@@ -12,6 +12,39 @@ public class Population {
             individuals[i] = new Individual();
         }
     }
+
+    public Individual[] naturalSelection() {
+        int fitness[] = new int[individuals.length];
+        int fitnessSum = 0;
+        float possibility[] = new float[individuals.length];
+        float roulette = 0;
+
+        Individual[] selectedInd = new Individual[individuals.length];
+
+        // prepare the list of fitness
+        for (int i = 0; i < individuals.length; i++) {
+            fitness[i] = individuals[i].fitness;
+            fitnessSum += fitness[i];
+        }
+        // prepare the roulette
+        for (int i = 0; i < individuals.length; i++) {
+            if (i == 0) {
+                possibility[i] = fitness[i] / fitnessSum;
+            }else {
+                possibility[i] = (fitness[i] / fitnessSum) + fitness[i - 1];
+            }
+        }
+        // select individual
+        for (int i = 0; i < selectedInd.length; i++){
+            // roulette selection
+            roulette = random.nextFloat();
+            for (int j = 0; j < selectedInd.length; j++)
+                if (roulette < possibility[i])
+                    selectedInd[i] = individuals[j];
+        }
+        return selectedInd;
+    }
+
     //Get the fittest individual
     public Individual getOneFittest() {
         int fitness[] = new int[individuals.length];
