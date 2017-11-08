@@ -13,6 +13,7 @@ public class Population {
         }
     }
 
+    // roulette natural selection
     public Individual[] naturalSelection() {
         int fitness[] = new int[individuals.length];
         int fitnessSum = 0;

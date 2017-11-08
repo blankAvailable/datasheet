@@ -55,7 +55,7 @@ public class SimpleDemoGA {
         System.out.println("");
     }
     //Selection
-    void selection() {
+    private void selection() {
 
         //Select the most fittest individual
         fittest = population.getOneFittest();
@@ -64,6 +64,50 @@ public class SimpleDemoGA {
         secondFittest = population.getAnotherFittest();
 
     }
+
+    // new random crossover
+    private void randCrossover(){
+        Random r = new Random();
+        int crossOverPoint0 = 0;
+        int crossOverPoint1 = 0;
+        int parent0 = 0;
+        int parent1 = 0;
+        int checkList[] = new int[population.individuals.length];
+
+        // two random crossover points
+        while (crossOverPoint0 == crossOverPoint1){
+            crossOverPoint0 = r.nextInt(population.individuals[0].geneLength);
+            crossOverPoint1 = r.nextInt(population.individuals[0].geneLength);
+        }
+
+        // keep crossOverPoint0 smaller than crossOverPoint1
+        if (crossOverPoint0 > crossOverPoint1){
+            int temp = 0;
+            temp = crossOverPoint0;
+            crossOverPoint0 = crossOverPoint1;
+            crossOverPoint1 = temp;
+        }
+
+        // choose parents randomly and do the cross over
+        for (int i = 0; i < (population.individuals.length) / 2; i ++){
+            while (parent0 == parent1 || checkList[parent0] == 1 || checkList[parent1] == 1){
+                parent0 = r.nextInt(population.individuals.length);
+                parent1 = r.nextInt(population.individuals.length);
+            }
+            checkList[parent0] = 1;
+            checkList[parent1] = 1;
+            // swap values among parents
+            for (int j = 0; j <= crossOverPoint1; j++){
+                if (j >= crossOverPoint0){
+                    int temp = population.individuals[parent0].genes[j];
+                    population.individuals[parent0].genes[j] = population.individuals[parent1].genes[j];
+                    population.individuals[parent1].genes[j] = temp;
+                }
+            }
+
+        }
+    }
+
     //Crossover
     void crossover() {
         Random rn = new Random();
@@ -78,7 +122,7 @@ public class SimpleDemoGA {
         }
     }
     //Mutation
-    void mutation() {
+    private void mutation() {
         Random rn = new Random();
 
         //Select a random mutation point
