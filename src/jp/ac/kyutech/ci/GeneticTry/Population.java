@@ -26,7 +26,9 @@ public class Population {
         for (int i = 0; i < individuals.length; i++) {
             fitness[i] = individuals[i].fitness;
             fitnessSum += fitness[i];
+            System.out.println("fitness " + i + fitness[i]);
         }
+
         // prepare the roulette
         for (int i = 0; i < individuals.length; i++) {
             if (i == 0) {
@@ -106,6 +108,6 @@ public class Population {
         for (int i = 0; i < individuals.length; i++) {
             individuals[i].calcFitness();
         }
-        getOneFittest();
+        //getOneFittest();
     }
 }

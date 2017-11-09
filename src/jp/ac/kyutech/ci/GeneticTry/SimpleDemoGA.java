@@ -28,21 +28,23 @@ public class SimpleDemoGA {
             ++demo.generationCount;
 
             //Do selection
-            demo.population.naturalSelection();
+            demo.population = demo.naturalSelection(demo.population.individuals.length, demo.population);
 
             //Do crossover
-            demo.crossover();
+            //demo.crossover();
+            //demo.randCrossover();
 
             //Do mutation under a random probability
-            if (rn.nextInt()%7 < 5) {
-                demo.mutation();
-            }
+            //if (rn.nextInt()%7 < 5) {
+            //    demo.mutation();
+            //}
+            //demo.randMutation(1);
 
             //Add fittest offspring to population
-            demo.addFittestOffspring();
+            //demo.addFittestOffspring();
 
             //Calculate new fitness value
-            demo.population.calculateFitness();
+           //demo.population.calculateFitness();
 
             System.out.println("Generation: " + demo.generationCount + " Fittest: " + demo.population.fittest);
         }
@@ -54,15 +56,40 @@ public class SimpleDemoGA {
         }
         System.out.println("");
     }
-    //Selection
-    private void selection() {
 
-        //Select the most fittest individual
-        fittest = population.getOneFittest();
+    // New roulette natural selection
+    private Population naturalSelection(int indsNum, Population population){
+        int fitness[] = new int[indsNum];
+        int fitnessSum = 0;
+        float possibility[] = new float[indsNum];
+        float roulette = 0;
+        Random random = new Random();
 
-        //Select the second most fittest individual
-        secondFittest = population.getAnotherFittest();
+        Population newPopulation = new Population();
 
+        for (int i = 0; i < indsNum; i++){
+            fitness[i] = population.individuals[i].fitness;
+            fitnessSum += fitness[i];
+        }
+        System.out.println("check fitness SUM " + fitnessSum);
+
+        // prepare the roulette
+        for (int i = 0; i < indsNum; i++) {
+            if (i == 0) {
+                possibility[i] = fitness[i] / fitnessSum;
+            }else {
+                possibility[i] = (fitness[i] / fitnessSum) + fitness[i - 1];
+            }
+        }
+        // select individual
+        for (int i = 0; i < indsNum; i++) {
+            // roulette selection
+            roulette = random.nextFloat();
+            for (int j = 0; j < indsNum; j++)
+                if (roulette < possibility[i])
+                    newPopulation.individuals[i] = population.individuals[j];
+        }
+        return newPopulation;
     }
 
     // New random crossover
@@ -76,8 +103,8 @@ public class SimpleDemoGA {
 
         // two random crossover points
         while (crossOverPoint0 == crossOverPoint1){
-            crossOverPoint0 = r.nextInt(population.individuals[0].geneLength);
-            crossOverPoint1 = r.nextInt(population.individuals[0].geneLength);
+            crossOverPoint0 = r.nextInt(population.individuals[1].geneLength);
+            crossOverPoint1 = r.nextInt(population.individuals[1].geneLength);
         }
 
         // keep crossOverPoint0 smaller than crossOverPoint1
@@ -108,20 +135,6 @@ public class SimpleDemoGA {
         }
     }
 
-    //Crossover
-    void crossover() {
-        Random rn = new Random();
-
-        //Select a random crossover point
-        int crossOverPoint = rn.nextInt(population.individuals[0].geneLength);
-        //Swap values among parents
-        for (int i = 0; i < crossOverPoint; i++) {
-            int temp = fittest.genes[i];
-            fittest.genes[i] = secondFittest.genes[i];
-            secondFittest.genes[i] = temp;
-        }
-    }
-
     // New random mutation
     private void randMutation(int groupCount){
         Random r = new Random();
@@ -131,50 +144,12 @@ public class SimpleDemoGA {
 
         for (int i = 0; i < population.individuals.length; i ++){
             if (r.nextInt()%7 < 5)
-                population.individuals[i].genes[mutationPoint0] = r.nextInt(groupCount);
+                population.individuals[i].genes[mutationPoint0] = r.nextInt()%groupCount;
             if (r.nextInt()%8 < 5)
-                population.individuals[i].genes[mutationPoint1] = r.nextInt(groupCount);
+                population.individuals[i].genes[mutationPoint1] = r.nextInt()%groupCount;
         }
 
     }
 
-    //Mutation
-    private void mutation() {
-        Random rn = new Random();
 
-        //Select a random mutation point
-        int mutationPoint = rn.nextInt(population.individuals[0].geneLength);
-        //Flip values at the mutation point
-        if (fittest.genes[mutationPoint] == 0) {
-            fittest.genes[mutationPoint] = 1;
-        } else {
-            fittest.genes[mutationPoint] = 0;
-        }
-        mutationPoint = rn.nextInt(population.individuals[0].geneLength);
-        if (secondFittest.genes[mutationPoint] == 0) {
-            secondFittest.genes[mutationPoint] = 1;
-        } else {
-            secondFittest.genes[mutationPoint] = 0;
-        }
-    }
-    //Get fittest offspring
-    Individual getFittestOffspring() {
-        if (fittest.fitness > secondFittest.fitness) {
-            return fittest;
-        }
-        return secondFittest;
-    }
-    //Replace least fittest individual from most fittest offspring
-    void addFittestOffspring() {
-
-        //Update fitness values of offspring
-        fittest.calcFitness();
-        secondFittest.calcFitness();
-
-        //Get index of least fit individual
-        int leastFittestIndex = population.getLeastFittestIndex();
-
-        //Replace least fittest individual from most fittest offspring
-        population.individuals[leastFittestIndex] = getFittestOffspring();
-    }
 }
