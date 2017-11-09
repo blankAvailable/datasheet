@@ -28,7 +28,7 @@ public class SimpleDemoGA {
             ++demo.generationCount;
 
             //Do selection
-            demo.selection();
+            demo.population.naturalSelection();
 
             //Do crossover
             demo.crossover();
@@ -65,7 +65,7 @@ public class SimpleDemoGA {
 
     }
 
-    // new random crossover
+    // New random crossover
     private void randCrossover(){
         Random r = new Random();
         int crossOverPoint0 = 0;
@@ -121,6 +121,23 @@ public class SimpleDemoGA {
             secondFittest.genes[i] = temp;
         }
     }
+
+    // New random mutation
+    private void randMutation(int groupCount){
+        Random r = new Random();
+
+        int mutationPoint0 = r.nextInt(population.individuals[0].geneLength);
+        int mutationPoint1 = r.nextInt(population.individuals[0].geneLength);
+
+        for (int i = 0; i < population.individuals.length; i ++){
+            if (r.nextInt()%7 < 5)
+                population.individuals[i].genes[mutationPoint0] = r.nextInt(groupCount);
+            if (r.nextInt()%8 < 5)
+                population.individuals[i].genes[mutationPoint1] = r.nextInt(groupCount);
+        }
+
+    }
+
     //Mutation
     private void mutation() {
         Random rn = new Random();
