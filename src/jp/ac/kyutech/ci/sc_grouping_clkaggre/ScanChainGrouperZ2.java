@@ -6,7 +6,8 @@ import java.util.Random;
 
 public class ScanChainGrouperZ2 extends ScanChainGrouper {
 
-    private static final int INITIAL_POPULATION = 32;
+    private static final int INITIAL_POPULATION = 64;
+    private static final float c = (float) 1.2;
 
     private int[][] candClkings;
 
@@ -24,33 +25,54 @@ public class ScanChainGrouperZ2 extends ScanChainGrouper {
     // natural selection
     private void naturalSelection(int groupCount, FastCostFunction cost){
         int[][] tempClkings = new int[INITIAL_POPULATION][chainSize];
-        int fitness[] = new int[INITIAL_POPULATION];
-        int fitnessSum = 1;
+        float fitness[] = new float[INITIAL_POPULATION];
+        float fitnessSum = 0;
+        float fitnessMax = 0;
+        float fitnessAvg = 0;
         float possibility[] = new float[INITIAL_POPULATION];
         float roulette = 0;
+        float a = 0;
+        float b = 0;
         Random r = new Random();
 
         for (int i = 0; i < INITIAL_POPULATION; i++){
             fitness[i] = 10000 - cost.evaluate(candClkings[i], groupCount);
             fitnessSum += fitness[i];
+            if (fitness[i] > fitnessMax)
+                fitnessMax = fitness[i];
         }
+        fitnessAvg = fitnessSum / INITIAL_POPULATION;
+        a = fitnessAvg * (c - 1)/(fitnessMax - fitnessAvg);
+        b = fitnessAvg * (fitnessMax - c * fitnessAvg)/(fitnessMax - fitnessAvg);
+
 
         // perpare the roulette
         for (int i = 0; i < INITIAL_POPULATION; i++){
             if (i == 0){
-                possibility[i] = fitness[i] / fitnessSum;
+                possibility[i] = (a * fitness[i] + b)/fitnessSum;
             }else {
-                possibility[i] = (fitness[i] / fitnessSum) + fitness[i-1];
+                possibility[i] = ((a * fitness[i] + b)/fitnessSum) + possibility[i-1];
             }
         }
 
+        log.info("Report possibility " + Arrays.toString(possibility).replaceAll("\\[", "").replaceAll
+                ("\\]", "").replaceAll(",", ""));
+
         // roulette individual selection
-        tempClkings[0] = candClkings[getFittestIdx(groupCount, cost)];
+        System.arraycopy(candClkings[getFittestIdx(groupCount, cost)], 0, tempClkings[0], 0, tempClkings[0].length);
         for (int i = 1; i < INITIAL_POPULATION; i++){
             roulette = r.nextFloat();
             for (int j = 0; j < INITIAL_POPULATION; j++){
-                if (roulette < possibility[j])
-                    System.arraycopy(candClkings[j], 0, tempClkings[i], 0, candClkings[j].length);
+                if (roulette < possibility[0]) {
+                    System.arraycopy(candClkings[0], 0, tempClkings[i], 0, candClkings[j].length);
+                    break;
+                }
+                if (j > 0) {
+                    if (roulette > possibility[j - 1] && roulette <= possibility[j]) {
+                        System.arraycopy(candClkings[j], 0, tempClkings[i], 0, candClkings[j].length);
+                        break;
+                    }
+                }
             }
         }
 
@@ -94,8 +116,8 @@ public class ScanChainGrouperZ2 extends ScanChainGrouper {
             checkList[parent1] = 1;
             checkListSum += (checkList[parent0] + checkList[parent1]);
             // swap genes between parents
-            for (int j = 0; j <= crossOverIdx1; j++){
-                if (j >= crossOverIdx0){
+            for (int j = 0; j >= crossOverIdx0; j++){
+                if (j <= crossOverIdx1){
                     int temp = candClkings[parent0][j];
                     candClkings[parent0][j] = candClkings[parent1][j];
                     candClkings[parent1][j] = temp;
@@ -112,9 +134,9 @@ public class ScanChainGrouperZ2 extends ScanChainGrouper {
         int mutationIdx1 = r.nextInt(chainSize - 1);
 
         for (int i = 0; i < INITIAL_POPULATION; i++){
-            if (r.nextInt()%7 < 4)
+            if (r.nextInt()%9 < 1)
                 candClkings[i][mutationIdx0] = r.nextInt(groupCount);
-            if (r.nextInt()%8 < 3)
+            if (r.nextInt()%9 < 1)
                 candClkings[i][mutationIdx1] = r.nextInt(groupCount);
         }
     }
@@ -160,19 +182,18 @@ public class ScanChainGrouperZ2 extends ScanChainGrouper {
             log.info("generationCount " + generationCount);
 
             naturalSelection(groupCount, cost);
-            log.info("Nagural Selection finished");
-
-            randCrossover(groupCount);
-            log.info("Crossover finished");
-
-            randMutation(groupCount);
-            log.info("Mutation finished");
-
-            currentMinCost = getFittestCost(groupCount, cost);
 
             for (int i = 0; i < INITIAL_POPULATION; i++)
                 log.info("New population " + Arrays.toString(candClkings[i]).replaceAll("\\[", "").replaceAll
                         ("\\]", "").replaceAll(",", ""));
+
+            randCrossover(groupCount);
+
+            randMutation(groupCount);
+
+            currentMinCost = getFittestCost(groupCount, cost);
+
+
             log.info("Generation " + generationCount + " lowest cost " + currentMinCost);
 
         }
