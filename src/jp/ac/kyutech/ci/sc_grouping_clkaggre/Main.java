@@ -135,6 +135,9 @@ public class Main extends KyupiApp {
         }else if(groupingMethod.startsWith("z1")){
             log.info("GroupingMethod Z1");
             grouper = new ScanChainGrouperZ1();
+        }else if (groupingMethod.startsWith("z2")){
+            log.info("GroupingMethod Z2");
+            grouper = new ScanChainGrouperZ2();
         } else {
             log.info("unknown grouping method: " + groupingMethod);
             printGoodbye();
