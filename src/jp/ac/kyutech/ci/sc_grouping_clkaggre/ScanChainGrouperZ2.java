@@ -7,6 +7,7 @@ import java.util.Random;
 public class ScanChainGrouperZ2 extends ScanChainGrouper {
 
     private static final int INITIAL_POPULATION = 64;
+    // smaller will make this algrithm finish faster
     private static final float c = (float) 1.2;
 
     private int[][] candClkings;
