@@ -6,9 +6,9 @@ import java.util.Random;
 
 public class ScanChainGrouperZ2 extends ScanChainGrouper {
 
-    private static final int INITIAL_POPULATION = 64;
+    private static final int INITIAL_POPULATION = 32;
     // smaller will make this algrithm finish faster
-    private static final float c = (float) 1.2;
+    private static final float c = (float) 1.5;
 
     private int[][] candClkings;
 
@@ -24,7 +24,7 @@ public class ScanChainGrouperZ2 extends ScanChainGrouper {
     }
 
     // natural selection
-    private void naturalSelection(int groupCount, FastCostFunction cost){
+    private void naturalSelection(int groupCount, int[] costList){
         int[][] tempClkings = new int[INITIAL_POPULATION][chainSize];
         float fitness[] = new float[INITIAL_POPULATION];
         float fitnessSum = 0;
@@ -37,7 +37,7 @@ public class ScanChainGrouperZ2 extends ScanChainGrouper {
         Random r = new Random();
 
         for (int i = 0; i < INITIAL_POPULATION; i++){
-            fitness[i] = 10000 - cost.evaluate(candClkings[i], groupCount);
+            fitness[i] = 10000 - costList[i];
             fitnessSum += fitness[i];
             if (fitness[i] > fitnessMax)
                 fitnessMax = fitness[i];
@@ -60,7 +60,7 @@ public class ScanChainGrouperZ2 extends ScanChainGrouper {
                 ("\\]", "").replaceAll(",", ""));
 
         // roulette individual selection
-        System.arraycopy(candClkings[getFittestIdx(groupCount, cost)], 0, tempClkings[0], 0, tempClkings[0].length);
+        System.arraycopy(candClkings[getFittestIdx(costList)], 0, tempClkings[0], 0, tempClkings[0].length);
         for (int i = 1; i < INITIAL_POPULATION; i++){
             roulette = r.nextFloat();
             for (int j = 0; j < INITIAL_POPULATION; j++){
@@ -84,7 +84,7 @@ public class ScanChainGrouperZ2 extends ScanChainGrouper {
     }
 
     // random crossover
-    private void randCrossover(int groupCount){
+    private void randCrossover(){
         Random r = new Random();
         int crossOverIdx0 = 0;
         int crossOverIdx1 = 0;
@@ -142,23 +142,21 @@ public class ScanChainGrouperZ2 extends ScanChainGrouper {
         }
     }
 
-    // get fittest clking cost
-    private int getFittestCost(int groupCount, FastCostFunction cost){
-        int minCost = Integer.MAX_VALUE;
+    // get cost list
+    private int[] getCostList(int groupCount, FastCostFunction cost){
+        int costList[] = new int[INITIAL_POPULATION];
         for (int i = 0; i < INITIAL_POPULATION; i++){
-            int currentCost = cost.evaluate(candClkings[i], groupCount);
-            if (minCost > currentCost)
-                minCost = currentCost;
+            costList[i] = cost.evaluate(candClkings[i], groupCount);
         }
-        return minCost;
+        return costList;
     }
 
     // get fittest clking idx
-    private int getFittestIdx(int groupCount, FastCostFunction cost){
+    private int getFittestIdx(int[] costList){
         int minCost = Integer.MAX_VALUE;
         int bestIdx = -1;
         for (int i = 0; i < INITIAL_POPULATION; i++){
-            int currentCost = cost.evaluate(candClkings[i], groupCount);
+            int currentCost = costList[i];
             if (minCost > currentCost){
                 minCost = currentCost;
                 bestIdx = i;
@@ -170,36 +168,43 @@ public class ScanChainGrouperZ2 extends ScanChainGrouper {
     @Override
     public int[] calculateClocking(int groupCount, FastCostFunction cost) {
         int generationCount = 0;
+        int costList[] = new int[INITIAL_POPULATION];
 
+        // initialize population & costList
         initialPopulation(groupCount);
         log.info("Initial population generated");
         for (int i = 0; i < INITIAL_POPULATION; i++)
             log.info("Initial population " + Arrays.toString(candClkings[i]).replaceAll("\\[", "").replaceAll
                     ("\\]", "").replaceAll(",", ""));
+        System.arraycopy(getCostList(groupCount, cost), 0 , costList, 0, costList.length);
 
         int currentMinCost = Integer.MAX_VALUE;
-        while (currentMinCost > 2000){
+        int bestIdx = 0;
+        while (currentMinCost > 2600){
             generationCount++;
             log.info("generationCount " + generationCount);
 
-            naturalSelection(groupCount, cost);
+            naturalSelection(groupCount, costList);
 
             for (int i = 0; i < INITIAL_POPULATION; i++)
                 log.info("New population " + Arrays.toString(candClkings[i]).replaceAll("\\[", "").replaceAll
                         ("\\]", "").replaceAll(",", ""));
 
-            randCrossover(groupCount);
+            randCrossover();
 
             randMutation(groupCount);
 
-            currentMinCost = getFittestCost(groupCount, cost);
-
+            System.arraycopy(getCostList(groupCount, cost), 0 , costList, 0, costList.length);
+            for (int i = 0; i < INITIAL_POPULATION; i++){
+                if (currentMinCost > costList[i]) {
+                    currentMinCost = costList[i];
+                    bestIdx = i;
+                }
+            }
 
             log.info("Generation " + generationCount + " lowest cost " + currentMinCost);
 
         }
-
-        int bestIdx = getFittestIdx(groupCount, cost);
 
         return candClkings[bestIdx];
     }
