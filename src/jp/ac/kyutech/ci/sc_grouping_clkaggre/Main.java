@@ -186,6 +186,15 @@ public class Main extends KyupiApp {
                 continue;
 
             int blocks = Integer.parseInt(argsParsed().getOptionValue("sim"));
+
+            BufferedWriter plot = null;
+            if (argsParsed().hasOption("plot")){
+                String filename = argsParsed().getOptionValue("plot");
+                File plotWriter = new File(filename + "_correlation" + caseId + ".txt");
+                plotWriter.createNewFile();
+                plot = new BufferedWriter(new FileWriter(plotWriter));
+            }
+
             log.info("WSA simulation setup... ");
             QBSource shifts = prepareExpandedRandomPatterns(chains, clocking);
             QBWeightedSwitchingActivitySim sim = new QBWeightedSwitchingActivitySim(circuit, shifts);
@@ -202,7 +211,20 @@ public class Main extends KyupiApp {
                 sim.next();
             log.info("WSA simulation finished.");
 
-
+            double overallActivityMax= 0.0;
+            for (int chainId = 0; chainId < chains.size(); chainId++){
+                ScanChain chain = chains.get(chainId);
+                // int clock_phase = clocking[chainId]
+                log.info("Chain " + chainId + " ScanInPort " + chain.in.node.queryName());
+                for (ScanCell cell : chain.cells){
+                    WeightedNodeSet wns = aggressorWNSet.get(cell);
+                    double activityMax = wns.getMaxActivity();
+                    if(plot != null)
+                        plot.write("" + cell2aggressorSet.get(cell).size() + " " + activityMax);
+                }
+            }
+            if (plot != null)
+                plot.close();
 
         } // caseId loop
         return null;
@@ -336,18 +358,11 @@ public class Main extends KyupiApp {
     private void printAggressorAndImpactInfo(ScanChains chains, HashMap<ScanCell, HashSet<Node>> cell2aggressorSet, HashMap<ScanChain,
             HashSet<Node>> chain2aggressorSet, HashMap<ScanChain, HashSet<Node>> chain2impactSet) throws IOException {
         BufferedWriter table = null;
-        BufferedWriter plot = null;
         if (argsParsed().hasOption("table")){
             String filename = argsParsed().getOptionValue("table");
             File tableWriter = new File(filename);
             tableWriter.createNewFile();
             table = new BufferedWriter(new FileWriter(tableWriter));
-        }
-        if (argsParsed().hasOption("plot")){
-            String filename = argsParsed().getOptionValue("plot");
-            File plotWriter = new File(filename);
-            plotWriter.createNewFile();
-            plot = new BufferedWriter(new FileWriter(plotWriter));
         }
         for (int chainId = 0; chainId < chains.size(); chainId++){
             ScanChain chain = chains.get(chainId);
@@ -358,13 +373,8 @@ public class Main extends KyupiApp {
             int aggsum = 0;
             int aggsizePredecessor = 0;
             int maxAggDiff = 0;
-            int cellCount = 0;
             for (ScanCell saff : chain.cells){
                 int aggsize = cell2aggressorSet.get(saff).size();
-                if (plot != null){
-                    plot.write(cellCount + " & " + aggsize + "\n");
-                    cellCount++;
-                }
                 aggmin = Math.min(aggmin, aggsize);
                 aggmax = Math.max(aggmax, aggsize);
                 aggsum += aggsize;
@@ -387,8 +397,6 @@ public class Main extends KyupiApp {
         }
         if (table != null)
             table.close();
-        if (plot != null)
-            plot.close();
     }
 
     private QBSource prepareExpandedRandomPatterns(ScanChains chains, int[] clocking) {

@@ -8,7 +8,8 @@ public class ScanChainGrouperZ2 extends ScanChainGrouper {
 
     private static final int INITIAL_POPULATION = 32;
     // smaller will make this algrithm finish faster
-    private static final float c = (float) 1.5;
+    private static final float C = (float) 1.5;
+    private static final int caseLimit = 6;
 
     private int[][] candClkings;
 
@@ -43,8 +44,8 @@ public class ScanChainGrouperZ2 extends ScanChainGrouper {
                 fitnessMax = fitness[i];
         }
         fitnessAvg = fitnessSum / INITIAL_POPULATION;
-        a = fitnessAvg * (c - 1)/(fitnessMax - fitnessAvg);
-        b = fitnessAvg * (fitnessMax - c * fitnessAvg)/(fitnessMax - fitnessAvg);
+        a = fitnessAvg * (C - 1)/(fitnessMax - fitnessAvg);
+        b = fitnessAvg * (fitnessMax - C * fitnessAvg)/(fitnessMax - fitnessAvg);
 
 
         // perpare the roulette
@@ -135,9 +136,9 @@ public class ScanChainGrouperZ2 extends ScanChainGrouper {
         int mutationIdx1 = r.nextInt(chainSize - 1);
 
         for (int i = 0; i < INITIAL_POPULATION; i++){
-            if (r.nextInt()%9 < 1)
+            if (r.nextInt(9) < 1)
                 candClkings[i][mutationIdx0] = r.nextInt(groupCount);
-            if (r.nextInt()%9 < 1)
+            if (r.nextInt(9) < 1)
                 candClkings[i][mutationIdx1] = r.nextInt(groupCount);
         }
     }
@@ -180,7 +181,7 @@ public class ScanChainGrouperZ2 extends ScanChainGrouper {
 
         int currentMinCost = Integer.MAX_VALUE;
         int bestIdx = 0;
-        while (currentMinCost > 2600){
+        while (currentMinCost > 2000){
             generationCount++;
             log.info("generationCount " + generationCount);
 

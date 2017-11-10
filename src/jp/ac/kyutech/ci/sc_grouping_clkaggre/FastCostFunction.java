@@ -102,7 +102,7 @@ public class FastCostFunction {
     public int evaluate(int[] clocking, int clocks, String filename, int caseId) throws IOException {
         int maxcostDiff = 0;
 
-        File plotWriter = new File(filename + "_grouping" + caseId);
+        File plotWriter = new File(filename + "_grouping" + caseId + ".txt");
         plotWriter.createNewFile();
         BufferedWriter plot = new BufferedWriter(new FileWriter(plotWriter));
 
