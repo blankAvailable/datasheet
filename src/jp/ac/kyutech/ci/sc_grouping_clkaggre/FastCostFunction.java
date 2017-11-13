@@ -8,6 +8,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -17,7 +18,7 @@ public class FastCostFunction {
     BitSet[] impacts;
     int[][][] aregions;
 
-    public FastCostFunction(HashMap<ScanChain, HashSet<Node>> chain2impactSet, HashMap<ScanCell, HashSet<Node>> cell2aggressorSet){
+    public FastCostFunction(HashMap<ScanChain, HashSet<Node>> chain2impactSet, HashMap<ScanCell, ArrayList<Node>> cell2aggressorSet){
 
         node2idx = new HashMap<>();
         int idx = 0;
@@ -41,7 +42,7 @@ public class FastCostFunction {
             aregions[chainId] = new int[cells][];
             for (int cellId = 0; cellId < cells; cellId++){
                 ScanCell cell = chain.cells.get(cellId);
-                HashSet<Node> agg = cell2aggressorSet.get(cell);
+                ArrayList<Node> agg = cell2aggressorSet.get(cell);
                 idx = 0;
                 for (Node n : agg)
                     if (node2idx.containsKey(n))
@@ -63,7 +64,6 @@ public class FastCostFunction {
 
     private int last_clock_id = 0;
 
-    // need test
     public int evaluate(int[] clocking, int clocks){
         int maxcost = 0;
 

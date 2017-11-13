@@ -1,5 +1,6 @@
 package jp.ac.kyutech.ci.sc_grouping_clkaggre;
 
+import jp.ac.kyutech.ci.sc_grouping_clkaggre.QBWeightedSwitchingActivitySim.WeightedNodeSet;
 import org.kyupi.data.QVExpander;
 import org.kyupi.data.item.QVector;
 import org.kyupi.data.source.BBSource;
@@ -14,10 +15,11 @@ import org.kyupi.misc.StringFilter;
 import org.kyupi.sim.BBPlainSim;
 
 import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.function.Predicate;
-
-import jp.ac.kyutech.ci.sc_grouping_clkaggre.QBWeightedSwitchingActivitySim.WeightedNodeSet;
 
 public class Main extends KyupiApp {
 
@@ -112,11 +114,9 @@ public class Main extends KyupiApp {
 
         // extract clock aggressor sets
         HashMap<Node, HashSet<Node>> cbuf2aggressorSet = new HashMap<>();
-        HashMap<ScanCell, HashSet<Node>> cell2aggressorSet = new HashMap<>();
-        HashMap<ScanChain, HashSet<Node>> chain2aggressorSet = new HashMap<>();
-        calculateAggressorSets(cbinfo, chains, placement, arxnm, arynm, cbuf2aggressorSet, cell2aggressorSet,
-                chain2aggressorSet);
-        printAggressorAndImpactInfo(chains, cell2aggressorSet, chain2aggressorSet, chain2impactset);
+        HashMap<ScanCell, ArrayList<Node>> cell2aggressorSet = new HashMap<>();
+        calculateAggressorSets(cbinfo, chains, placement, arxnm, arynm, cbuf2aggressorSet, cell2aggressorSet);
+        printAggressorAndImpactInfo(chains, cell2aggressorSet, chain2impactset);
 
         FastCostFunction cost = new FastCostFunction(chain2impactset, cell2aggressorSet);
         // read in grouping paremeters
@@ -220,7 +220,7 @@ public class Main extends KyupiApp {
                     WeightedNodeSet wns = aggressorWNSet.get(cell);
                     double activityMax = wns.getMaxActivity();
                     if(plot != null)
-                        plot.write("" + cell2aggressorSet.get(cell).size() + " " + activityMax);
+                        plot.write("" + cell2aggressorSet.get(cell).size() + " " + activityMax + "\n");
                 }
             }
             if (plot != null)
@@ -334,14 +334,11 @@ public class Main extends KyupiApp {
     }
 
     private void calculateAggressorSets(CBInfo cbInfo, ScanChains chains, Placement placement, int arxnm, int arynm, HashMap<Node,
-            HashSet<Node>> cbuf2aggressorSet, HashMap<ScanCell, HashSet<Node>> cell2aggressorSet, HashMap<ScanChain,
-            HashSet<Node>> chain2aggressorSet){
+            HashSet<Node>> cbuf2aggressorSet, HashMap<ScanCell, ArrayList<Node>> cell2aggressorSet){
         for (int chainId = 0; chainId < chains.size(); chainId++){
             ScanChain chain = chains.get(chainId);
-            HashSet<Node> chainaggressors = new HashSet<>();
-            chain2aggressorSet.put(chain, chainaggressors);
             for (ScanCell cell : chain.cells){
-                HashSet<Node> saffaggressors = new HashSet<>();
+                ArrayList<Node> saffaggressors = new ArrayList<>();
                 cell2aggressorSet.put(cell, saffaggressors);
                 for (Node n : cbInfo.sff_to_clock_buffer_set.get(cell.node)){
                     int x = placement.getX(n);
@@ -350,13 +347,11 @@ public class Main extends KyupiApp {
                             y+ arynm / 2));
                     saffaggressors.addAll(cbuf2aggressorSet.get(n));
                 }
-                chainaggressors.addAll(saffaggressors);
             }
         }
     }
 
-    private void printAggressorAndImpactInfo(ScanChains chains, HashMap<ScanCell, HashSet<Node>> cell2aggressorSet, HashMap<ScanChain,
-            HashSet<Node>> chain2aggressorSet, HashMap<ScanChain, HashSet<Node>> chain2impactSet) throws IOException {
+    private void printAggressorAndImpactInfo(ScanChains chains, HashMap<ScanCell, ArrayList<Node>> cell2aggressorSet, HashMap<ScanChain, HashSet<Node>> chain2impactSet) throws IOException {
         BufferedWriter table = null;
         if (argsParsed().hasOption("table")){
             String filename = argsParsed().getOptionValue("table");
@@ -389,8 +384,6 @@ public class Main extends KyupiApp {
             int aggavg = aggsum / chain.cells.size();
             log.info(" AggressorsPerScanCell Min" + aggmin + " Avg " + aggavg + " Max " + aggmax + " MaxDifference "
                     + maxAggDiff);
-            log.info(" AggressorsForChain SimpleSum " + aggsum + " UniqueAggressorCount " + chain2aggressorSet.get
-                    (chain).size());
             log.info(" ImpactCellCount " + chain2impactSet.get(chain).size());
             if (table != null)
                 table.write(chainId + " & " + " & " + aggavg + " & " + maxAggDiff + "\\\\\n");
