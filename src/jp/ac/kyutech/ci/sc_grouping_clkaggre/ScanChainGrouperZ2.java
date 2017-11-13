@@ -132,9 +132,9 @@ public class ScanChainGrouperZ2 extends ScanChainGrouper {
         int mutationIdx1 = r.nextInt(chainSize - 1);
 
         for (int i = 0; i < INITIAL_POPULATION; i++){
-            if (r.nextInt(9) < 1)
+            if (r.nextInt(9) < 2)
                 candClkings[i][mutationIdx0] = r.nextInt(groupCount);
-            if (r.nextInt(9) < 1)
+            if (r.nextInt(9) < 3)
                 candClkings[i][mutationIdx1] = r.nextInt(groupCount);
         }
     }
@@ -178,7 +178,7 @@ public class ScanChainGrouperZ2 extends ScanChainGrouper {
         int currentMinCost = Integer.MAX_VALUE;
         int previousMinCost = Integer.MAX_VALUE;
         int bestIdx = 0;
-        int caseLimit = 6;
+        int caseLimit = 10;
         while (caseLimit > 0){
             generationCount++;
             log.info("generationCount " + generationCount);
@@ -202,7 +202,7 @@ public class ScanChainGrouperZ2 extends ScanChainGrouper {
             }
             if (currentMinCost < previousMinCost){
                 previousMinCost = currentMinCost;
-                caseLimit = 6;
+                caseLimit = 10;
             }
             caseLimit--;
 

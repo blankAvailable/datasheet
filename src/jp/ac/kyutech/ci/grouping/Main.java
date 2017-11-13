@@ -271,6 +271,7 @@ public class Main extends KyupiApp {
 			HashMap<ScanCell, WeightedNodeSet> aggressor_wns = new HashMap<>();
 			for (ScanCell sc : cell2aggressorSet.keySet()) {
 				WeightedNodeSet wns = sim.new WeightedNodeSet();
+				// fixme: cell2aggressorSet.get(sc) has duplicated nodes
 				for (Node n : cell2aggressorSet.get(sc)) {
 					wns.add(n, 1.0);
 				}
