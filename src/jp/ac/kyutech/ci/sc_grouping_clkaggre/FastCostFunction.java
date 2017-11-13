@@ -99,6 +99,7 @@ public class FastCostFunction {
         return maxcost;
     }
 
+    // grouping will make clock aggressor balance worse? need check
     public int evaluate(int[] clocking, int clocks, String filename, int caseId) throws IOException {
         int maxcostDiff = 0;
 
