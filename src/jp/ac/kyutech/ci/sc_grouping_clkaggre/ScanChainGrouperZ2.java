@@ -9,7 +9,6 @@ public class ScanChainGrouperZ2 extends ScanChainGrouper {
     private static final int INITIAL_POPULATION = 32;
     // smaller will make this algrithm finish faster
     private static final float C = (float) 1.5;
-    private static final int caseLimit = 6;
 
     private int[][] candClkings;
 
@@ -56,9 +55,6 @@ public class ScanChainGrouperZ2 extends ScanChainGrouper {
                 possibility[i] = ((a * fitness[i] + b)/fitnessSum) + possibility[i-1];
             }
         }
-
-        log.info("Report possibility " + Arrays.toString(possibility).replaceAll("\\[", "").replaceAll
-                ("\\]", "").replaceAll(",", ""));
 
         // roulette individual selection
         System.arraycopy(candClkings[getFittestIdx(costList)], 0, tempClkings[0], 0, tempClkings[0].length);
@@ -180,8 +176,10 @@ public class ScanChainGrouperZ2 extends ScanChainGrouper {
         System.arraycopy(getCostList(groupCount, cost), 0 , costList, 0, costList.length);
 
         int currentMinCost = Integer.MAX_VALUE;
+        int previousMinCost = Integer.MAX_VALUE;
         int bestIdx = 0;
-        while (currentMinCost > 2000){
+        int caseLimit = 6;
+        while (caseLimit > 0){
             generationCount++;
             log.info("generationCount " + generationCount);
 
@@ -202,9 +200,14 @@ public class ScanChainGrouperZ2 extends ScanChainGrouper {
                     bestIdx = i;
                 }
             }
+            if (currentMinCost < previousMinCost){
+                previousMinCost = currentMinCost;
+                caseLimit = 6;
+            }
+            caseLimit--;
 
             log.info("Generation " + generationCount + " lowest cost " + currentMinCost);
-
+            currentMinCost = Integer.MAX_VALUE;
         }
 
         return candClkings[bestIdx];
