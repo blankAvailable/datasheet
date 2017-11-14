@@ -87,11 +87,11 @@ public class FastCostFunction {
                         continue;
                     }else if (Math.abs((costPredecessor - cost)) > maxcost){
                         maxcost = Math.abs((costPredecessor - cost));
-                        costPredecessor = cost;
                         last_chain_id = chainId;
                         last_cell_id = cellId;
                         last_clock_id = c;
                     }
+                    costPredecessor = cost;
                 }
             }
         }
@@ -114,6 +114,8 @@ public class FastCostFunction {
                 if (clocking[chainId] == c)
                     impactUnion.or(impacts[chainId]);
             }
+            System.out.println("ImpactUnion check: " + impactUnion.size());
+
             for (int chainId = 0; chainId < aregions.length; chainId++){
                 int costPredecessor = 0;
                 for (int cellId = 0; cellId < aregions[chainId].length; cellId++){
@@ -122,17 +124,18 @@ public class FastCostFunction {
                         if (impactUnion.get(aregions[chainId][cellId][aggId]))
                             cost++;
                     }
+                    System.out.println("Cost check: " + cost + " & " + costPredecessor);
                     plot.write(cellId + " & " + cost + "\n");
                     if (costPredecessor == 0){
                         costPredecessor = cost;
                         continue;
                     }else if (Math.abs((costPredecessor - cost)) > maxcostDiff){
                         maxcostDiff = Math.abs((costPredecessor - cost));
-                        costPredecessor = cost;
                         last_chain_id = chainId;
                         last_cell_id = cellId;
                         last_clock_id = c;
                     }
+                    costPredecessor = cost;
                 }
             }
         }
