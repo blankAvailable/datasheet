@@ -12,6 +12,8 @@ public class ScanChainGrouperZ2 extends ScanChainGrouper {
 
     private int[][] candClkings;
 
+    private int[] eliteClking;
+
     // get initial population 64 individuals
     private void initialPopulation(int groupCount){
         Random r = new Random();
@@ -26,6 +28,7 @@ public class ScanChainGrouperZ2 extends ScanChainGrouper {
     // natural selection
     private void naturalSelection(int groupCount, int[] costList){
         int[][] tempClkings = new int[INITIAL_POPULATION][chainSize];
+        eliteClking = new int[chainSize];
         float fitness[] = new float[INITIAL_POPULATION];
         float fitnessSum = 0;
         float fitnessMax = 0;
@@ -57,8 +60,8 @@ public class ScanChainGrouperZ2 extends ScanChainGrouper {
         }
 
         // roulette individual selection
-        System.arraycopy(candClkings[getFittestIdx(costList)], 0, tempClkings[0], 0, tempClkings[0].length);
-        for (int i = 1; i < INITIAL_POPULATION; i++){
+        System.arraycopy(candClkings[getFittestIdx(costList)], 0, eliteClking, 0, eliteClking.length);
+        for (int i = 0; i < INITIAL_POPULATION; i++){
             roulette = r.nextFloat();
             for (int j = 0; j < INITIAL_POPULATION; j++){
                 if (roulette < possibility[0]) {
@@ -162,6 +165,20 @@ public class ScanChainGrouperZ2 extends ScanChainGrouper {
         return bestIdx;
     }
 
+    // get worst clking idx
+    private int getWorstIdx(int[] costList){
+        int maxCost = 0;
+        int worstIdx = -1;
+        for (int i = 0; i < INITIAL_POPULATION; i++){
+            int currentCost = costList[i];
+            if (maxCost < currentCost){
+                maxCost = currentCost;
+                worstIdx = i;
+            }
+        }
+        return worstIdx;
+    }
+
     @Override
     public int[] calculateClocking(int groupCount, FastCostFunction cost) {
         int generationCount = 0;
@@ -194,6 +211,12 @@ public class ScanChainGrouperZ2 extends ScanChainGrouper {
             randMutation(groupCount);
 
             System.arraycopy(getCostList(groupCount, cost), 0 , costList, 0, costList.length);
+            log.info("Current worst individual " + Arrays.toString(candClkings[getWorstIdx(costList)]).replaceAll("\\[",
+                    "").replaceAll("\\]", "").replaceAll(",", ""));
+            log.info("Current elite individual " + Arrays.toString(eliteClking).replaceAll("\\[", "").replaceAll
+                    ("\\]", "").replaceAll(",", ""));
+            System.arraycopy(eliteClking, 0, candClkings[getWorstIdx(costList)], 0, eliteClking.length);
+            costList[getWorstIdx(costList)] = cost.evaluate(eliteClking, groupCount);
             for (int i = 0; i < INITIAL_POPULATION; i++){
                 if (currentMinCost > costList[i]) {
                     currentMinCost = costList[i];
@@ -204,6 +227,7 @@ public class ScanChainGrouperZ2 extends ScanChainGrouper {
                 previousMinCost = currentMinCost;
                 caseLimit = 10;
             }
+            previousMinCost = currentMinCost;
             caseLimit--;
 
             log.info("Generation " + generationCount + " lowest cost " + currentMinCost);
