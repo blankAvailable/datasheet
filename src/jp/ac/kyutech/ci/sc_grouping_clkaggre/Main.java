@@ -201,6 +201,7 @@ public class Main extends KyupiApp {
             HashMap<ScanCell, WeightedNodeSet> aggressorWNSet = new HashMap<>();
             for (ScanCell saff : cell2aggressorSet.keySet()){
                 WeightedNodeSet wnSet = sim.new WeightedNodeSet();
+                // FIXME cell2aggressorSet.get(sc) has duplicated nodes
                 for (Node n : cell2aggressorSet.get(saff)){
                     wnSet.add(n, 1.0);
                 }
@@ -227,6 +228,7 @@ public class Main extends KyupiApp {
                 plot.close();
 
         } // caseId loop
+        printGoodbye();
         return null;
     }
 
@@ -249,7 +251,6 @@ public class Main extends KyupiApp {
                     strbuf.append(" " + n.queryName());
                 }
                 saff2cb.put(saffnode, cb);
-                log.debug("clk buffer " + strbuf);
                 all_cbuf.addAll(cb);
             }
         }
