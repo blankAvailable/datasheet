@@ -75,6 +75,8 @@ public class FastCostFunction {
                     impactUnion.or(impacts[chainId]);
             }
             for (int chainId = 0; chainId < aregions.length; chainId++){
+                if (clocking[chainId] != c)
+                    continue;
                 int costPredecessor = 0;
                 for (int cellId = 0; cellId < aregions[chainId].length; cellId++){
                     int cost = 0;

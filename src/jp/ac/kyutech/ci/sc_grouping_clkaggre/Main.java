@@ -126,13 +126,26 @@ public class Main extends KyupiApp {
         ScanChainGrouping grouping = null;
         ScanChainGrouper grouper = null;
         String groupingMethod = stringFromArgsOrDefault("prt_method", "random").toLowerCase();
-        long randomSeed = longFromArgsOrDefault("prt_start", 0);
+        long startSeed = longFromArgsOrDefault("prt_start", 0);
         long groupingCases = longFromArgsOrDefault("prt_cases", 1);
         if (groupingMethod.startsWith("r")){
             log.info("GroupingMethod Random");
-            log.info("GroupingStart " + randomSeed);
-            grouping = new RandomGrouping(chains.size(), clocks, randomSeed);
-        }else if(groupingMethod.startsWith("z1")){
+            log.info("GroupingStart " + startSeed);
+            grouping = new RandomGrouping(chains.size(), clocks, startSeed);
+        }else if (groupingMethod.startsWith("se")){
+            log.info("GroupingMethod Sequential");
+            log.info("GroupingStart " + startSeed);
+            grouping = new seqGrouping(chains.size(), clocks);
+            for (int i = 0; i < startSeed; i++){
+                if (grouping.hasNext()){
+                    grouping.next();
+                }else {
+                    log.info("startSeed out of bound");
+                    grouping.iterator();
+                }
+            }
+        }
+        else if(groupingMethod.startsWith("z1")){
             log.info("GroupingMethod Z1");
             grouper = new ScanChainGrouperZ1();
         }else if (groupingMethod.startsWith("z2")){
@@ -149,10 +162,10 @@ public class Main extends KyupiApp {
             grouper.setChainSize(chains.size());
             if (groupingCases > 1)
                 log.warn("prt_cases is ignored, only a sigle grouping is evaluated.");
-            if (randomSeed > 0)
+            if (startSeed > 0)
                 log.warn("prt_start is ignored, only a sigle grouping is evaluated");
             groupingCases = 1;
-            randomSeed = 0;
+            startSeed = 0;
         }
 
         //start grouping
