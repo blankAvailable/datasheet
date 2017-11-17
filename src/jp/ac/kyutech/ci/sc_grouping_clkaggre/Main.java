@@ -15,10 +15,7 @@ import org.kyupi.misc.StringFilter;
 import org.kyupi.sim.BBPlainSim;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.*;
 import java.util.function.Predicate;
 
 public class Main extends KyupiApp {
@@ -214,8 +211,15 @@ public class Main extends KyupiApp {
             HashMap<ScanCell, WeightedNodeSet> aggressorWNSet = new HashMap<>();
             for (ScanCell saff : cell2aggressorSet.keySet()){
                 WeightedNodeSet wnSet = sim.new WeightedNodeSet();
-                // FIXME cell2aggressorSet.get(sc) has duplicated nodes
-                for (Node n : cell2aggressorSet.get(saff)){
+
+                // remove duplicate node
+                ArrayList<Node> dupRemovedCell2aggr = new ArrayList();
+                for (int i = 0; i < cell2aggressorSet.get(saff).size(); i++){
+                    if (!dupRemovedCell2aggr.contains(cell2aggressorSet.get(saff).get(i)))
+                        dupRemovedCell2aggr.add(cell2aggressorSet.get(saff).get(i));
+                }
+
+                for (Node n : dupRemovedCell2aggr){
                     wnSet.add(n, 1.0);
                 }
                 aggressorWNSet.put(saff, wnSet);
