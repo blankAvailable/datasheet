@@ -124,7 +124,9 @@ public class Main extends KyupiApp {
         String groupingMethod = stringFromArgsOrDefault("prt_method", "random").toLowerCase();
         long startSeed = longFromArgsOrDefault("prt_start", 0);
         long groupingCases = longFromArgsOrDefault("prt_cases", 1);
-        if (clocks > chains.size()) {
+        if (clocks == 1){
+            log.info("AvailableGroupCount = 1");
+        }else if (clocks > chains.size()) {
             log.info("AvailableGroupCount Larger Than ChainCount, One Chain Per Group");
         }else if (groupingMethod.startsWith("r")) {
                 log.info("GroupingMethod Random");
@@ -179,11 +181,13 @@ public class Main extends KyupiApp {
                     grouping.iterator();
                 }
                 clocking = grouping.next();
-            }else {
+            }else if (clocks > chains.size()){
                 clocking = new int[chains.size()];
                 for (int i = 0; i < chains.size(); i++){
                     clocking[i] = i;
                 }
+            }else {
+                clocking = new int[chains.size()];
             }
 
             if (argsParsed().hasOption("plot")){

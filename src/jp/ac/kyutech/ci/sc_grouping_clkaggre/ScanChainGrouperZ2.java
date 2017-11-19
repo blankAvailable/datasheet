@@ -132,10 +132,12 @@ public class ScanChainGrouperZ2 extends ScanChainGrouper {
     private void randMutation(int groupCount, int generationCount){
         Random r = new Random();
 
-        int[] mutationIdx = new int[(chainSize / 4) + 1];
+        int[] mutationIdx = new int[chainSize / 4];
         for (int i = 0; i < mutationIdx.length; i++)
             mutationIdx[i] = r.nextInt(chainSize - 1);
 
+        log.debug("mutation points list " + Arrays.toString(mutationIdx).replaceAll("\\[", "").replaceAll
+                ("\\]", "").replaceAll(",", ""));
         float possibility = (float) 0.8 / (generationCount/2);
         for (int i = 0; i < INITIAL_POPULATION; i++){
             for (int j = 0; j < mutationIdx.length; j++){
