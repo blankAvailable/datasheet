@@ -1,12 +1,10 @@
 package jp.ac.kyutech.ci.sc_grouping_clkaggre;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class seqGrouping extends ScanChainGrouping{
+public class SeqGrouping extends ScanChainGrouping{
 
     private int chainCount;
     private int groupCount;
@@ -14,7 +12,7 @@ public class seqGrouping extends ScanChainGrouping{
     private int[] k;
     private int[] m;
 
-    public seqGrouping(int chainCount, int groupCount){
+    public SeqGrouping(int chainCount, int groupCount){
         this.chainCount = chainCount;
         this.groupCount = groupCount;
         initFirstGrouping();
@@ -41,7 +39,6 @@ public class seqGrouping extends ScanChainGrouping{
      *
      * @return an Iterator.
      */
-    @NotNull
     @Override
     public Iterator<int[]> iterator() {
         initFirstGrouping();

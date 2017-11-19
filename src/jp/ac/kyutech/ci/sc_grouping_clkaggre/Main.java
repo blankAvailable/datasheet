@@ -133,7 +133,7 @@ public class Main extends KyupiApp {
             } else if (groupingMethod.startsWith("se")) {
                 log.info("GroupingMethod Sequential");
                 log.info("GroupingStart " + startSeed);
-                grouping = new seqGrouping(chains.size(), clocks);
+                grouping = new SeqGrouping(chains.size(), clocks);
                 for (int i = 0; i < startSeed; i++) {
                     if (grouping.hasNext()) {
                         grouping.next();
