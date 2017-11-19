@@ -118,41 +118,41 @@ public class Main extends KyupiApp {
         FastCostFunction cost = new FastCostFunction(chain2impactset, cell2aggressorSet);
         // read in grouping paremeters
         int clocks = intFromArgsOrDefault("clk", 1);
-        clocks = Math.min(clocks, chains.size());
         log.info("AvailableGroupCount " + clocks);
         ScanChainGrouping grouping = null;
         ScanChainGrouper grouper = null;
         String groupingMethod = stringFromArgsOrDefault("prt_method", "random").toLowerCase();
         long startSeed = longFromArgsOrDefault("prt_start", 0);
         long groupingCases = longFromArgsOrDefault("prt_cases", 1);
-        if (groupingMethod.startsWith("r")){
-            log.info("GroupingMethod Random");
-            log.info("GroupingStart " + startSeed);
-            grouping = new RandomGrouping(chains.size(), clocks, startSeed);
-        }else if (groupingMethod.startsWith("se")){
-            log.info("GroupingMethod Sequential");
-            log.info("GroupingStart " + startSeed);
-            grouping = new seqGrouping(chains.size(), clocks);
-            for (int i = 0; i < startSeed; i++){
-                if (grouping.hasNext()){
-                    grouping.next();
-                }else {
-                    log.info("startSeed out of bound");
-                    grouping.iterator();
+        if (clocks > chains.size()) {
+            log.info("AvailableGroupCount Larger Than ChainCount, One Chain Per Group");
+        }else if (groupingMethod.startsWith("r")) {
+                log.info("GroupingMethod Random");
+                log.info("GroupingStart " + startSeed);
+                grouping = new RandomGrouping(chains.size(), clocks, startSeed);
+            } else if (groupingMethod.startsWith("se")) {
+                log.info("GroupingMethod Sequential");
+                log.info("GroupingStart " + startSeed);
+                grouping = new seqGrouping(chains.size(), clocks);
+                for (int i = 0; i < startSeed; i++) {
+                    if (grouping.hasNext()) {
+                        grouping.next();
+                    } else {
+                        log.info("startSeed out of bound");
+                        grouping.iterator();
+                    }
                 }
+            } else if (groupingMethod.startsWith("z1")) {
+                log.info("GroupingMethod Z1");
+                grouper = new ScanChainGrouperZ1();
+            } else if (groupingMethod.startsWith("z2")) {
+                log.info("GroupingMethod Z2");
+                grouper = new ScanChainGrouperZ2();
+            } else {
+                log.info("unknown grouping method: " + groupingMethod);
+                printGoodbye();
+                return null;
             }
-        }
-        else if(groupingMethod.startsWith("z1")){
-            log.info("GroupingMethod Z1");
-            grouper = new ScanChainGrouperZ1();
-        }else if (groupingMethod.startsWith("z2")){
-            log.info("GroupingMethod Z2");
-            grouper = new ScanChainGrouperZ2();
-        } else {
-            log.info("unknown grouping method: " + groupingMethod);
-            printGoodbye();
-            return null;
-        }
 
         // set algorithm parameters, if an algorithm is selected
         if (grouper != null){
@@ -173,12 +173,17 @@ public class Main extends KyupiApp {
                 log.info("ScanChainGrouping start with " + clocks +" available groups... ");
                 clocking = grouper.calculateClocking(clocks, cost);
                 log.info("ScanChainGrouping finished.");
-            }else{
+            }else if (grouping != null){
                 if (!grouping.hasNext()){
                     log.error("prt_start+caseId out of bounds, starting over");
                     grouping.iterator();
                 }
                 clocking = grouping.next();
+            }else {
+                clocking = new int[chains.size()];
+                for (int i = 0; i < chains.size(); i++){
+                    clocking[i] = i;
+                }
             }
 
             if (argsParsed().hasOption("plot")){

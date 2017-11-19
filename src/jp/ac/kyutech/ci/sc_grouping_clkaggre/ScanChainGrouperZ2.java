@@ -1,7 +1,6 @@
 package jp.ac.kyutech.ci.sc_grouping_clkaggre;
 
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Random;
 
@@ -58,9 +57,9 @@ public class ScanChainGrouperZ2 extends ScanChainGrouper {
         // perpare the roulette
         for (int i = 0; i < INITIAL_POPULATION; i++){
             if (i == 0){
-                possibility[i] = (a * fitness[i] + b)/fitnessSum;
+                possibility[i] = Math.abs((a * fitness[i] + b)/fitnessSum);
             }else {
-                possibility[i] = ((a * fitness[i] + b)/fitnessSum) + possibility[i-1];
+                possibility[i] = Math.abs(((a * fitness[i] + b)/fitnessSum) + possibility[i-1]);
             }
         }
 
@@ -129,18 +128,20 @@ public class ScanChainGrouperZ2 extends ScanChainGrouper {
         }
     }
 
-    // random mutation (low posibility)
-    private void randMutation(int groupCount){
+    // random mutation (changing posibility)
+    private void randMutation(int groupCount, int generationCount){
         Random r = new Random();
 
-        int mutationIdx0 = r.nextInt(chainSize - 1);
-        int mutationIdx1 = r.nextInt(chainSize - 1);
+        int[] mutationIdx = new int[(chainSize / 4) + 1];
+        for (int i = 0; i < mutationIdx.length; i++)
+            mutationIdx[i] = r.nextInt(chainSize - 1);
 
+        float possibility = (float) 0.8 / (generationCount/2);
         for (int i = 0; i < INITIAL_POPULATION; i++){
-            if (r.nextInt(9) < 2)
-                currentCandClkings[i][mutationIdx0] = r.nextInt(groupCount);
-            if (r.nextInt(9) < 3)
-                currentCandClkings[i][mutationIdx1] = r.nextInt(groupCount);
+            for (int j = 0; j < mutationIdx.length; j++){
+                if (r.nextFloat() < possibility)
+                    currentCandClkings[i][mutationIdx[j]] = r.nextInt(groupCount - 1);
+            }
         }
     }
 
@@ -231,7 +232,7 @@ public class ScanChainGrouperZ2 extends ScanChainGrouper {
 
             randCrossover();
 
-            randMutation(groupCount);
+            randMutation(groupCount, generationCount);
 
             System.arraycopy(getCostList(groupCount, cost, costList), 0 , costList, 0, costList.length);
             System.arraycopy(eliteClking, 0, currentCandClkings[getWorstIdx(costList)], 0, eliteClking.length);
