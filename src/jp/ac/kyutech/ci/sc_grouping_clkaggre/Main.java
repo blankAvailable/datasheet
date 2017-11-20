@@ -207,12 +207,6 @@ public class Main extends KyupiApp {
             int blocks = Integer.parseInt(argsParsed().getOptionValue("sim"));
 
             BufferedWriter plot = null;
-            if (argsParsed().hasOption("plot")){
-                String filename = argsParsed().getOptionValue("plot");
-                File plotWriter = new File(filename + "_WSAdiff" + caseId + ".txt");
-                plotWriter.createNewFile();
-                plot = new BufferedWriter(new FileWriter(plotWriter));
-            }
 
             log.info("WSA simulation setup... ");
             QBSource shifts = prepareExpandedRandomPatterns(chains, clocking);
@@ -238,7 +232,7 @@ public class Main extends KyupiApp {
                 sim.next();
             log.info("WSA simulation finished.");
 
-            double overallActivityMax= 0.0;
+            double overallActivityDiffMax= 0.0;
             for (int chainId = 0; chainId < chains.size(); chainId++){
                 ScanChain chain = chains.get(chainId);
                 // int clock_phase = clocking[chainId]
@@ -257,14 +251,11 @@ public class Main extends KyupiApp {
                         wns2 = aggressorWNSet.get(cell);
                         activity2 = wns2.getActivity(7000);
                         flag = false;
-                        if(plot != null)
-                            plot.write("" + cell2aggressorSet.get(cell).size() + " " + (activity1 - activity2) + "\n");
+                        overallActivityDiffMax = Math.max(overallActivityDiffMax, Math.abs(activity1 - activity2));
                     }
-
                 }
             }
-            if (plot != null)
-                plot.close();
+            log.info("OverallMaxWSADiff " + overallActivityDiffMax);
 
         } // caseId loop
         printGoodbye();
