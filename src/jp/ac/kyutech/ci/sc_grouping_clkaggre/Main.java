@@ -193,8 +193,12 @@ public class Main extends KyupiApp {
             if (argsParsed().hasOption("plot")){
                 String filename = argsParsed().getOptionValue("plot");
                 log.info("CostDifference " + cost.evaluate(clocking, clocks, filename, caseId));
+                log.info("GroupCost " + Arrays.toString(cost.groupCost).replaceAll("\\[", "").replaceAll("\\]", "")
+                        .replaceAll(",", ""));
             }else{
                 log.info("CostDifference " + cost.evaluate(clocking, clocks));
+                log.info("GroupCost " + Arrays.toString(cost.groupCost).replaceAll("\\[", "").replaceAll("\\]", "")
+                        .replaceAll(",", ""));
             }
 
             // print grouping info and grouping cost

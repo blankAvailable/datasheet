@@ -17,6 +17,7 @@ public class FastCostFunction {
     HashMap<Node, Integer> node2idx;
     BitSet[] impacts;
     int[][][] aregions;
+    int[] groupCost;
 
     public FastCostFunction(HashMap<ScanChain, HashSet<Node>> chain2impactSet, HashMap<ScanCell, ArrayList<Node>> cell2aggressorSet){
 
@@ -65,7 +66,8 @@ public class FastCostFunction {
     private int last_clock_id = 0;
 
     public int evaluate(int[] clocking, int clocks){
-        int maxcost = 0;
+        int maxCostDiff = 0;
+        groupCost = new int[clocks];
 
         for (int c = 0; c < clocks; c++){
             // compute sets of possibly active nodes of current group
@@ -87,8 +89,8 @@ public class FastCostFunction {
                     if (costPredecessor == 0){
                         costPredecessor = cost;
                         continue;
-                    }else if (Math.abs((costPredecessor - cost)) > maxcost){
-                        maxcost = Math.abs((costPredecessor - cost));
+                    }else if (Math.abs((costPredecessor - cost)) > maxCostDiff){
+                        maxCostDiff = Math.abs((costPredecessor - cost));
                         last_chain_id = chainId;
                         last_cell_id = cellId;
                         last_clock_id = c;
@@ -96,14 +98,15 @@ public class FastCostFunction {
                     costPredecessor = cost;
                 }
             }
+            groupCost[c] = maxCostDiff;
         }
 
-        return maxcost;
+        return maxCostDiff;
     }
 
     // grouping will make clock aggressor balance worse? need check
     public int evaluate(int[] clocking, int clocks, String filename, int caseId) throws IOException {
-        int maxcostDiff = 0;
+        int maxCostDiff = 0;
 
         File plotWriter = new File(filename + "_grouping" + caseId + ".txt");
         plotWriter.createNewFile();
@@ -129,8 +132,8 @@ public class FastCostFunction {
                     if (costPredecessor == 0){
                         costPredecessor = cost;
                         continue;
-                    }else if (Math.abs((costPredecessor - cost)) > maxcostDiff){
-                        maxcostDiff = Math.abs((costPredecessor - cost));
+                    }else if (Math.abs((costPredecessor - cost)) > maxCostDiff){
+                        maxCostDiff = Math.abs((costPredecessor - cost));
                         last_chain_id = chainId;
                         last_cell_id = cellId;
                         last_clock_id = c;
@@ -138,9 +141,10 @@ public class FastCostFunction {
                     costPredecessor = cost;
                 }
             }
+            groupCost[c] = maxCostDiff;
         }
         plot.close();
-        return maxcostDiff;
+        return maxCostDiff;
     }
 
     public int getLastWorstClockId(){ return last_clock_id; }
