@@ -6,7 +6,7 @@ import java.util.Random;
 
 public class ScanChainGrouperZ2 extends ScanChainGrouper {
 
-    private static final int INITIAL_POPULATION = 32;
+    private static final int INITIAL_POPULATION = 24;
     // smaller will make this algrithm finish faster
     private static final float C = (float) 1.5;
 
@@ -57,9 +57,9 @@ public class ScanChainGrouperZ2 extends ScanChainGrouper {
         // perpare the roulette
         for (int i = 0; i < INITIAL_POPULATION; i++){
             if (i == 0){
-                possibility[i] = Math.abs((a * fitness[i] + b)/fitnessSum);
+                possibility[i] = (a * fitness[i] + b)/fitnessSum;
             }else {
-                possibility[i] = Math.abs(((a * fitness[i] + b)/fitnessSum) + possibility[i-1]);
+                possibility[i] = ((a * fitness[i] + b)/fitnessSum) + possibility[i-1];
             }
         }
 
@@ -132,19 +132,35 @@ public class ScanChainGrouperZ2 extends ScanChainGrouper {
     private void randMutation(int groupCount, int generationCount){
         Random r = new Random();
 
-        int[] mutationIdx = new int[chainSize / 4];
+        int[] mutationIdx = new int[(chainSize / 4) + 1];
         for (int i = 0; i < mutationIdx.length; i++)
-            mutationIdx[i] = r.nextInt(chainSize - 1);
+            mutationIdx[i] = r.nextInt(chainSize);
 
-        log.debug("mutation points list " + Arrays.toString(mutationIdx).replaceAll("\\[", "").replaceAll
-                ("\\]", "").replaceAll(",", ""));
-        float possibility = (float) 0.8 / (generationCount/2);
+        float possibility = (float) ((0.7 / generationCount) + 0.2);
+        log.info(" Mutate possibility: " + possibility);
         for (int i = 0; i < INITIAL_POPULATION; i++){
             for (int j = 0; j < mutationIdx.length; j++){
-                if (r.nextFloat() < possibility)
-                    currentCandClkings[i][mutationIdx[j]] = r.nextInt(groupCount - 1);
+                if (r.nextFloat() < possibility) {
+                    int newGroup = r.nextInt(groupCount);
+                    while (true){
+                        if (currentCandClkings[i][mutationIdx[j]] != newGroup){
+                            currentCandClkings[i][mutationIdx[j]] = newGroup;
+                            break;
+                        }
+                        newGroup = r.nextInt(groupCount);
+                    }
+                }
             }
         }
+/*        int mutationIdx0 = r.nextInt(chainSize - 1);
+        int mutationIdx1 = r.nextInt(chainSize - 1);
+
+        for (int i = 0; i < INITIAL_POPULATION; i++){
+            if (r.nextInt(9) < 2)
+                currentCandClkings[i][mutationIdx0] = r.nextInt(groupCount);
+            if (r.nextInt(9) < 3)
+                currentCandClkings[i][mutationIdx1] = r.nextInt(groupCount);
+        }*/
     }
 
     // get cost list
@@ -221,6 +237,7 @@ public class ScanChainGrouperZ2 extends ScanChainGrouper {
         int currentMinCost = Integer.MAX_VALUE;
         int previousMinCost = Integer.MAX_VALUE;
         int bestIdx = 0;
+        int disasterLimit = 3;
         int caseLimit = 10;
         while (caseLimit > 0){
             generationCount++;
@@ -228,17 +245,24 @@ public class ScanChainGrouperZ2 extends ScanChainGrouper {
 
             naturalSelection(costList);
 
-            for (int i = 0; i < INITIAL_POPULATION; i++)
-                log.info("New population " + Arrays.toString(currentCandClkings[i]).replaceAll("\\[", "").replaceAll
-                        ("\\]", "").replaceAll(",", ""));
-
             randCrossover();
 
             randMutation(groupCount, generationCount);
 
             System.arraycopy(getCostList(groupCount, cost, costList), 0 , costList, 0, costList.length);
-            System.arraycopy(eliteClking, 0, currentCandClkings[getWorstIdx(costList)], 0, eliteClking.length);
-            costList[getWorstIdx(costList)] = cost.evaluate(eliteClking, groupCount);
+
+            // every 6 generations start disaster, kill the elite
+            if (generationCount%6 != 0 || disasterLimit <= 0) {
+                System.arraycopy(eliteClking, 0, currentCandClkings[getWorstIdx(costList)], 0, eliteClking.length);
+                costList[getWorstIdx(costList)] = cost.evaluate(eliteClking, groupCount);
+            }else {
+                disasterLimit--;
+                log.debug(" disaster happened, remain " + disasterLimit + " times");
+            }
+
+            for (int i = 0; i < INITIAL_POPULATION; i++)
+                log.info("New population " + Arrays.toString(currentCandClkings[i]).replaceAll("\\[", "").replaceAll
+                        ("\\]", "").replaceAll(",", ""));
             for (int i = 0; i < INITIAL_POPULATION; i++){
                 if (currentMinCost > costList[i]) {
                     currentMinCost = costList[i];

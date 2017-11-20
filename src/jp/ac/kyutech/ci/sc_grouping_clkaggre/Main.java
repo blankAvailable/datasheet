@@ -243,11 +243,24 @@ public class Main extends KyupiApp {
                 ScanChain chain = chains.get(chainId);
                 // int clock_phase = clocking[chainId]
                 log.info("Chain " + chainId + " ScanInPort " + chain.in.node.queryName());
+                WeightedNodeSet wns1;
+                double activity1 = 0.0;
+                WeightedNodeSet wns2;
+                double activity2 = 0.0;
+                boolean flag = false;
                 for (ScanCell cell : chain.cells){
-                    WeightedNodeSet wns = aggressorWNSet.get(cell);
-                    double activityMax = wns.getMaxActivity();
-                    if(plot != null)
-                        plot.write("" + cell2aggressorSet.get(cell).size() + " " + activityMax + "\n");
+                    if (flag == false) {
+                        wns1 = aggressorWNSet.get(cell);
+                        activity1 = wns1.getActivity(7000);
+                        flag = true;
+                    }else {
+                        wns2 = aggressorWNSet.get(cell);
+                        activity2 = wns2.getActivity(7000);
+                        flag = false;
+                        if(plot != null)
+                            plot.write("" + cell2aggressorSet.get(cell).size() + " " + (activity1 - activity2) + "\n");
+                    }
+
                 }
             }
             if (plot != null)
