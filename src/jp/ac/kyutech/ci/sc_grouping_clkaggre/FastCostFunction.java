@@ -116,7 +116,6 @@ public class FastCostFunction {
                 if (clocking[chainId] == c)
                     impactUnion.or(impacts[chainId]);
             }
-            System.out.println("ImpactUnion check: " + impactUnion.size());
 
             for (int chainId = 0; chainId < aregions.length; chainId++){
                 int costPredecessor = 0;
@@ -126,7 +125,6 @@ public class FastCostFunction {
                         if (impactUnion.get(aregions[chainId][cellId][aggId]))
                             cost++;
                     }
-                    System.out.println("Cost check: " + cost + " & " + costPredecessor);
                     plot.write(cellId + " & " + cost + "\n");
                     if (costPredecessor == 0){
                         costPredecessor = cost;

@@ -209,7 +209,7 @@ public class Main extends KyupiApp {
             BufferedWriter plot = null;
             if (argsParsed().hasOption("plot")){
                 String filename = argsParsed().getOptionValue("plot");
-                File plotWriter = new File(filename + "_correlation" + caseId + ".txt");
+                File plotWriter = new File(filename + "_WSAdiff" + caseId + ".txt");
                 plotWriter.createNewFile();
                 plot = new BufferedWriter(new FileWriter(plotWriter));
             }
