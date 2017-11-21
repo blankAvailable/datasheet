@@ -107,48 +107,5 @@ public class FastCostFunction {
         return maxCostDiff;
     }
 
-    // grouping will make clock aggressor balance worse? need check
-    public int evaluate(int[] clocking, int clocks, String filename, int caseId) throws IOException {
-        int maxCostDiff = 0;
-
-        File plotWriter = new File(filename + "_grouping" + caseId + ".txt");
-        plotWriter.createNewFile();
-        BufferedWriter plot = new BufferedWriter(new FileWriter(plotWriter));
-
-        for (int c = 0; c < clocks; c++){
-            // compute sets of possibly active nodes of current group
-            impactUnion.clear();
-            for (int chainId = 0; chainId < impacts.length; chainId++){
-                if (clocking[chainId] == c)
-                    impactUnion.or(impacts[chainId]);
-            }
-
-            for (int chainId = 0; chainId < aregions.length; chainId++){
-                int costPredecessor = 0;
-                for (int cellId = 0; cellId < aregions[chainId].length; cellId++){
-                    int cost = 0;
-                    for (int aggId = 0; aggId < aregions[chainId][cellId].length; aggId++){
-                        if (impactUnion.get(aregions[chainId][cellId][aggId]))
-                            cost++;
-                    }
-                    plot.write(cellId + " & " + cost + "\n");
-                    if (costPredecessor == 0){
-                        costPredecessor = cost;
-                        continue;
-                    }else if (Math.abs((costPredecessor - cost)) > maxCostDiff){
-                        maxCostDiff = Math.abs((costPredecessor - cost));
-                        last_chain_id = chainId;
-                        last_cell_id = cellId;
-                        last_clock_id = c;
-                    }
-                    costPredecessor = cost;
-                }
-            }
-            groupCost[c] = maxCostDiff;
-        }
-        plot.close();
-        return maxCostDiff;
-    }
-
     public int getLastWorstClockId(){ return last_clock_id; }
 }

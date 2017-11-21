@@ -124,6 +124,7 @@ public class Main extends KyupiApp {
         String groupingMethod = stringFromArgsOrDefault("prt_method", "random").toLowerCase();
         long startSeed = longFromArgsOrDefault("prt_start", 0);
         long groupingCases = longFromArgsOrDefault("prt_cases", 1);
+        int[][] candClking = new int[10][10];
         if (clocks == 1){
             log.info("AvailableGroupCount = 1");
         }else if (clocks > chains.size()) {
@@ -150,8 +151,19 @@ public class Main extends KyupiApp {
             } else if (groupingMethod.startsWith("z2")) {
                 log.info("GroupingMethod Z2");
                 grouper = new ScanChainGrouperZ2();
-            } else {
-                log.info("unknown grouping method: " + groupingMethod);
+            } else if (groupingMethod.startsWith("hand")){
+                candClking[0] = new int[]{1, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+                candClking[1] = new int[]{1, 1, 0, 0, 0, 0, 0, 0, 0, 0};
+                candClking[2] = new int[]{1, 1, 1, 0, 0, 0, 0, 0, 0, 0};
+                candClking[3] = new int[]{1, 1, 1, 1, 0, 0, 0, 0, 0, 0};
+                candClking[4] = new int[]{1, 1, 1, 1, 1, 0, 0, 0, 0, 0};
+                candClking[5] = new int[]{1, 1, 1, 1, 1, 1, 0, 0, 0, 0};
+                candClking[6] = new int[]{1, 1, 1, 1, 1, 1, 1, 0, 0, 0};
+                candClking[7] = new int[]{1, 1, 1, 1, 1, 1, 1, 1, 0, 0};
+                candClking[8] = new int[]{1, 1, 1, 1, 1, 1, 1, 1, 1, 0};
+                candClking[9] = new int[]{1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+            }else {
+                log.error("unknown grouping method " + groupingMethod);
                 printGoodbye();
                 return null;
             }
@@ -167,6 +179,13 @@ public class Main extends KyupiApp {
             startSeed = 0;
         }
 
+        BufferedWriter plot = null;
+        if (argsParsed().hasOption("plot")) {
+            String filename = argsParsed().getOptionValue("plot");
+            File plotWriter = new File(filename);
+            plotWriter.createNewFile();
+            plot = new BufferedWriter(new FileWriter(plotWriter));
+        }
         //start grouping
         for (int caseId = 0; caseId < groupingCases; caseId++){
             log.info("GroupingCase " + caseId);
@@ -182,17 +201,18 @@ public class Main extends KyupiApp {
                 }
                 clocking = grouping.next();
             }else if (clocks > chains.size()){
+                clocks = chains.size();
                 clocking = new int[chains.size()];
                 for (int i = 0; i < chains.size(); i++){
                     clocking[i] = i;
                 }
             }else {
-                clocking = new int[chains.size()];
+                clocking = candClking[caseId];
             }
 
-            if (argsParsed().hasOption("plot")){
-                String filename = argsParsed().getOptionValue("plot");
-                log.info("CostDifference " + cost.evaluate(clocking, clocks, filename, caseId));
+            if (plot != null){
+                log.info("CostDifference " + cost.evaluate(clocking, clocks));
+                plot.write(" " + caseId + " " + cost.groupCost[0] + "\n");
                 log.info("GroupCost " + Arrays.toString(cost.groupCost).replaceAll("\\[", "").replaceAll("\\]", "")
                         .replaceAll(",", ""));
             }else{
@@ -200,6 +220,7 @@ public class Main extends KyupiApp {
                 log.info("GroupCost " + Arrays.toString(cost.groupCost).replaceAll("\\[", "").replaceAll("\\]", "")
                         .replaceAll(",", ""));
             }
+
 
             // print grouping info and grouping cost
             log.info("Clocking " + Arrays.toString(clocking).replaceAll("\\[", "").replaceAll("\\]", "")
@@ -210,7 +231,6 @@ public class Main extends KyupiApp {
 
             int blocks = Integer.parseInt(argsParsed().getOptionValue("sim"));
 
-            BufferedWriter plot = null;
 
             log.info("WSA simulation setup... ");
             QBSource shifts = prepareExpandedRandomPatterns(chains, clocking);
@@ -219,14 +239,14 @@ public class Main extends KyupiApp {
             for (ScanCell saff : cell2aggressorSet.keySet()){
                 WeightedNodeSet wnSet = sim.new WeightedNodeSet();
 
-                // remove duplicate node
+/*                // remove duplicate node
                 ArrayList<Node> dupRemovedCell2aggr = new ArrayList();
                 for (int i = 0; i < cell2aggressorSet.get(saff).size(); i++){
                     if (!dupRemovedCell2aggr.contains(cell2aggressorSet.get(saff).get(i)))
                         dupRemovedCell2aggr.add(cell2aggressorSet.get(saff).get(i));
-                }
+                }*/
 
-                for (Node n : dupRemovedCell2aggr){
+                for (Node n : cell2aggressorSet.get(saff)){
                     wnSet.add(n, 1.0);
                 }
                 aggressorWNSet.put(saff, wnSet);
@@ -249,11 +269,11 @@ public class Main extends KyupiApp {
                 for (ScanCell cell : chain.cells){
                     if (flag == false) {
                         wns1 = aggressorWNSet.get(cell);
-                        activity1 = wns1.getActivity(7000);
+                        activity1 = wns1.getActivity(500);
                         flag = true;
                     }else {
                         wns2 = aggressorWNSet.get(cell);
-                        activity2 = wns2.getActivity(7000);
+                        activity2 = wns2.getActivity(500);
                         flag = false;
                         overallActivityDiffMax = Math.max(overallActivityDiffMax, Math.abs(activity1 - activity2));
                     }
@@ -262,6 +282,10 @@ public class Main extends KyupiApp {
             log.info("OverallMaxWSADiff " + overallActivityDiffMax);
 
         } // caseId loop
+
+        if (plot != null)
+            plot.close();
+
         printGoodbye();
         return null;
     }
