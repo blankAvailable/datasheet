@@ -6,7 +6,7 @@ import java.util.Random;
 
 public class ScanChainGrouperZ2 extends ScanChainGrouper {
 
-    private static final int INITIAL_POPULATION = 24;
+    private static final int INITIAL_POPULATION = 32;
     // smaller will make this algrithm finish faster
     private static final float C = (float) 1.5;
 
@@ -136,7 +136,7 @@ public class ScanChainGrouperZ2 extends ScanChainGrouper {
         for (int i = 0; i < mutationIdx.length; i++)
             mutationIdx[i] = r.nextInt(chainSize);
 
-        float possibility = (float) ((0.7 / generationCount) + 0.2);
+        float possibility = (float) ((0.5 / generationCount) + 0.06);
         log.info(" Mutate possibility: " + possibility);
         for (int i = 0; i < INITIAL_POPULATION; i++){
             for (int j = 0; j < mutationIdx.length; j++){
@@ -257,6 +257,7 @@ public class ScanChainGrouperZ2 extends ScanChainGrouper {
                 costList[getWorstIdx(costList)] = cost.evaluate(eliteClking, groupCount);
             }else {
                 disasterLimit--;
+                caseLimit = 10;
                 log.debug(" disaster happened, remain " + disasterLimit + " times");
             }
 

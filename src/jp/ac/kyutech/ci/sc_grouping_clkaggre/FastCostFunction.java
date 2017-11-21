@@ -70,6 +70,7 @@ public class FastCostFunction {
         groupCost = new int[clocks];
 
         for (int c = 0; c < clocks; c++){
+            int groupCostDiff = 0;
             // compute sets of possibly active nodes of current group
             impactUnion.clear();
             for (int chainId = 0; chainId < impacts.length; chainId++){
@@ -95,10 +96,12 @@ public class FastCostFunction {
                         last_cell_id = cellId;
                         last_clock_id = c;
                     }
+                    if (Math.abs((costPredecessor - cost)) > groupCostDiff)
+                        groupCostDiff = Math.abs((costPredecessor - cost));
                     costPredecessor = cost;
                 }
             }
-            groupCost[c] = maxCostDiff;
+            groupCost[c] = groupCostDiff;
         }
 
         return maxCostDiff;
