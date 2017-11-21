@@ -269,11 +269,11 @@ public class Main extends KyupiApp {
                 for (ScanCell cell : chain.cells){
                     if (flag == false) {
                         wns1 = aggressorWNSet.get(cell);
-                        activity1 = wns1.getActivity(500);
+                        activity1 = wns1.getActivity(7000);
                         flag = true;
                     }else {
                         wns2 = aggressorWNSet.get(cell);
-                        activity2 = wns2.getActivity(500);
+                        activity2 = wns2.getActivity(7000);
                         flag = false;
                         overallActivityDiffMax = Math.max(overallActivityDiffMax, Math.abs(activity1 - activity2));
                     }
