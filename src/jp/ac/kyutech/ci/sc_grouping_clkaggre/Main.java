@@ -266,16 +266,18 @@ public class Main extends KyupiApp {
                 WeightedNodeSet wns2;
                 double activity2 = 0.0;
                 boolean flag = false;
-                for (ScanCell cell : chain.cells){
-                    if (flag == false) {
-                        wns1 = aggressorWNSet.get(cell);
-                        activity1 = wns1.getActivity(12000);
-                        flag = true;
-                    }else {
-                        wns2 = aggressorWNSet.get(cell);
-                        activity2 = wns2.getActivity(12000);
-                        flag = false;
-                        overallActivityDiffMax = Math.max(overallActivityDiffMax, Math.abs(activity1 - activity2));
+                for (int patternId = 0; patternId < blocks * 32; patternId++){
+                    for (ScanCell cell : chain.cells){
+                        if (flag == false) {
+                            wns1 = aggressorWNSet.get(cell);
+                            activity1 = wns1.getActivity(patternId);
+                            flag = true;
+                        }else {
+                            wns2 = aggressorWNSet.get(cell);
+                            activity2 = wns2.getActivity(patternId);
+                            flag = false;
+                            overallActivityDiffMax = Math.max(overallActivityDiffMax, Math.abs(activity1 - activity2));
+                        }
                     }
                 }
             }
