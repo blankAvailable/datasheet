@@ -124,7 +124,6 @@ public class Main extends KyupiApp {
         String groupingMethod = stringFromArgsOrDefault("prt_method", "random").toLowerCase();
         long startSeed = longFromArgsOrDefault("prt_start", 0);
         long groupingCases = longFromArgsOrDefault("prt_cases", 1);
-        int[][] candClking = new int[10][10];
         if (clocks == 1){
             log.info("AvailableGroupCount = 1");
         }else if (clocks > chains.size()) {
@@ -151,18 +150,7 @@ public class Main extends KyupiApp {
             } else if (groupingMethod.startsWith("z2")) {
                 log.info("GroupingMethod Z2");
                 grouper = new ScanChainGrouperZ2();
-            } else if (groupingMethod.startsWith("hand")){
-                candClking[0] = new int[]{1, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-                candClking[1] = new int[]{1, 1, 0, 0, 0, 0, 0, 0, 0, 0};
-                candClking[2] = new int[]{1, 1, 1, 0, 0, 0, 0, 0, 0, 0};
-                candClking[3] = new int[]{1, 1, 1, 1, 0, 0, 0, 0, 0, 0};
-                candClking[4] = new int[]{1, 1, 1, 1, 1, 0, 0, 0, 0, 0};
-                candClking[5] = new int[]{1, 1, 1, 1, 1, 1, 0, 0, 0, 0};
-                candClking[6] = new int[]{1, 1, 1, 1, 1, 1, 1, 0, 0, 0};
-                candClking[7] = new int[]{1, 1, 1, 1, 1, 1, 1, 1, 0, 0};
-                candClking[8] = new int[]{1, 1, 1, 1, 1, 1, 1, 1, 1, 0};
-                candClking[9] = new int[]{1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
-            }else {
+            } else {
                 log.error("unknown grouping method " + groupingMethod);
                 printGoodbye();
                 return null;
@@ -207,7 +195,7 @@ public class Main extends KyupiApp {
                     clocking[i] = i;
                 }
             }else {
-                clocking = candClking[caseId];
+                clocking = new int[chains.size()];
             }
 
             if (plot != null){
