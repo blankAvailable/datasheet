@@ -136,7 +136,7 @@ public class ScanChainGrouperZ2 extends ScanChainGrouper {
         for (int i = 0; i < mutationIdx.length; i++)
             mutationIdx[i] = r.nextInt(chainSize);
 
-        float possibility = (float) ((0.5 / generationCount) + 0.06);
+        float possibility = (float) ((0.4 / generationCount) + 0.06);
         log.info(" Mutate possibility: " + possibility);
         for (int i = 0; i < INITIAL_POPULATION; i++){
             for (int j = 0; j < mutationIdx.length; j++){
@@ -237,7 +237,7 @@ public class ScanChainGrouperZ2 extends ScanChainGrouper {
         int currentMinCost = Integer.MAX_VALUE;
         int previousMinCost = Integer.MAX_VALUE;
         int bestIdx = 0;
-        int disasterLimit = 3;
+        int disasterLimit = 6;
         int caseLimit = 10;
         while (caseLimit > 0){
             generationCount++;
