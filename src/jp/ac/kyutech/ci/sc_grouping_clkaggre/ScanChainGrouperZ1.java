@@ -1,13 +1,10 @@
 package jp.ac.kyutech.ci.sc_grouping_clkaggre;
 
 import java.util.Arrays;
-import java.util.Random;
 
 public class ScanChainGrouperZ1 extends ScanChainGrouper {
 
     private static final int RANDOM_TIMEOUT = 32;
-
-    private FastCostFunction cost;
 
     public int[] calculateClocking(int groupCount, FastCostFunction cost) {
 
