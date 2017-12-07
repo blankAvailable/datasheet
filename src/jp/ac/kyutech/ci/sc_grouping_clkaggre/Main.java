@@ -230,13 +230,6 @@ public class Main extends KyupiApp {
             for (ScanCell saff : cell2aggressorSet.keySet()){
                 WeightedNodeSet wnSet = sim.new WeightedNodeSet();
 
-/*                // remove duplicate node
-                ArrayList<Node> dupRemovedCell2aggr = new ArrayList();
-                for (int i = 0; i < cell2aggressorSet.get(saff).size(); i++){
-                    if (!dupRemovedCell2aggr.contains(cell2aggressorSet.get(saff).get(i)))
-                        dupRemovedCell2aggr.add(cell2aggressorSet.get(saff).get(i));
-                }*/
-
                 for (Node n : cell2aggressorSet.get(saff)){
                     wnSet.add(n, 1.0);
                 }
