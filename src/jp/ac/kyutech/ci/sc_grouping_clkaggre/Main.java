@@ -205,11 +205,11 @@ public class Main extends KyupiApp {
                 log.info("CostDifference " + cost.evaluate(clocking, clocks));
                 plot.write(" " + caseId + " " + cost.groupCost[0] + "\n");
                 log.info("GroupCost " + Arrays.toString(cost.groupCost).replaceAll("\\[", "").replaceAll("\\]", "")
-                        .replaceAll(",", ""));
+                        .replaceAll(",", "") + " Worst group " + cost.getLastWorstClockId());
             }else{
                 log.info("CostDifference " + cost.evaluate(clocking, clocks));
                 log.info("GroupCost " + Arrays.toString(cost.groupCost).replaceAll("\\[", "").replaceAll("\\]", "")
-                        .replaceAll(",", ""));
+                        .replaceAll(",", "") + " Worst group " + cost.getLastWorstClockId());
             }
 
 
@@ -249,6 +249,12 @@ public class Main extends KyupiApp {
 
             double overallActivityDiffMax= 0.0;
             for (int chainId = 0; chainId < chains.size(); chainId++){
+
+                //WSA difference may large somewhere else, but at this those places are not activated.
+                //Only need to count the WSA difference at current group
+                if (clocking[chainId] != cost.getLastWorstClockId())
+                    continue;
+
                 ScanChain chain = chains.get(chainId);
                 // int clock_phase = clocking[chainId]
                 log.info("Chain " + chainId + " ScanInPort " + chain.in.node.queryName());

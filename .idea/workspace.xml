@@ -4,11 +4,10 @@
     <bookmark url="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/Main.java" line="153" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cae84d3d-baa2-453a-b51c-b59977cd4fe2" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/ScanChainGrouperZ3.java" />
+    <list default="true" id="cae84d3d-baa2-453a-b51c-b59977cd4fe2" name="Default" comment="fixed a bug on wsa diff calculation part">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/FastCostFunction.java" afterPath="$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/FastCostFunction.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/Main.java" afterPath="$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/Main.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/ScanChainGrouperZ1.java" afterPath="$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/ScanChainGrouperZ1.java" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -18,53 +17,13 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="DockManager">
-    <window id="1">
-      <content type="file-editors">
-        <state>
-          <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-            <file leaf-file-name="ScanChainGrouperZ1.java" pinned="false" current-in-tab="true">
-              <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/ScanChainGrouperZ1.java">
-                <provider selected="true" editor-type-id="text-editor">
-                  <state relative-caret-position="391">
-                    <caret line="23" column="40" lean-forward="false" selection-start-line="22" selection-start-column="21" selection-end-line="23" selection-end-column="40" />
-                    <folding>
-                      <element signature="method#SwapWorstChain#0;class#ScanChainGrouperZ1#0" expanded="false" />
-                    </folding>
-                  </state>
-                </provider>
-              </entry>
-            </file>
-            <file leaf-file-name="ScanChainGrouperZ2.java" pinned="false" current-in-tab="false">
-              <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/ScanChainGrouperZ2.java">
-                <provider selected="true" editor-type-id="text-editor">
-                  <state relative-caret-position="1007">
-                    <caret line="239" column="29" lean-forward="false" selection-start-line="239" selection-start-column="29" selection-end-line="239" selection-end-column="29" />
-                    <folding>
-                      <element signature="method#initialPopulation#0;class#ScanChainGrouperZ2#0" expanded="false" />
-                      <element signature="method#naturalSelection#0;class#ScanChainGrouperZ2#0" expanded="false" />
-                      <element signature="method#randCrossover#0;class#ScanChainGrouperZ2#0" expanded="false" />
-                      <element signature="method#getCostList#0;class#ScanChainGrouperZ2#0" expanded="false" />
-                      <element signature="method#getCostList#1;class#ScanChainGrouperZ2#0" expanded="false" />
-                      <element signature="method#getFittestIdx#0;class#ScanChainGrouperZ2#0" expanded="false" />
-                      <element signature="method#getWorstIdx#0;class#ScanChainGrouperZ2#0" expanded="false" />
-                    </folding>
-                  </state>
-                </provider>
-              </entry>
-            </file>
-          </leaf>
-        </state>
-      </content>
-    </window>
-  </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file leaf-file-name="Main.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/Main.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="432">
-              <caret line="207" column="44" lean-forward="false" selection-start-line="206" selection-start-column="25" selection-end-line="207" selection-end-column="44" />
+            <state relative-caret-position="544">
+              <caret line="253" column="58" lean-forward="false" selection-start-line="253" selection-start-column="58" selection-end-line="253" selection-end-column="58" />
               <folding>
                 <element signature="method#collectClockBuffers#0;class#Main#0" expanded="false" />
                 <element signature="method#collectClockBuffers#1;class#Main#0" expanded="false" />
@@ -79,7 +38,7 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ScanChainGrouperZ3.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="ScanChainGrouperZ3.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/ScanChainGrouperZ3.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="476">
@@ -91,11 +50,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="FastCostFunction.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="FastCostFunction.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/FastCostFunction.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="181">
-              <caret line="70" column="0" lean-forward="true" selection-start-line="70" selection-start-column="0" selection-end-line="70" selection-end-column="0" />
+            <state relative-caret-position="136">
+              <caret line="15" column="20" lean-forward="false" selection-start-line="15" selection-start-column="20" selection-end-line="15" selection-end-column="20" />
               <folding />
             </state>
           </provider>
@@ -126,8 +85,9 @@
         <option value="$PROJECT_DIR$/src/jp/ac/kyutech/ci/grouping/Main.java" />
         <option value="$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/ScanChainGrouperZ2.java" />
         <option value="$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/ScanChainGrouperZ1.java" />
-        <option value="$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/Main.java" />
         <option value="$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/ScanChainGrouperZ3.java" />
+        <option value="$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/FastCostFunction.java" />
+        <option value="$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/Main.java" />
       </list>
     </option>
   </component>
@@ -156,22 +116,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="ProjectPane">
-        <subPane>
-          <expand>
-            <path>
-              <item name="grouping" type="b2602c69:ProjectViewProjectNode" />
-              <item name="grouping" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="grouping" type="b2602c69:ProjectViewProjectNode" />
-              <item name="grouping" type="462c0819:PsiDirectoryNode" />
-              <item name=".idea" type="462c0819:PsiDirectoryNode" />
-            </path>
-          </expand>
-          <select />
-        </subPane>
-      </pane>
       <pane id="PackagesPane">
         <subPane>
           <expand>
@@ -200,10 +144,31 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scratches" />
       <pane id="AndroidView" />
+      <pane id="Scratches" />
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="grouping" type="b2602c69:ProjectViewProjectNode" />
+              <item name="grouping" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="grouping" type="b2602c69:ProjectViewProjectNode" />
+              <item name="grouping" type="462c0819:PsiDirectoryNode" />
+              <item name=".idea" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
       <pane id="Scope" />
     </panes>
+  </component>
+  <component name="Push.Settings">
+    <excluded-roots>
+      <path value="$PROJECT_DIR$/../kyupi" />
+    </excluded-roots>
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -227,7 +192,7 @@
       </extension>
       <option name="MAIN_CLASS_NAME" value="jp.ac.kyutech.ci.sc_grouping_clkaggre.Main" />
       <option name="VM_PARAMETERS" value="" />
-      <option name="PROGRAM_PARAMETERS" value="-d testdata\b17\b17_25_10_layout.v -def testdata\b17\b17_25_10_layout.def -clk 4 -prt_method z3" />
+      <option name="PROGRAM_PARAMETERS" value="-d testdata\b17\b17_25_10_layout.v -def testdata\b17\b17_25_10_layout.def -clk 3 -prt_method z3" />
       <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
       <option name="ALTERNATIVE_JRE_PATH" />
@@ -277,18 +242,6 @@
       </option>
       <envs />
       <patterns />
-    </configuration>
-    <configuration default="true" type="JetRunConfigurationType" factoryName="Kotlin">
-      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
-      <option name="MAIN_CLASS_NAME" />
-      <option name="VM_PARAMETERS" />
-      <option name="PROGRAM_PARAMETERS" />
-      <option name="WORKING_DIRECTORY" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="PASS_PARENT_ENVS" value="true" />
-      <module name="kyupi" />
-      <envs />
     </configuration>
     <configuration default="true" type="#org.jetbrains.idea.devkit.run.PluginConfigurationType" factoryName="Plugin">
       <module name="" />
@@ -422,6 +375,18 @@
       <envs />
       <method />
     </configuration>
+    <configuration default="true" type="JetRunConfigurationType" factoryName="Kotlin">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="WORKING_DIRECTORY" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <module name="kyupi" />
+      <envs />
+    </configuration>
     <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType" factoryName="Kotlin script">
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
       <option name="filePath" />
@@ -473,7 +438,14 @@
       <option name="project" value="LOCAL" />
       <updated>1511339677031</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="add a simple heuristic greedy algorithm.">
+      <created>1511514090120</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1511514090120</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -488,7 +460,7 @@
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.37860465" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.37860465" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32978722" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -568,7 +540,9 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="change to check the max wsa diff from all rounds of patterns" />
     <MESSAGE value="fixed the bug that chans.size()&gt;10 will have error" />
-    <option name="LAST_COMMIT_MESSAGE" value="fixed the bug that chans.size()&gt;10 will have error" />
+    <MESSAGE value="add a simple heuristic greedy algorithm." />
+    <MESSAGE value="fixed a bug on wsa diff calculation part" />
+    <option name="LAST_COMMIT_MESSAGE" value="fixed a bug on wsa diff calculation part" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -859,9 +833,29 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/ScanChainGrouperZ3.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="476">
+          <caret line="28" column="89" lean-forward="false" selection-start-line="28" selection-start-column="89" selection-end-line="28" selection-end-column="89" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/ScanChainGrouperZ1.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="323">
+          <caret line="19" column="46" lean-forward="true" selection-start-line="19" selection-start-column="46" selection-end-line="19" selection-end-column="46" />
+          <folding>
+            <element signature="method#SwapWorstChain#0;class#ScanChainGrouperZ1#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/ScanChainGrouperZ2.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1007">
+        <state relative-caret-position="1513">
           <caret line="239" column="29" lean-forward="false" selection-start-line="239" selection-start-column="29" selection-end-line="239" selection-end-column="29" />
           <folding>
             <element signature="method#initialPopulation#0;class#ScanChainGrouperZ2#0" expanded="false" />
@@ -875,28 +869,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/ScanChainGrouperZ1.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="391">
-          <caret line="23" column="40" lean-forward="false" selection-start-line="22" selection-start-column="21" selection-end-line="23" selection-end-column="40" />
-          <folding>
-            <element signature="method#SwapWorstChain#0;class#ScanChainGrouperZ1#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/FastCostFunction.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="181">
-          <caret line="70" column="0" lean-forward="true" selection-start-line="70" selection-start-column="0" selection-end-line="70" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/Main.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="432">
-          <caret line="207" column="44" lean-forward="false" selection-start-line="206" selection-start-column="25" selection-end-line="207" selection-end-column="44" />
+        <state relative-caret-position="544">
+          <caret line="253" column="58" lean-forward="false" selection-start-line="253" selection-start-column="58" selection-end-line="253" selection-end-column="58" />
           <folding>
             <element signature="method#collectClockBuffers#0;class#Main#0" expanded="false" />
             <element signature="method#collectClockBuffers#1;class#Main#0" expanded="false" />
@@ -910,13 +886,11 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/ScanChainGrouperZ3.java">
+    <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/FastCostFunction.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="476">
-          <caret line="28" column="89" lean-forward="false" selection-start-line="28" selection-start-column="89" selection-end-line="28" selection-end-column="89" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
+        <state relative-caret-position="136">
+          <caret line="15" column="20" lean-forward="false" selection-start-line="15" selection-start-column="20" selection-end-line="15" selection-end-column="20" />
+          <folding />
         </state>
       </provider>
     </entry>
