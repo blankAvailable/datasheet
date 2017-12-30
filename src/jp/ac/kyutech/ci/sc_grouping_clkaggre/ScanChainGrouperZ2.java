@@ -85,6 +85,7 @@ public class ScanChainGrouperZ2 extends ScanChainGrouper {
     }
 
     // random crossover
+    // this step may introduce too much change
     private void randCrossover(){
         Random r = new Random();
         int crossOverIdx0 = 0;
@@ -136,7 +137,7 @@ public class ScanChainGrouperZ2 extends ScanChainGrouper {
         for (int i = 0; i < mutationIdx.length; i++)
             mutationIdx[i] = r.nextInt(chainSize);
 
-        float possibility = (float) ((0.4 / generationCount) + 0.06);
+        float possibility = (float) ((0.4 / generationCount) + 0.08);
         log.info(" Mutate possibility: " + possibility);
         for (int i = 0; i < INITIAL_POPULATION; i++){
             for (int j = 0; j < mutationIdx.length; j++){

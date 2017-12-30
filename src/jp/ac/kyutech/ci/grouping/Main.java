@@ -230,8 +230,10 @@ public class Main extends KyupiApp {
 			HashMap<ScanCell, HashSet<Node>> cell2activeAggressorSet = calculateMaxActiveAggressors(chains, clocking,
 					cell2aggressorSet, chain2impactSet);
 
+			FastCostFunction cost = new FastCostFunction(chain2impactSet, cell2aggressorSet);
 			int maxActiveAggressors = printSizeHistogram(cell2activeAggressorSet, cell2aggressorSet);
 			log.info("  MaxActiveAggressors " + maxActiveAggressors);
+			log.info(" CostAfterGrouping " + cost.evaluate(clocking, clocks));
 			maxOverlap[case_idx] = maxActiveAggressors;
 			log.info("Clocking "
 					+ Arrays.toString(clocking).replaceAll("\\[", "").replaceAll("\\]", "").replaceAll(",", ""));
@@ -302,6 +304,8 @@ public class Main extends KyupiApp {
 					// }
 					if (gp_correlation != null) {
 						gp_correlation.println("" + cell2activeAggressorSet.get(cell).size() + " " + activityMax);
+					//	gp_correlation.println("" + cost.evaluate_weighted(cell2activeAggressorSet.get(cell)) + " " +
+					//			activityMax);
 					}
 					chainActivityMax = Math.max(chainActivityMax, activityMax);
 					overallActivityMax = Math.max(overallActivityMax, activityMax);
@@ -458,6 +462,17 @@ public class Main extends KyupiApp {
 						placement.getRectangle(x - arxnm / 2, y - arynm / 2, x + arxnm / 2, y + arynm / 2));
 				chainaggressors.addAll(cell2aggressors.get(cell));
 			}
+
+			/*//count aggressor type
+			List<String> Type = new ArrayList<>();
+			for (Node n : chainaggressors){
+				*//*if (!Type.contains(Integer.toHexString(n.type() & 0x3ff)))
+					Type.add(Integer.toHexString(n.type() & 0x3ff));*//*
+				if (!Type.contains(n.typeName()))
+					Type.add(n.typeName());
+			}
+			log.info("aggressor type: " + Type);*/
+
 		}
 	}
 
