@@ -71,6 +71,7 @@ public class Main extends KyupiApp {
 		options.addOption("max_overlap", true, "output maximum structural impact/aggressor overlap to given file");
 		options.addOption("dispersion", true,
 				"output coefficient of dispersion for every scan chain group to given file");
+		options.addOption("overlap_thr", true, "set the overlap ratio threshold for heuristic algorithm");
 
 	}
 
@@ -183,6 +184,17 @@ public class Main extends KyupiApp {
 		} else if (prt_method.startsWith("z1")) {
 			log.info("PartitionMethod Z1");
 			partAlg = new ScanChainGrouperAlgZ1();
+		}else if (prt_method.startsWith("z2")){
+			log.info("PartitionMethod Z2");
+			if (argsParsed().hasOption("overlap_thr")) {
+				int threshold = Integer.parseInt(argsParsed().getOptionValue("overlap_thr"));
+				partAlg = new ScanChainGrouperAlgZ2(threshold);
+			}else {
+				log.error("please specify overlap_thr option");
+				printGoodbye();
+				return null;
+			}
+
 		} else {
 			File f = new File(prt_method);
 			if (!f.canRead()) {

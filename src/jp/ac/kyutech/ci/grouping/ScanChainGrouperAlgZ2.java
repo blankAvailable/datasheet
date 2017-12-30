@@ -6,9 +6,12 @@ import java.util.Random;
  * Created by Zhang on 2017/5/11.
  */
 public class ScanChainGrouperAlgZ2 extends ScanChainGrouper {
-    private static final float THRESHOLD =10;
-
     private FastCostFunction cost;
+    private int threshold = 0;
+
+    public ScanChainGrouperAlgZ2(int threshold){
+        this.threshold = threshold;
+    }
 
     public int[] calculateClocking(int clockCount){
         Random r = new Random();
@@ -22,7 +25,11 @@ public class ScanChainGrouperAlgZ2 extends ScanChainGrouper {
 
         for (int i = 1; i < chains.size(); i++){
             if (availableGroupExist(clocksFlag)){
-
+                for (int clkIdx = 0; clkIdx < clockCount; clkIdx++){
+                    if (clocksFlag[clkIdx] == 1){
+                        
+                    }
+                }
             }else {
 
             }
