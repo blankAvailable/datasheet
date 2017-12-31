@@ -15,6 +15,7 @@ public class ScanChainGrouperZ3 extends ScanChainGrouper {
 
         for (int i = 1; i < chainSize; i++){
             int tempMinCost = Integer.MAX_VALUE;
+
             int tempBestGroup = -1;
             for (int j = 0; j < groupCount; j++){
                 clocking[i] = j;
