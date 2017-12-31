@@ -3,8 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="cae84d3d-baa2-453a-b51c-b59977cd4fe2" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/src/jp/ac/kyutech/ci/grouping/FastCostFunction.java" afterPath="$PROJECT_DIR$/src/jp/ac/kyutech/ci/grouping/FastCostFunction.java" />
-      <change beforePath="$PROJECT_DIR$/src/jp/ac/kyutech/ci/grouping/ScanChainGrouperAlgZ2.java" afterPath="$PROJECT_DIR$/src/jp/ac/kyutech/ci/grouping/ScanChainGrouperAlgZ2.java" />
       <change beforePath="$PROJECT_DIR$/../kyupi/src/org/kyupi/Main.java" afterPath="$PROJECT_DIR$/../kyupi/src/org/kyupi/Main.java" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
@@ -585,7 +583,8 @@
     <MESSAGE value=" lower mutate possibility rise disaster time to 6" />
     <MESSAGE value="add the population to 50" />
     <MESSAGE value="add z3 for ets18work, tried to improve costfunction for ats17work, but failed." />
-    <option name="LAST_COMMIT_MESSAGE" value="add z3 for ets18work, tried to improve costfunction for ats17work, but failed." />
+    <MESSAGE value="started ScanCHainGrouperAlgZ2 for ats 17 work" />
+    <option name="LAST_COMMIT_MESSAGE" value="started ScanCHainGrouperAlgZ2 for ats 17 work" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -908,6 +907,12 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="684">
           <caret line="180" column="22" lean-forward="true" selection-start-line="180" selection-start-column="22" selection-end-line="180" selection-end-column="22" />
+          <folding>
+            <element signature="method#FastCostFunction#0;class#FastCostFunction#0" expanded="false" />
+            <element signature="method#evaluate_weighted#0;class#FastCostFunction#0" expanded="false" />
+            <element signature="e#6761#6762#0" expanded="true" />
+            <element signature="e#6789#6790#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -923,6 +928,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="456">
           <caret line="24" column="16" lean-forward="false" selection-start-line="24" selection-start-column="16" selection-end-line="24" selection-end-column="16" />
+          <folding />
         </state>
       </provider>
     </entry>
