@@ -1,9 +1,6 @@
 package jp.ac.kyutech.ci.grouping;
 
-import java.util.BitSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 
 import jp.ac.kyutech.ci.grouping.Main.CBInfo;
 
@@ -159,25 +156,29 @@ public class FastCostFunction {
 	public boolean evaluate_usable(int[] clocking, int clocks, float threshold) {
 		boolean usable = true;
 
+		System.out.println("Clocking " + Arrays.toString(clocking).replaceAll("\\[", "").replaceAll("\\]", "")
+				.replaceAll(",", ""));
 		for (int c = 0; c < clocks; c++) {
 			impactUnion.clear();
 			for (int chainIdx = 0; chainIdx < impacts.length; chainIdx++) {
-				if (clocking[chainIdx] == clocks)
+				if (clocking[chainIdx] == c)
 					//copy impacts[chainIdx] to bitset impactUnion
 					impactUnion.or(impacts[chainIdx]);
 			}
 			for (int chainIdx = 0; chainIdx < aregions.length; chainIdx++) {
 				for (int cellIdx = 0; cellIdx < aregions[chainIdx].length; cellIdx++){
-					int cost = 0;
+					float cost = 0;
 					for (int aggIdx = 0; aggIdx < aregions[chainIdx][cellIdx].length; aggIdx++){
 						if (impactUnion.get(aregions[chainIdx][cellIdx][aggIdx]))
 							cost++;
 					}
-					if ((cost/aregions[chainIdx][cellIdx].length) > threshold)
+					if (cost == 0)
+						continue;
+					if ((cost/aregions[chainIdx][cellIdx].length) * 100 > threshold)
 						usable = false;
 				}
 			}
-			if (!usable)
+			if (usable == false)
 				break;
 		}
 		return usable;

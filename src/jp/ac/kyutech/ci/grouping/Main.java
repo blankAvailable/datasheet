@@ -194,7 +194,6 @@ public class Main extends KyupiApp {
 				printGoodbye();
 				return null;
 			}
-
 		} else {
 			File f = new File(prt_method);
 			if (!f.canRead()) {
