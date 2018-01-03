@@ -156,8 +156,6 @@ public class FastCostFunction {
 	public boolean evaluate_usable(int[] clocking, int clocks, float threshold) {
 		boolean usable = true;
 
-		System.out.println("Clocking " + Arrays.toString(clocking).replaceAll("\\[", "").replaceAll("\\]", "")
-				.replaceAll(",", ""));
 		for (int c = 0; c < clocks; c++) {
 			impactUnion.clear();
 			for (int chainIdx = 0; chainIdx < impacts.length; chainIdx++) {
