@@ -1,12 +1,14 @@
 package jp.ac.kyutech.ci.grouping;
 
-import java.util.*;
-
 import jp.ac.kyutech.ci.grouping.Main.CBInfo;
-
 import org.kyupi.graph.Graph.Node;
 import org.kyupi.graph.ScanChains.ScanCell;
 import org.kyupi.graph.ScanChains.ScanChain;
+
+import java.util.BitSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 
 public class FastCostFunction {
 
@@ -172,7 +174,7 @@ public class FastCostFunction {
 					}
 					if (cost == 0)
 						continue;
-					if ((cost/aregions[chainIdx][cellIdx].length) * 100 > threshold)
+					if (cost > threshold)
 						usable = false;
 				}
 			}

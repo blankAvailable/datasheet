@@ -1,34 +1,14 @@
 package jp.ac.kyutech.ci.grouping;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.math.BigInteger;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.text.NumberFormat;
-import java.util.*;
-import java.util.function.Predicate;
-
+import jp.ac.kyutech.ci.grouping.QBWeightedSwitchingActivitySim.WeightedNodeSet;
 import org.junit.Test;
 import org.kyupi.data.QVExpander;
 import org.kyupi.data.item.QVector;
 import org.kyupi.data.source.BBSource;
 import org.kyupi.data.source.QBSource;
 import org.kyupi.data.source.QVSource;
-import org.kyupi.graph.FormatVerilog;
-import org.kyupi.graph.Graph;
+import org.kyupi.graph.*;
 import org.kyupi.graph.Graph.Node;
-import org.kyupi.graph.GraphTools;
-import org.kyupi.graph.Library;
-import org.kyupi.graph.LibraryOldSAED;
-import org.kyupi.graph.LibrarySAED;
-import org.kyupi.graph.Placement;
-import org.kyupi.graph.ScanChains;
 import org.kyupi.graph.ScanChains.ScanCell;
 import org.kyupi.graph.ScanChains.ScanChain;
 import org.kyupi.misc.ArrayTools;
@@ -36,7 +16,13 @@ import org.kyupi.misc.KyupiApp;
 import org.kyupi.misc.StringFilter;
 import org.kyupi.sim.BBPlainSim;
 
-import jp.ac.kyutech.ci.grouping.QBWeightedSwitchingActivitySim.WeightedNodeSet;
+import java.io.*;
+import java.math.BigInteger;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
+import java.util.*;
+import java.util.function.Predicate;
 
 public class Main extends KyupiApp {
 
@@ -71,7 +57,6 @@ public class Main extends KyupiApp {
 		options.addOption("max_overlap", true, "output maximum structural impact/aggressor overlap to given file");
 		options.addOption("dispersion", true,
 				"output coefficient of dispersion for every scan chain group to given file");
-		options.addOption("overlap_thr", true, "set the overlap ratio threshold for heuristic algorithm");
 
 	}
 
@@ -186,14 +171,7 @@ public class Main extends KyupiApp {
 			partAlg = new ScanChainGrouperAlgZ1();
 		}else if (prt_method.startsWith("z2")){
 			log.info("PartitionMethod Z2");
-			if (argsParsed().hasOption("overlap_thr")) {
-				int threshold = Integer.parseInt(argsParsed().getOptionValue("overlap_thr"));
-				partAlg = new ScanChainGrouperAlgZ2(threshold);
-			}else {
-				log.error("please specify overlap_thr option");
-				printGoodbye();
-				return null;
-			}
+			partAlg = new ScanChainGrouperAlgZ2();
 		} else {
 			File f = new File(prt_method);
 			if (!f.canRead()) {

@@ -11,8 +11,8 @@ public class ScanChainGrouperAlgZ2 extends ScanChainGrouper {
     private FastCostFunction cost;
     private int threshold = 0;
 
-    public ScanChainGrouperAlgZ2(int threshold){
-        this.threshold = threshold;
+    public ScanChainGrouperAlgZ2(){
+
     }
 
     public int[] calculateClocking(int clockCount){
@@ -20,11 +20,16 @@ public class ScanChainGrouperAlgZ2 extends ScanChainGrouper {
             cost = new FastCostFunction(chain2impactSet, cell2aggressorSet);
             log.info("FastCostFunction initialized");
         }
+        int[] thrClocking = new  int[chains.size()];
+        for (int i = 0; i < thrClocking.length; i++)
+            thrClocking[i] = i;
+        threshold = cost.evaluate(thrClocking, chains.size());
+        log.info("Lower bound: " + threshold);
 
         Random r = new Random();
         int[] clocksFlag = new int[clockCount];
 
-        int clocking[] = new int[chains.size()];
+        int[] clocking = new int[chains.size()];
         for (int i = 0; i < chains.size(); i++)
             clocking[i] = -1;
         clocking[0] = r.nextInt(clockCount);
