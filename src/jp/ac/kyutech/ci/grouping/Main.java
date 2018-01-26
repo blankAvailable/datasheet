@@ -46,6 +46,7 @@ public class Main extends KyupiApp {
 		options.addOption("prt_method", true, "partitioning method: seq, random, s1, z1, ... (default seq)");
 		options.addOption("prt_start", true, "start partition index (seq) or start seed (random) (default 0)");
 		options.addOption("prt_cases", true, "number of partitions to evaluate (for seq, random only) (default 1)");
+		options.addOption("ir_drop", true, "read max ir-drop list and output the flip-flop with max ir-drop and the the value of ir-drop");
 
 		// specific operations to perform
 		options.addOption("sep_clk", true, "safe a new design with separate chain clocks to given file and exit");
@@ -66,6 +67,34 @@ public class Main extends KyupiApp {
 	public Void call() throws Exception {
 
 		printWelcome();
+
+		if (argsParsed().hasOption("ir_drop")) {
+			String filename = argsParsed().getOptionValue("ir_drop");
+			FileReader fr = new FileReader(filename);
+			log.info("Loading ir-dropliset " + filename);
+			BufferedReader br = new BufferedReader(fr);
+			String line = null;
+			float max = 0;
+			float avg = 0;
+			int ffcount = 0;
+			int maxIRdropLine = 0;
+			int linecount = 0;
+			while ((line = br.readLine()) != null){
+				linecount++;
+				if (line.contains("reg")) {
+					String keywords[] = line.split(" ");
+					if ((1.2 - Float.parseFloat(keywords[3])) > max) {
+						max = (float) (1.2 - Float.parseFloat(keywords[3]));
+						maxIRdropLine = linecount;
+					}
+					ffcount++;
+					avg += 1.2 - Float.parseFloat(keywords[3]);
+				}
+			}
+			avg /= ffcount;
+			log.info("MaxIRdropOnFF " + max + " lineNum " + maxIRdropLine);
+			log.info("AvgIRdropOnFFs " + avg);
+		}
 
 		Util util = new Util();
 		// load circuit and print basic statistics
