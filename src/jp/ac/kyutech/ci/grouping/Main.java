@@ -71,7 +71,7 @@ public class Main extends KyupiApp {
 		if (argsParsed().hasOption("ir_drop")) {
 			String filename = argsParsed().getOptionValue("ir_drop");
 			FileReader fr = new FileReader(filename);
-			log.info("Loading ir-dropliset " + filename);
+			log.info("Loading ir-droplist " + filename);
 			BufferedReader br = new BufferedReader(fr);
 			String line = null;
 			float max = 0;
@@ -89,6 +89,7 @@ public class Main extends KyupiApp {
 					}
 					ffcount++;
 					avg += 1.2 - Float.parseFloat(keywords[3]);
+					System.out.println(keywords[5] + " " + keywords[3]);
 				}
 			}
 			avg /= ffcount;
