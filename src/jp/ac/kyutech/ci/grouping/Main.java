@@ -82,6 +82,7 @@ public class Main extends KyupiApp {
 			while ((line = br.readLine()) != null){
 				linecount++;
 				if (line.contains("reg")) {
+
 					String keywords[] = line.split(" ");
 					if ((1.2 - Float.parseFloat(keywords[3])) > max) {
 						max = (float) (1.2 - Float.parseFloat(keywords[3]));
@@ -90,6 +91,7 @@ public class Main extends KyupiApp {
 					ffcount++;
 					avg += 1.2 - Float.parseFloat(keywords[3]);
 					System.out.println(keywords[5] + " " + keywords[3]);
+
 				}
 			}
 			avg /= ffcount;
