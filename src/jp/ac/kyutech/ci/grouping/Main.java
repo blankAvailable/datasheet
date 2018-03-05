@@ -23,6 +23,7 @@ import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.*;
 import java.util.function.Predicate;
+import static java.lang.Math.toIntExact;
 
 public class Main extends KyupiApp {
 
@@ -69,6 +70,7 @@ public class Main extends KyupiApp {
 		printWelcome();
 
 		if (argsParsed().hasOption("ir_drop")) {
+			int[] dropffcount = new int[101];
 			String filename = argsParsed().getOptionValue("ir_drop");
 			FileReader fr = new FileReader(filename);
 			log.info("Loading ir-droplist " + filename);
@@ -82,6 +84,7 @@ public class Main extends KyupiApp {
 			while ((line = br.readLine()) != null){
 				linecount++;
 				if (line.contains("reg")) {
+					int percentage;
 
 					String keywords[] = line.split(" ");
 					if ((1.2 - Float.parseFloat(keywords[3])) > max) {
@@ -90,7 +93,9 @@ public class Main extends KyupiApp {
 					}
 					ffcount++;
 					avg += 1.2 - Float.parseFloat(keywords[3]);
-					System.out.println(keywords[5] + " " + keywords[3]);
+					//System.out.println(keywords[5] + " " + keywords[3]);
+					percentage = toIntExact(Math.round((Float.parseFloat(keywords[3])/3.096)*100));
+					dropffcount[percentage]++;
 
 				}
 			}
