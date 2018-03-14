@@ -1,13 +1,6 @@
 package jp.ac.kyutech.ci.sc_grouping_clkaggre;
 
-import java.util.HashMap;
-import java.util.HashSet;
-
-import org.kyupi.graph.Graph.Node;
 import org.apache.log4j.Logger;
-import org.kyupi.graph.ScanChains;
-import org.kyupi.graph.ScanChains.ScanCell;
-import org.kyupi.graph.ScanChains.ScanChain;
 
 public abstract class ScanChainGrouper {
 

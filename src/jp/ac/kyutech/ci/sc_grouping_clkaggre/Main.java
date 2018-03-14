@@ -37,7 +37,7 @@ public class Main extends KyupiApp {
         options.addOption("clk", true, "number of staggered groups");
         options.addOption("arx", true, "horizontal size of aggressor regions in units of NAND2X1 widths");
         options.addOption("ary", true, "vertical size of aggressor regions in units of rows");
-        options.addOption("prt_method", true, "partitioning method: seq, random, s1, ... (default seq)");
+        options.addOption("prt_method", true, "partitioning method: seq, random, z1, ... (default seq)");
         options.addOption("prt_start", true, "start partition index (seq) or start seed (random) (default 0)");
         options.addOption("prt_cases", true, "number of partitions to evaluate (for seq, random only) (default 1)");
 
@@ -49,6 +49,9 @@ public class Main extends KyupiApp {
         options.addOption("table", true, "output a data table for latex into given file");
         // output data for excel
         options.addOption("plot", true, "output a data table for latex into given file");
+        options.addOption("zpl", true, "input the name of the zpl file");
+        options.addOption("thr", true, "input the skew threshold for the ILP model or heuristic");
+        options.addOption("sol", true, "read the solution from the ILP model to get the optimized grouping");
     }
 
     private Graph circuit;
@@ -102,8 +105,8 @@ public class Main extends KyupiApp {
         }
 
         // read aggressor region size parameters
-        double arx = doubleFromArgsOrDefault("arx", 600);
-        double ary = doubleFromArgsOrDefault("ary", 14);
+        double arx = doubleFromArgsOrDefault("arx", 200);
+        double ary = doubleFromArgsOrDefault("ary", 8);
         int arxnm = (int) (arx * NAND_WIDTH);
         int arynm = (int) (ary * ROW_HEIGHT);
         log.info("AggressorRegionSize X " + arx + " Y " + ary);
@@ -170,6 +173,15 @@ public class Main extends KyupiApp {
             startSeed = 0;
         }
 
+        int skewthreshold = intFromArgsOrDefault("thr", 0);
+        ScanChianGrouperZ4 zpl = null;
+        if (argsParsed().hasOption("zpl")) {
+            String filename = argsParsed().getOptionValue("zpl");
+            zpl = new ScanChianGrouperZ4(chain2impactset, cell2aggressorSet, skewthreshold);
+            zpl.ZplWriter(filename, clocks);
+        }
+
+
         BufferedWriter plot = null;
         if (argsParsed().hasOption("plot")) {
             String filename = argsParsed().getOptionValue("plot");
@@ -181,6 +193,7 @@ public class Main extends KyupiApp {
         for (int caseId = 0; caseId < groupingCases; caseId++){
             log.info("GroupingCase " + caseId);
             int clocking[];
+
             if (grouper != null){
                 log.info("ScanChainGrouping start with " + clocks +" available groups... ");
                 clocking = grouper.calculateClocking(clocks, cost);
@@ -199,6 +212,13 @@ public class Main extends KyupiApp {
                 }
             }else {
                 clocking = new int[chains.size()];
+            }
+
+            if (argsParsed().hasOption("sol")){
+                String filename = argsParsed().getOptionValue("sol");
+                if (zpl == null)
+                    zpl = new ScanChianGrouperZ4(chain2impactset, cell2aggressorSet, skewthreshold);
+                clocking = zpl.SolReader(filename, clocks);
             }
 
             if (plot != null){
@@ -396,6 +416,7 @@ public class Main extends KyupiApp {
                     int y = placement.getY(n);
                     cbuf2aggressorSet.put(n, placement.getRectangle(x - arxnm / 2, y - arynm / 2, x + arxnm / 2,
                             y+ arynm / 2));
+                    //no duplication removing
                     saffaggressors.addAll(cbuf2aggressorSet.get(n));
                 }
             }

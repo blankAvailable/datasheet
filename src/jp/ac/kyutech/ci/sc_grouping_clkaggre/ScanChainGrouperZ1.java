@@ -2,6 +2,10 @@ package jp.ac.kyutech.ci.sc_grouping_clkaggre;
 
 import java.util.Arrays;
 
+/**
+ * Random grouping followed with greedy improve
+ */
+
 public class ScanChainGrouperZ1 extends ScanChainGrouper {
 
     private static final int RANDOM_TIMEOUT = 32;

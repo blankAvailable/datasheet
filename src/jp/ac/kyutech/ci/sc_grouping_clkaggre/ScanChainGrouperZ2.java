@@ -4,6 +4,10 @@ package jp.ac.kyutech.ci.sc_grouping_clkaggre;
 import java.util.Arrays;
 import java.util.Random;
 
+/**
+ * genetic grouping
+ */
+
 public class ScanChainGrouperZ2 extends ScanChainGrouper {
 
     private static final int INITIAL_POPULATION = 50;

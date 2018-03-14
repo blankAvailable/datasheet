@@ -94,12 +94,15 @@ public class Main extends KyupiApp {
 					ffcount++;
 					avg += 1.2 - Float.parseFloat(keywords[3]);
 					//System.out.println(keywords[5] + " " + keywords[3]);
-					percentage = toIntExact(Math.round((Float.parseFloat(keywords[3])/3.096)*100));
+					percentage = toIntExact(Math.round(((1.2 - Float.parseFloat(keywords[3]))/3.096)*100));
 					dropffcount[percentage]++;
 
 				}
 			}
 			avg /= ffcount;
+			for (int per = 1; per <= 100; per++){
+				System.out.println(per + " " +dropffcount[per]);
+			}
 			log.info("MaxIRdropOnFF " + max + " lineNum " + maxIRdropLine);
 			log.info("AvgIRdropOnFFs " + avg);
 		}

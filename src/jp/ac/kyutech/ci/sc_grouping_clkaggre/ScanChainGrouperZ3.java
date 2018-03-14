@@ -3,6 +3,10 @@ package jp.ac.kyutech.ci.sc_grouping_clkaggre;
 import java.util.Arrays;
 import java.util.Random;
 
+/**
+ * total greedy search
+ */
+
 public class ScanChainGrouperZ3 extends ScanChainGrouper {
     @Override
     public int[] calculateClocking(int groupCount, FastCostFunction cost) {
