@@ -175,7 +175,7 @@ public class Main extends KyupiApp {
 
         int skewthreshold = intFromArgsOrDefault("thr", 0);
         ScanChianGrouperZ4 zpl = null;
-        if (argsParsed().hasOption("zpl")) {
+        if (argsParsed().hasOption("zpl") && clocks < chains.size()) {
             String filename = argsParsed().getOptionValue("zpl");
             zpl = new ScanChianGrouperZ4(chain2impactset, cell2aggressorSet, skewthreshold);
             zpl.ZplWriter(filename, clocks);
@@ -214,7 +214,7 @@ public class Main extends KyupiApp {
                 clocking = new int[chains.size()];
             }
 
-            if (argsParsed().hasOption("sol")){
+            if (argsParsed().hasOption("sol") && clocks < chains.size()){
                 String filename = argsParsed().getOptionValue("sol");
                 if (zpl == null)
                     zpl = new ScanChianGrouperZ4(chain2impactset, cell2aggressorSet, skewthreshold);
