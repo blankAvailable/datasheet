@@ -270,30 +270,46 @@ public class ScanChianGrouperZ4 {
     private int ThrConsWeiter(int[][][] aregions, BufferedWriter cons, int groupCount, int thr, long constrainId) throws IOException {
         int conflict = 0;
         boolean pairingflag = true;
+        StringBuilder thrbuilder = new StringBuilder();
         for (int chainIdx = 0; chainIdx < aregions.length; chainIdx++){
             for (int scancellIdx = 0; scancellIdx < aregions[chainIdx].length; scancellIdx++){
                 if (aregions[chainIdx][scancellIdx][0] == -1)
                     continue;
                 if (pairingflag){
                     cons.write("var conf" + conflict + " binary;\n");
-                    cons.write("subto c" + constrainId + ": vif vabs(");
+                    cons.write("subto c" + constrainId + ": vif");
                     if (scancellIdx > 0)
                         scancellIdx--;
                 }
                 for (int nodeIdx = 0; nodeIdx < aregions[chainIdx][scancellIdx].length; nodeIdx++){
                     for (int g = 0; g < groupCount; g++){
                         if (pairingflag)
-                            cons.write(" + ");
+                            thrbuilder.append(" + ");
                         else
-                            cons.write(" - ");
-                        cons.write("z_" + aregions[chainIdx][scancellIdx][nodeIdx] + "_" + chainIdx + "_" + g);
-                        if (nodeIdx+1 == aregions[chainIdx][scancellIdx].length && g+1 == groupCount && !pairingflag) {
-                            cons.write(" ) > " + thr + " then conf" + conflict + " == 1 " + "else conf" + conflict + " == 0 end;\n");
+                            thrbuilder.append(" - ");
+                        thrbuilder.append("z_" + aregions[chainIdx][scancellIdx][nodeIdx] + "_" + chainIdx + "_" + g);
+                        if (nodeIdx + 1 == aregions[chainIdx][scancellIdx].length && g + 1 == groupCount && !pairingflag){
+                            cons.write(thrbuilder.toString() + " < " + thr + " or" + thrbuilder.toString() + " > "
+                                    + thr + " then conf" + conflict + " == 1 " + "else conf" + conflict + " == 0 end;\n");
                             conflict++;
                             constrainId++;
                         }
                     }
                 }
+//                for (int nodeIdx = 0; nodeIdx < aregions[chainIdx][scancellIdx].length; nodeIdx++){
+//                    for (int g = 0; g < groupCount; g++){
+//                        if (pairingflag)
+//                            cons.write(" + ");
+//                        else
+//                            cons.write(" - ");
+//                        cons.write("z_" + aregions[chainIdx][scancellIdx][nodeIdx] + "_" + chainIdx + "_" + g);
+//                        if (nodeIdx+1 == aregions[chainIdx][scancellIdx].length && g+1 == groupCount && !pairingflag) {
+//                            cons.write(" ) > " + thr + " then conf" + conflict + " == 1 " + "else conf" + conflict + " == 0 end;\n");
+//                            conflict++;
+//                            constrainId++;
+//                        }
+//                    }
+//                }
                 pairingflag = !pairingflag;
             }
         }
