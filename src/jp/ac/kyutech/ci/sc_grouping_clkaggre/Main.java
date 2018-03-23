@@ -121,6 +121,7 @@ public class Main extends KyupiApp {
         FastCostFunction cost = new FastCostFunction(chain2impactset, cell2aggressorSet);
         // read in grouping paremeters
         int clocks = intFromArgsOrDefault("clk", 1);
+        int skewthreshold = intFromArgsOrDefault("thr", 0);
         log.info("AvailableGroupCount " + clocks);
         ScanChainGrouping grouping = null;
         ScanChainGrouper grouper = null;
@@ -154,8 +155,11 @@ public class Main extends KyupiApp {
                 log.info("GroupingMethod Z2");
                 grouper = new ScanChainGrouperZ2();
             }else if (groupingMethod.startsWith("z3")) {
-            log.info("GroupingMethod Z3");
-            grouper = new ScanChainGrouperZ3();
+                log.info("GroupingMethod Z3");
+                grouper = new ScanChainGrouperZ3();
+            } else if (groupingMethod.startsWith("z5")){
+                log.info("GroupingMethod Z5");
+                grouper = new ScanChainGrouperZ5(skewthreshold);
             } else {
                 log.error("unknown grouping method " + groupingMethod);
                 printGoodbye();
@@ -173,7 +177,6 @@ public class Main extends KyupiApp {
             startSeed = 0;
         }
 
-        int skewthreshold = intFromArgsOrDefault("thr", 0);
         ScanChianGrouperZ4 zpl = null;
         if (argsParsed().hasOption("zpl") && clocks < chains.size()) {
             String filename = argsParsed().getOptionValue("zpl");

@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.Random;
 
 /**
- * total greedy search
+ * totally greedy search
  */
 
 public class ScanChainGrouperZ3 extends ScanChainGrouper {

@@ -53,6 +53,7 @@ public class FastCostFunction {
         }
     }
 
+
     private BitSet impactUnion = new BitSet();
 
     private int last_chain_id = 0;
@@ -101,6 +102,55 @@ public class FastCostFunction {
         }
 
         return maxCostDiff;
+    }
+
+    public int evaluate_counter(int[] clocking, int clocks, int threshold){
+        int maxCostDiff = 0;
+        int conflictCounter = 0;
+        groupCost = new int[clocks];
+
+        for (int c = 0; c < clocks; c++){
+            int groupCostDiff = 0;
+            // compute sets of possibly active nodes of current group
+            impactUnion.clear();
+            for (int chainId = 0; chainId < impacts.length; chainId++){
+                if (clocking[chainId] == c)
+                    impactUnion.or(impacts[chainId]);
+            }
+            for (int chainId = 0; chainId < aregions.length; chainId++){
+                if (clocking[chainId] != c)
+                    continue;
+                int costPredecessor = 0;
+                for (int cellId = 0; cellId < aregions[chainId].length; cellId++){
+                    int cost = 0;
+                    for (int aggId = 0; aggId < aregions[chainId][cellId].length; aggId++){
+                        if (impactUnion.get(aregions[chainId][cellId][aggId]))
+                            cost++;
+                    }
+                    if (costPredecessor == 0){
+                        costPredecessor = cost;
+                        continue;
+                    }else if (Math.abs((costPredecessor - cost)) > threshold){
+                        conflictCounter++;
+                    }
+                    if (Math.abs((costPredecessor - cost)) > groupCostDiff)
+                        groupCostDiff = Math.abs((costPredecessor - cost));
+                    costPredecessor = cost;
+                }
+            }
+            groupCost[c] = groupCostDiff;
+        }
+
+        return conflictCounter;
+    }
+
+    public boolean evaluate_usable(int[] clocking, int clocks, float threshold) {
+        boolean usable = false;
+
+        if (evaluate(clocking, clocks) <= threshold)
+            usable = true;
+
+        return usable;
     }
 
     public int getLastWorstClockId(){ return last_clock_id; }

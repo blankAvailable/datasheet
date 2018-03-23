@@ -2,10 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="cae84d3d-baa2-453a-b51c-b59977cd4fe2" name="Default" comment="">
+      <change beforePath="" afterPath="$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/ScanChainGrouperZ5.java" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/src/jp/ac/kyutech/ci/grouping/FastCostFunction.java" afterPath="$PROJECT_DIR$/src/jp/ac/kyutech/ci/grouping/FastCostFunction.java" />
-      <change beforePath="$PROJECT_DIR$/src/jp/ac/kyutech/ci/grouping/Main.java" afterPath="$PROJECT_DIR$/src/jp/ac/kyutech/ci/grouping/Main.java" />
-      <change beforePath="$PROJECT_DIR$/src/jp/ac/kyutech/ci/grouping/ScanChainGrouperAlgZ2.java" afterPath="$PROJECT_DIR$/src/jp/ac/kyutech/ci/grouping/ScanChainGrouperAlgZ2.java" />
+      <change beforePath="$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/FastCostFunction.java" afterPath="$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/FastCostFunction.java" />
+      <change beforePath="$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/Main.java" afterPath="$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/Main.java" />
+      <change beforePath="$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/ScanChainGrouperZ3.java" afterPath="$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/ScanChainGrouperZ3.java" />
+      <change beforePath="$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/ScanChianGrouperZ4.java" afterPath="$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/ScanChianGrouperZ4.java" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -16,52 +19,16 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="DockManager">
-    <window id="1">
+    <window id="2">
       <content type="file-editors">
         <state>
-          <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-            <file leaf-file-name="ScanChainGrouperAlgZ2.java" pinned="false" current-in-tab="true">
-              <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/grouping/ScanChainGrouperAlgZ2.java">
+          <leaf>
+            <file leaf-file-name="ScanChainGrouperZ5.java" pinned="false" current-in-tab="true">
+              <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/ScanChainGrouperZ5.java">
                 <provider selected="true" editor-type-id="text-editor">
-                  <state relative-caret-position="655">
-                    <caret line="46" column="43" lean-forward="false" selection-start-line="46" selection-start-column="43" selection-end-line="46" selection-end-column="43" />
-                    <folding>
-                      <element signature="e#317#318#0" expanded="true" />
-                      <element signature="e#359#360#0" expanded="true" />
-                    </folding>
-                  </state>
-                </provider>
-              </entry>
-            </file>
-            <file leaf-file-name="Main.java" pinned="false" current-in-tab="false">
-              <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/grouping/Main.java">
-                <provider selected="true" editor-type-id="text-editor">
-                  <state relative-caret-position="3629">
-                    <caret line="229" column="55" lean-forward="false" selection-start-line="229" selection-start-column="55" selection-end-line="229" selection-end-column="55" />
+                  <state relative-caret-position="673">
+                    <caret line="62" column="92" lean-forward="false" selection-start-line="62" selection-start-column="92" selection-end-line="62" selection-end-column="92" />
                     <folding />
-                  </state>
-                </provider>
-              </entry>
-            </file>
-          </leaf>
-        </state>
-      </content>
-    </window>
-    <window id="1">
-      <content type="file-editors">
-        <state>
-          <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-            <file leaf-file-name="FastCostFunction.java" pinned="false" current-in-tab="true">
-              <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/grouping/FastCostFunction.java">
-                <provider selected="true" editor-type-id="text-editor">
-                  <state relative-caret-position="540">
-                    <caret line="175" column="33" lean-forward="false" selection-start-line="175" selection-start-column="33" selection-end-line="175" selection-end-column="33" />
-                    <folding>
-                      <element signature="method#FastCostFunction#0;class#FastCostFunction#0" expanded="false" />
-                      <element signature="method#evaluate#0;class#FastCostFunction#0" expanded="false" />
-                      <element signature="method#evaluate_weighted#0;class#FastCostFunction#0" expanded="false" />
-                      <element signature="method#evaluate_weighted#1;class#FastCostFunction#0" expanded="false" />
-                    </folding>
                   </state>
                 </provider>
               </entry>
@@ -73,37 +40,69 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="ScanChainGrouperAlgS2.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/grouping/ScanChainGrouperAlgS2.java">
+      <file leaf-file-name="ScanChianGrouperZ4.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/ScanChianGrouperZ4.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="114">
-              <caret line="8" column="32" lean-forward="false" selection-start-line="8" selection-start-column="32" selection-end-line="8" selection-end-column="32" />
+            <state relative-caret-position="169">
+              <caret line="282" column="17" lean-forward="false" selection-start-line="282" selection-start-column="17" selection-end-line="282" selection-end-column="17" />
+              <folding>
+                <element signature="docComment;class#MinCircuit#0" expanded="false" />
+                <element signature="class#MinCircuit#0" expanded="false" />
+                <element signature="method#testCase#0;class#ScanChianGrouperZ4#0" expanded="false" />
+                <element signature="method#ScanChianGrouperZ4#0;class#ScanChianGrouperZ4#0" expanded="false" />
+                <element signature="method#VariableWriter#0;class#ScanChianGrouperZ4#0" expanded="false" />
+                <element signature="method#Var2ChainConsWriter#0;class#ScanChianGrouperZ4#0" expanded="false" />
+                <element signature="method#OnevOnegConsWriter#0;class#ScanChianGrouperZ4#0" expanded="false" />
+                <element signature="method#ZConsWriter#0;class#ScanChianGrouperZ4#0" expanded="false" />
+                <element signature="method#SelfConsWriter#0;class#ScanChianGrouperZ4#0" expanded="false" />
+                <element signature="method#ObjectiveWriter#0;class#ScanChianGrouperZ4#0" expanded="false" />
+                <element signature="method#ZplWriter#0;class#ScanChianGrouperZ4#0" expanded="false" />
+                <element signature="method#SolReader#0;class#ScanChianGrouperZ4#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ScanChainGrouperAlgZ2.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/grouping/ScanChainGrouperAlgZ2.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="874">
+              <caret line="49" column="44" lean-forward="false" selection-start-line="49" selection-start-column="44" selection-end-line="49" selection-end-column="44" />
+              <folding>
+                <element signature="method#ScanChainGrouperAlgZ2#0;class#ScanChainGrouperAlgZ2#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ScanChainGrouper.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/ScanChainGrouper.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="76">
+              <caret line="4" column="22" lean-forward="false" selection-start-line="4" selection-start-column="22" selection-end-line="4" selection-end-column="22" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="FastCostFunction.java" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/FastCostFunction.java">
+      <file leaf-file-name="Main.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/Main.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="228">
-              <caret line="55" column="46" lean-forward="true" selection-start-line="55" selection-start-column="46" selection-end-line="55" selection-end-column="46" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ScanChainGrouperZ3.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/ScanChainGrouperZ3.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="399">
-              <caret line="22" column="46" lean-forward="false" selection-start-line="21" selection-start-column="16" selection-end-line="22" selection-end-column="46" />
+            <state relative-caret-position="-1232">
+              <caret line="150" column="57" lean-forward="false" selection-start-line="150" selection-start-column="57" selection-end-line="150" selection-end-column="57" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
     </leaf>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
@@ -128,21 +127,23 @@
         <option value="$PROJECT_DIR$/src/jp/ac/kyutech/ci/grouping/ScanChainGrouperAlgZ1.java" />
         <option value="$PROJECT_DIR$/lib/org.sat4j.core.jar!/org/sat4j/package-info.class" />
         <option value="$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/ScanChainGrouperZ2.java" />
-        <option value="$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/Main.java" />
-        <option value="$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/ScanChainGrouperZ3.java" />
-        <option value="$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/FastCostFunction.java" />
         <option value="$PROJECT_DIR$/../kyupi/src/org/kyupi/graph/Graph.java" />
-        <option value="$PROJECT_DIR$/src/jp/ac/kyutech/ci/grouping/Main.java" />
         <option value="$PROJECT_DIR$/src/jp/ac/kyutech/ci/grouping/ScanChainGrouperAlgZ2.java" />
         <option value="$PROJECT_DIR$/src/jp/ac/kyutech/ci/grouping/FastCostFunction.java" />
+        <option value="$PROJECT_DIR$/src/jp/ac/kyutech/ci/grouping/Main.java" />
+        <option value="$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/ScanChainGrouperZ3.java" />
+        <option value="$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/Main.java" />
+        <option value="$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/ScanChianGrouperZ4.java" />
+        <option value="$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/FastCostFunction.java" />
+        <option value="$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/ScanChainGrouperZ5.java" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="-319" />
-    <option name="y" value="118" />
-    <option name="width" value="1382" />
-    <option name="height" value="754" />
+    <option name="x" value="2079" />
+    <option name="y" value="68" />
+    <option name="width" value="1552" />
+    <option name="height" value="850" />
   </component>
   <component name="ProjectLevelVcsManager">
     <OptionsSetting value="false" id="Update" />
@@ -163,6 +164,9 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="AndroidView" />
+      <pane id="Scope" />
+      <pane id="Scratches" />
       <pane id="PackagesPane">
         <subPane>
           <expand>
@@ -174,12 +178,6 @@
               <item name="grouping" type="58d84e3e:PackageViewProjectNode" />
               <item name="grouping" type="616d4139:PackageViewModuleNode" />
               <item name="jp.ac.kyutech.ci" type="1f31426a:PackageElementNode" />
-            </path>
-            <path>
-              <item name="grouping" type="58d84e3e:PackageViewProjectNode" />
-              <item name="grouping" type="616d4139:PackageViewModuleNode" />
-              <item name="jp.ac.kyutech.ci" type="1f31426a:PackageElementNode" />
-              <item name="grouping" type="1f31426a:PackageElementNode" />
             </path>
             <path>
               <item name="grouping" type="58d84e3e:PackageViewProjectNode" />
@@ -207,13 +205,11 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
-      <pane id="Scratches" />
-      <pane id="AndroidView" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -227,7 +223,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Application.Main_ATS">
+  <component name="RunManager" selected="Application.Main">
     <configuration default="true" type="Applet" factoryName="Applet">
       <option name="HTML_USED" value="false" />
       <option name="WIDTH" value="400" />
@@ -244,7 +240,7 @@
       </extension>
       <option name="MAIN_CLASS_NAME" value="jp.ac.kyutech.ci.sc_grouping_clkaggre.Main" />
       <option name="VM_PARAMETERS" value="" />
-      <option name="PROGRAM_PARAMETERS" value="-d testdata\b17\b17_25_10_layout.v -def testdata\b17\b17_25_10_layout.def -clk 3 -prt_method z3 -sim 50" />
+      <option name="PROGRAM_PARAMETERS" value="-d testdata\b12\b12_25_6_layout.v -def testdata\b12\b12_25_6_layout.def -clk 2 -prt_method z5 -thr 100" />
       <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
       <option name="ALTERNATIVE_JRE_PATH" />
@@ -263,7 +259,7 @@
       </extension>
       <option name="MAIN_CLASS_NAME" value="jp.ac.kyutech.ci.grouping.Main" />
       <option name="VM_PARAMETERS" value="" />
-      <option name="PROGRAM_PARAMETERS" value="-d testdata\b17\b17_25_10_layout.v -def testdata\b17\b17_25_10_layout.def -clk 4 -prt_method z2 -overlap_thr 50" />
+      <option name="PROGRAM_PARAMETERS" value="-d testdata\b17\b17_25_10_layout.v -def testdata\b17\b17_25_10_layout.def -ir_drop testdata\b19\set_rail_voltage_max_dy_vcd.sc" />
       <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
       <option name="ALTERNATIVE_JRE_PATH" />
@@ -469,8 +465,8 @@
     </list>
     <recent_temporary>
       <list size="2">
-        <item index="0" class="java.lang.String" itemvalue="Application.Main_ATS" />
-        <item index="1" class="java.lang.String" itemvalue="Application.Main" />
+        <item index="0" class="java.lang.String" itemvalue="Application.Main" />
+        <item index="1" class="java.lang.String" itemvalue="Application.Main_ATS" />
       </list>
     </recent_temporary>
   </component>
@@ -528,41 +524,77 @@
       <option name="project" value="LOCAL" />
       <updated>1514627351611</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="add a method to read ir-drop list">
+      <created>1516938186208</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1516938186209</updated>
+    </task>
+    <task id="LOCAL-00007" summary="add a method to read ir-drop list">
+      <created>1519782845176</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1519782845176</updated>
+    </task>
+    <task id="LOCAL-00008" summary="add a method to read ir-drop list">
+      <created>1519782948372</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1519782948372</updated>
+    </task>
+    <task id="LOCAL-00009" summary="add a method to read ir-drop list">
+      <created>1520213263578</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1520213263578</updated>
+    </task>
+    <task id="LOCAL-00010" summary="as vabs() cost too much memory, try to avoid to use it">
+      <created>1521646929205</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1521646929206</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1382" height="754" extended-state="6" />
+    <frame x="1912" y="77" width="1552" height="850" extended-state="6" />
+    <editor active="true" />
     <layout>
+      <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32934928" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3751938" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32978722" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.37297297" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32837838" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2137628" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.234375" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Learn" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Theme Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Nl-Palette" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Properties" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Theme Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
     </layout>
     <layout-to-restore>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32845744" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -590,6 +622,16 @@
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="true" content_ui="tabs" />
     </layout-to-restore>
+  </component>
+  <component name="Vcs.Log.History.Properties">
+    <option name="COLUMN_ORDER">
+      <list>
+        <option value="0" />
+        <option value="2" />
+        <option value="3" />
+        <option value="1" />
+      </list>
+    </option>
   </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
@@ -627,11 +669,13 @@
     <MESSAGE value="add the population to 50" />
     <MESSAGE value="add z3 for ets18work, tried to improve costfunction for ats17work, but failed." />
     <MESSAGE value="started ScanCHainGrouperAlgZ2 for ats 17 work" />
-    <option name="LAST_COMMIT_MESSAGE" value="started ScanCHainGrouperAlgZ2 for ats 17 work" />
+    <MESSAGE value="add a method to read ir-drop list" />
+    <MESSAGE value="as vabs() cost too much memory, try to avoid to use it" />
+    <option name="LAST_COMMIT_MESSAGE" value="as vabs() cost too much memory, try to avoid to use it" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="1" />
+      <option name="time" value="2" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -640,55 +684,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/grouping/ScanChainGrouperAlgZ1.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="76">
-          <caret line="6" column="13" lean-forward="false" selection-start-line="6" selection-start-column="13" selection-end-line="6" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_121/src.zip!/java/util/Random.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="134" column="11" lean-forward="false" selection-start-line="134" selection-start-column="11" selection-end-line="134" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_121/src.zip!/java/lang/Override.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="459">
-          <caret line="50" column="18" lean-forward="false" selection-start-line="50" selection-start-column="18" selection-end-line="50" selection-end-column="26" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/ScanChainGrouperZ1.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="343">
-          <caret line="60" column="32" lean-forward="false" selection-start-line="60" selection-start-column="32" selection-end-line="60" selection-end-column="32" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/ScanChainGrouper.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="380">
-          <caret line="22" column="4" lean-forward="false" selection-start-line="22" selection-start-column="4" selection-end-line="22" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../kyupi/src/org/kyupi/data/source/QBSource.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="95">
-          <caret line="17" column="22" lean-forward="false" selection-start-line="17" selection-start-column="22" selection-end-line="17" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/QBWeightedSwitchingActivitySim.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../kyupi/src/org/kyupi/graph/ScanChains.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="171">
@@ -819,20 +814,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/ScanChainGrouperZ2.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1129">
-          <caret line="139" column="69" lean-forward="true" selection-start-line="139" selection-start-column="69" selection-end-line="139" selection-end-column="69" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/Main.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="456">
-          <caret line="256" column="39" lean-forward="false" selection-start-line="256" selection-start-column="39" selection-end-line="256" selection-end-column="39" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../kyupi/src/org/kyupi/graph/FormatVerilog.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-1496">
@@ -861,13 +842,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_121/src.zip!/java/util/HashMap.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="146">
-          <caret line="553" column="13" lean-forward="false" selection-start-line="553" selection-start-column="13" selection-end-line="553" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="jar://C:/Program Files/Java/jdk1.8.0_121/src.zip!/java/util/HashMap.java" />
     <entry file="file://$PROJECT_DIR$/../kyupi/src/org/kyupi/graph/LibraryNangate.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="19">
@@ -882,13 +857,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_121/src.zip!/java/util/LinkedList.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="315">
-          <caret line="302" column="16" lean-forward="false" selection-start-line="302" selection-start-column="16" selection-end-line="302" selection-end-column="23" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="jar://C:/Program Files/Java/jdk1.8.0_121/src.zip!/java/util/LinkedList.java" />
     <entry file="file://$PROJECT_DIR$/../kyupi/src/org/kyupi/graph/GraphTools.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="543">
@@ -928,65 +897,154 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="76">
           <caret line="11" column="22" lean-forward="false" selection-start-line="11" selection-start-column="22" selection-end-line="11" selection-end-column="22" />
-          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/grouping/ScanChainGrouperAlgS2.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="114">
+        <state relative-caret-position="19">
           <caret line="8" column="32" lean-forward="false" selection-start-line="8" selection-start-column="32" selection-end-line="8" selection-end-column="32" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://C:/Program Files/Java/jdk1.8.0_162/src.zip!/java/io/FileReader.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="268">
+          <caret line="44" column="13" lean-forward="false" selection-start-line="44" selection-start-column="13" selection-end-line="44" selection-end-column="23" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/ScanChainGrouperZ3.java">
+    <entry file="file://$PROJECT_DIR$/../kyupi/src/org/kyupi/graph/Placement.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="399">
-          <caret line="22" column="46" lean-forward="false" selection-start-line="21" selection-start-column="16" selection-end-line="22" selection-end-column="46" />
-          <folding />
+        <state relative-caret-position="461">
+          <caret line="51" column="35" lean-forward="false" selection-start-line="51" selection-start-column="35" selection-end-line="51" selection-end-column="35" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/grouping/ScanChainGrouperAlgZ2.java">
+    <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/grouping/PartitionGenerator.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="655">
-          <caret line="46" column="43" lean-forward="false" selection-start-line="46" selection-start-column="43" selection-end-line="46" selection-end-column="43" />
-          <folding>
-            <element signature="e#317#318#0" expanded="true" />
-            <element signature="e#359#360#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="92">
+          <caret line="6" column="22" lean-forward="false" selection-start-line="6" selection-start-column="22" selection-end-line="6" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://C:/Program Files/Java/jdk1.8.0_162/src.zip!/java/lang/Math.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="15157">
+          <caret line="715" column="23" lean-forward="false" selection-start-line="715" selection-start-column="23" selection-end-line="715" selection-end-column="23" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/grouping/Main.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3629">
-          <caret line="229" column="55" lean-forward="false" selection-start-line="229" selection-start-column="55" selection-end-line="229" selection-end-column="55" />
+        <state relative-caret-position="23">
+          <caret line="97" column="46" lean-forward="false" selection-start-line="97" selection-start-column="46" selection-end-line="97" selection-end-column="46" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/ScanChainGrouperZ2.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="551">
+          <caret line="136" column="66" lean-forward="false" selection-start-line="136" selection-start-column="66" selection-end-line="136" selection-end-column="66" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/ScanChainGrouper.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="76">
+          <caret line="4" column="22" lean-forward="false" selection-start-line="4" selection-start-column="22" selection-end-line="4" selection-end-column="22" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/grouping/FastCostFunction.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="540">
-          <caret line="175" column="33" lean-forward="false" selection-start-line="175" selection-start-column="33" selection-end-line="175" selection-end-column="33" />
+        <state relative-caret-position="43">
+          <caret line="157" column="0" lean-forward="false" selection-start-line="157" selection-start-column="0" selection-end-line="184" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/grouping/ScanChainGrouperAlgZ2.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="874">
+          <caret line="49" column="44" lean-forward="false" selection-start-line="49" selection-start-column="44" selection-end-line="49" selection-end-column="44" />
           <folding>
-            <element signature="method#FastCostFunction#0;class#FastCostFunction#0" expanded="false" />
-            <element signature="method#evaluate#0;class#FastCostFunction#0" expanded="false" />
-            <element signature="method#evaluate_weighted#0;class#FastCostFunction#0" expanded="false" />
-            <element signature="method#evaluate_weighted#1;class#FastCostFunction#0" expanded="false" />
+            <element signature="method#ScanChainGrouperAlgZ2#0;class#ScanChainGrouperAlgZ2#0" expanded="false" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/ScanChainGrouperZ3.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="14" column="44" lean-forward="false" selection-start-line="14" selection-start-column="44" selection-end-line="14" selection-end-column="44" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/Main.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1232">
+          <caret line="150" column="57" lean-forward="false" selection-start-line="150" selection-start-column="57" selection-end-line="150" selection-end-column="57" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/FastCostFunction.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="228">
-          <caret line="55" column="46" lean-forward="true" selection-start-line="55" selection-start-column="46" selection-end-line="55" selection-end-column="46" />
+        <state relative-caret-position="620">
+          <caret line="133" column="42" lean-forward="false" selection-start-line="133" selection-start-column="42" selection-end-line="133" selection-end-column="42" />
+          <folding>
+            <element signature="method#evaluate#0;class#FastCostFunction#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/ScanChainGrouperZ5.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="673">
+          <caret line="62" column="92" lean-forward="false" selection-start-line="62" selection-start-column="92" selection-end-line="62" selection-end-column="92" />
           <folding />
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/ScanChianGrouperZ4.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="169">
+          <caret line="282" column="17" lean-forward="false" selection-start-line="282" selection-start-column="17" selection-end-line="282" selection-end-column="17" />
+          <folding>
+            <element signature="docComment;class#MinCircuit#0" expanded="false" />
+            <element signature="class#MinCircuit#0" expanded="false" />
+            <element signature="method#testCase#0;class#ScanChianGrouperZ4#0" expanded="false" />
+            <element signature="method#ScanChianGrouperZ4#0;class#ScanChianGrouperZ4#0" expanded="false" />
+            <element signature="method#VariableWriter#0;class#ScanChianGrouperZ4#0" expanded="false" />
+            <element signature="method#Var2ChainConsWriter#0;class#ScanChianGrouperZ4#0" expanded="false" />
+            <element signature="method#OnevOnegConsWriter#0;class#ScanChianGrouperZ4#0" expanded="false" />
+            <element signature="method#ZConsWriter#0;class#ScanChianGrouperZ4#0" expanded="false" />
+            <element signature="method#SelfConsWriter#0;class#ScanChianGrouperZ4#0" expanded="false" />
+            <element signature="method#ObjectiveWriter#0;class#ScanChianGrouperZ4#0" expanded="false" />
+            <element signature="method#ZplWriter#0;class#ScanChianGrouperZ4#0" expanded="false" />
+            <element signature="method#SolReader#0;class#ScanChianGrouperZ4#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+  </component>
+  <component name="masterDetails">
+    <states>
+      <state key="ProjectJDKs.UI">
+        <settings>
+          <last-edited>1.8</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+    </states>
   </component>
 </project>
