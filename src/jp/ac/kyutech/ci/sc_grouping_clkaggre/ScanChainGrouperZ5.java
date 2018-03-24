@@ -22,8 +22,8 @@ public class ScanChainGrouperZ5 extends ScanChainGrouper {
 
         for (int chainIdx = 1; chainIdx < chainSize; chainIdx++) {
 
-            System.out.println("Clocking " + Arrays.toString(clocking).replaceAll("\\[", "").replaceAll("\\]", "")
-                    .replaceAll(",", ""));
+            System.out.println("Clocking " + Arrays.toString(clocking).replaceAll("\\[", "").
+                    replaceAll("\\]", "").replaceAll(",", ""));
 
             if (availableGroupExist(clocksFlag)) {
                 for (int clkIdx = 0; clkIdx < groupCount; clkIdx++) {
@@ -59,6 +59,7 @@ public class ScanChainGrouperZ5 extends ScanChainGrouper {
                 clocking[chainIdx] = tempBestGroup;
                 clocksFlag[tempBestGroup] = 1;
             }
+            SwapWorstChian(clocking, groupCount, cost);
         }
         log.info("ConflictCounter: " + cost.evaluate_counter(clocking, groupCount, threshold));
 
@@ -77,5 +78,34 @@ public class ScanChainGrouperZ5 extends ScanChainGrouper {
 
         log.info("Available group exist? " + exist);
         return exist;
+    }
+
+    private void SwapWorstChian(int[] clocking, int groupCount, FastCostFunction cost){
+        int worstChain = -1;
+        int bestGroup = 0;
+        int highestCostImprove = 0;
+        int baseCost = cost.evaluate(clocking, groupCount);
+        for (int chainId = 0; chainId < clocking.length; chainId++){
+            int group = clocking[chainId];
+            if (group == -1)
+                break;
+            for (int groupId = 0; groupId < groupCount; groupId++){
+                clocking[chainId] = groupId;
+                int cost_diff = baseCost - cost.evaluate(clocking, groupCount);
+                clocking[chainId] = group;
+                if (cost_diff >= highestCostImprove){
+                    worstChain = chainId;
+                    highestCostImprove = cost_diff;
+                    bestGroup = groupId;
+                }
+            }
+        }
+        if (highestCostImprove > 0) {
+            log.debug("Worst chain " + worstChain + " changed from group " + clocking[worstChain] + " to "
+                    + bestGroup + " with the cost improved " + highestCostImprove);
+            clocking[worstChain] = bestGroup;
+        }else {
+            log.debug("No chain was moved as no improvement could be made");
+        }
     }
 }
