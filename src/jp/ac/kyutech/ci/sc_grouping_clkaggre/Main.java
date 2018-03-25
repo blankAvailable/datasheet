@@ -194,6 +194,7 @@ public class Main extends KyupiApp {
             plot = new BufferedWriter(new FileWriter(plotWriter));
         }
         //start grouping
+        int avgCost = 0;
         for (int caseId = 0; caseId < groupingCases; caseId++){
             log.info("GroupingCase " + caseId);
             int clocking[];
@@ -224,6 +225,8 @@ public class Main extends KyupiApp {
                     zpl = new ScanChianGrouperZ4(chain2impactset, cell2aggressorSet, skewthreshold);
                 clocking = zpl.SolReader(filename, clocks);
             }
+
+            avgCost += cost.evaluate(clocking, clocks);
 
             if (plot != null){
                 log.info("CostDifference " + cost.evaluate(clocking, clocks));
@@ -298,6 +301,8 @@ public class Main extends KyupiApp {
             log.info("OverallMaxWSADiff " + overallActivityDiffMax);
 
         } // caseId loop
+
+        log.info("AverageCost " + avgCost/groupingCases);
 
         if (plot != null)
             plot.close();
