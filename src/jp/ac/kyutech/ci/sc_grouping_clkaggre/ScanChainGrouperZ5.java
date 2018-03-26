@@ -59,7 +59,7 @@ public class ScanChainGrouperZ5 extends ScanChainGrouper {
                 clocking[chainIdx] = tempBestGroup;
                 clocksFlag[tempBestGroup] = 1;
             }
-            SwapWorstChian(clocking, groupCount, cost);
+            SwapWorstChian(clocking, clocksFlag, groupCount, clocking[chainIdx], cost);
         }
         log.info("ConflictCounter: " + cost.evaluate_counter(clocking, groupCount, threshold));
 
@@ -80,7 +80,7 @@ public class ScanChainGrouperZ5 extends ScanChainGrouper {
         return exist;
     }
 
-    private void SwapWorstChian(int[] clocking, int groupCount, FastCostFunction cost){
+    private void SwapWorstChian(int[] clocking, int[]clocksFlag, int groupCount, int currentGroup, FastCostFunction cost){
         int worstChain = -1;
         int bestGroup = 0;
         int highestCostImprove = 0;
@@ -90,6 +90,8 @@ public class ScanChainGrouperZ5 extends ScanChainGrouper {
             if (group == -1)
                 break;
             for (int groupId = 0; groupId < groupCount; groupId++){
+                if (clocksFlag[groupId] == 0)
+                    continue;
                 clocking[chainId] = groupId;
                 int cost_diff = baseCost - cost.evaluate(clocking, groupCount);
                 clocking[chainId] = group;
