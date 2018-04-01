@@ -105,8 +105,8 @@ public class Main extends KyupiApp {
         }
 
         // read aggressor region size parameters
-        double arx = doubleFromArgsOrDefault("arx", 200);
-        double ary = doubleFromArgsOrDefault("ary", 8);
+        double arx = doubleFromArgsOrDefault("arx", 100);
+        double ary = doubleFromArgsOrDefault("ary", 4);
         int arxnm = (int) (arx * NAND_WIDTH);
         int arynm = (int) (ary * ROW_HEIGHT);
         log.info("AggressorRegionSize X " + arx + " Y " + ary);
