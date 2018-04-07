@@ -118,6 +118,13 @@ public class Main extends KyupiApp {
         calculateAggressorSets(cbinfo, chains, placement, arxnm, arynm, cbuf2aggressorSet, cell2aggressorSet);
         printAggressorAndImpactInfo(chains, cell2aggressorSet, chain2impactset);
 
+        log.info("Calculating self impact aggressor sets...");
+        HashMap<ScanCell, HashSet<Node>> cell2selfAggressorSet = calculateSelfAggressors(chains, cell2aggressorSet, chain2impactset);
+        for (ScanCell sff : cell2aggressorSet.keySet()){
+            System.out.println(100*(float) cell2selfAggressorSet.get(sff).size()/cell2aggressorSet.get(sff).size() + " " + cell2aggressorSet.get(sff).size());
+        }
+
+
         FastCostFunction cost = new FastCostFunction(chain2impactset, cell2aggressorSet);
         // read in grouping paremeters
         int clocks = intFromArgsOrDefault("clk", 1);
@@ -505,6 +512,19 @@ public class Main extends KyupiApp {
             }
         };
         return QBSource.from(shifts);
+    }
+
+    private HashMap<ScanCell, HashSet<Node>> calculateSelfAggressors(
+            ScanChains chains, HashMap<ScanCell, ArrayList<Node>> cell2aggressorSet, HashMap<ScanChain, HashSet<Node>> chain2impactSet){
+        HashMap<ScanCell, HashSet<Node>> selfAggressors = new HashMap<>();
+
+        for (ScanCell sff : cell2aggressorSet.keySet()){
+            HashSet<Node> agg = new HashSet<>(cell2aggressorSet.get(sff));
+            agg.retainAll(chain2impactSet.get(chains.get(sff.chainIdx())));
+            selfAggressors.put(sff, agg);
+        }
+
+        return selfAggressors;
     }
 
     /**

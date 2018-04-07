@@ -5,12 +5,7 @@ import org.kyupi.graph.ScanChains.ScanCell;
 import org.kyupi.graph.ScanChains.ScanChain;
 
 import java.io.*;
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Arrays;
+import java.util.*;
 
 /**
  * integer linear programming
@@ -96,8 +91,9 @@ public class ScanChianGrouperZ4 {
         constrainId = OnevOnegConsWriter(testcase.chain2aggressor, test, 2, 'x', constrainId);
         constrainId = OnevOnegConsWriter(testcase.impacts, test, 2, 'y', constrainId);
         constrainId = ZConsWriter(testcase.chain2aggressor, testcase.impacts, test, 2, constrainId);
-        constrainId = SelfConsWriter(testcase.chain2aggressor, testcase.impacts, test, 2, constrainId);
-        conflict = ThrConsWeiter(testcase.aregion, test, 2, 0, constrainId);
+        //constrainId = SelfConsWriter(testcase.chain2aggressor, testcase.impacts, test, 2, constrainId);
+        conflict = ThrConsWeiter(testcase.aregion, testcase.impacts, test, 2, 0, constrainId);
+        //conflict = ThrConsWeiter(testcase.aregion, test, 2, 0, constrainId);
         test.write("\n");
         ObjectiveWriter(conflict, test);
 
@@ -179,7 +175,6 @@ public class ScanChianGrouperZ4 {
                 ArrayList<Integer> nodecounter = new ArrayList<>();
                 for (int nodeIdx = 0; nodeIdx < objectivelist[chainIdx].size(); nodeIdx++){
                     if (objectivelist[chainIdx].get(nodeIdx)) {
-                        System.out.println(nodeIdx);
                         nodecounter.add(nodeIdx);
                     }
                 }
@@ -267,12 +262,13 @@ public class ScanChianGrouperZ4 {
         return constrainId;
     }
 
-    private int ThrConsWeiter(int[][][] aregions, BufferedWriter cons, int groupCount, int thr, long constrainId) throws IOException {
+    private int ThrConsWeiter(int[][][] aregions, BitSet[] objectivelist1, BufferedWriter cons, int groupCount, int thr, long constrainId) throws IOException {
         int conflict = 0;
         boolean pairingflag = true;
         StringBuilder thrbuilder = new StringBuilder();
         for (int chainIdx = 0; chainIdx < aregions.length; chainIdx++){
             for (int scancellIdx = 0; scancellIdx < aregions[chainIdx].length; scancellIdx++){
+                int selfimpnodes = 0;
                 if (aregions[chainIdx][scancellIdx][0] == -1)
                     continue;
                 if (pairingflag){
@@ -281,21 +277,50 @@ public class ScanChianGrouperZ4 {
                     if (scancellIdx > 0)
                         scancellIdx--;
                 }
-//                for (int nodeIdx = 0; nodeIdx < aregions[chainIdx][scancellIdx].length; nodeIdx++){
-//                    for (int g = 0; g < groupCount; g++){
-//                        if (pairingflag)
-//                            thrbuilder.append(" + ");
-//                        else
-//                            thrbuilder.append(" - ");
-//                        thrbuilder.append("z_" + aregions[chainIdx][scancellIdx][nodeIdx] + "_" + chainIdx + "_" + g);
-//                        if (nodeIdx + 1 == aregions[chainIdx][scancellIdx].length && g + 1 == groupCount && !pairingflag){
-//                            cons.write(thrbuilder.toString() + " < " + thr + " or" + thrbuilder.toString() + " > "
-//                                    + thr + " then conf" + conflict + " == 1 " + "else conf" + conflict + " == 0 end;\n");
-//                            conflict++;
-//                            constrainId++;
-//                        }
-//                    }
-//                }
+
+                for (int nodeIdx = 0; nodeIdx < aregions[chainIdx][scancellIdx].length; nodeIdx++){
+                    if (objectivelist1[chainIdx].get(aregions[chainIdx][scancellIdx][nodeIdx])){
+                        selfimpnodes++;
+                        continue;
+                    }
+                    for (int g = 0; g < groupCount; g++){
+                        if (pairingflag)
+                            cons.write(" + ");
+                        else
+                            cons.write(" - ");
+                        cons.write("z_" + aregions[chainIdx][scancellIdx][nodeIdx] + "_" + chainIdx + "_" + g);
+
+                    }
+                }
+                if (!pairingflag) {
+                    cons.write(" - " + selfimpnodes + " ) > " + thr + " then conf" + conflict + " == 1 " + "else conf" + conflict + " == 0 end;\n");
+                    conflict++;
+                    constrainId++;
+                }else {
+                    cons.write(" + " + selfimpnodes);
+                }
+                pairingflag = !pairingflag;
+            }
+        }
+        return conflict;
+    }
+
+    private int ThrConsWeiter(int[][][] aregions, BufferedWriter cons, int groupCount, int thr, long constrainId) throws IOException {
+        int conflict = 0;
+        boolean pairingflag = true;
+        StringBuilder thrbuilder = new StringBuilder();
+        for (int chainIdx = 0; chainIdx < aregions.length; chainIdx++){
+            for (int scancellIdx = 0; scancellIdx < aregions[chainIdx].length; scancellIdx++){
+                int selfimpnodes = 0;
+                if (aregions[chainIdx][scancellIdx][0] == -1)
+                    continue;
+                if (pairingflag){
+                    cons.write("var conf" + conflict + " binary;\n");
+                    cons.write("subto c" + constrainId + ": vif vabs(");
+                    if (scancellIdx > 0)
+                        scancellIdx--;
+                }
+
                 for (int nodeIdx = 0; nodeIdx < aregions[chainIdx][scancellIdx].length; nodeIdx++){
                     for (int g = 0; g < groupCount; g++){
                         if (pairingflag)
@@ -303,12 +328,13 @@ public class ScanChianGrouperZ4 {
                         else
                             cons.write(" - ");
                         cons.write("z_" + aregions[chainIdx][scancellIdx][nodeIdx] + "_" + chainIdx + "_" + g);
-                        if (nodeIdx+1 == aregions[chainIdx][scancellIdx].length && g+1 == groupCount && !pairingflag) {
-                            cons.write(" ) > " + thr + " then conf" + conflict + " == 1 " + "else conf" + conflict + " == 0 end;\n");
-                            conflict++;
-                            constrainId++;
-                        }
+
                     }
+                }
+                if (!pairingflag) {
+                    cons.write(" ) > " + thr + " then conf" + conflict + " == 1 " + "else conf" + conflict + " == 0 end;\n");
+                    conflict++;
+                    constrainId++;
                 }
                 pairingflag = !pairingflag;
             }
@@ -354,10 +380,11 @@ public class ScanChianGrouperZ4 {
         constrainId = ZConsWriter(chain2aggressors, impacts, zpl, groupCount, constrainId);
 
         //write the self impacted constrains
-        constrainId = SelfConsWriter(chain2aggressors, impacts, zpl, groupCount, constrainId);
+        //constrainId = SelfConsWriter(chain2aggressors, impacts, zpl, groupCount, constrainId);
 
         //write the threshold constrains
-        conflict = ThrConsWeiter(aregions, zpl, groupCount, skewthreshold, constrainId);
+        conflict = ThrConsWeiter(aregions, impacts, zpl, groupCount, skewthreshold, constrainId);
+        //conflict = ThrConsWeiter(aregions, zpl, groupCount, skewthreshold, constrainId);
 
         //write the objective function
         ObjectiveWriter(conflict, zpl);
