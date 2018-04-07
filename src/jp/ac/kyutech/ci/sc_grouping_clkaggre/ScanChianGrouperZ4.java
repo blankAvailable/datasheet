@@ -93,7 +93,6 @@ public class ScanChianGrouperZ4 {
         constrainId = ZConsWriter(testcase.chain2aggressor, testcase.impacts, test, 2, constrainId);
         //constrainId = SelfConsWriter(testcase.chain2aggressor, testcase.impacts, test, 2, constrainId);
         conflict = ThrConsWeiter(testcase.aregion, testcase.impacts, test, 2, 0, constrainId);
-        //conflict = ThrConsWeiter(testcase.aregion, test, 2, 0, constrainId);
         test.write("\n");
         ObjectiveWriter(conflict, test);
 
