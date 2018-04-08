@@ -214,10 +214,15 @@ public class ScanChianGrouperZ4 {
         for (int chainIdx = 0; chainIdx < objectivelist.length; chainIdx++){
             for (int nodeIdx = 0; nodeIdx < objectivelist[chainIdx].length(); nodeIdx++){
                 if (objectivelist[chainIdx].get(nodeIdx)){
+
+                    //jump the constraints for self impact nodes for smaller file
+                    if (objectivelist1[chainIdx].get(nodeIdx))
+                        continue;
+
                     for (int g = 0; g < groupCount; g++) {
                         cons.write("subto c" + constrainId + ": ");
                         //write vif x_node_chain_g == 1 and
-                        cons.write("vif x_" + nodeIdx + "_" + chainIdx + "_" + g + " == 1 and ");
+                        cons.write("vif x_" + nodeIdx + "_" + chainIdx + "_" + g + " * ( ");
                         ArrayList<Integer> impactlist = new ArrayList<>();
                         for (int impchianIdx = 0; impchianIdx < objectivelist1.length; impchianIdx++){
                             if (objectivelist1[impchianIdx].get(nodeIdx))
@@ -230,7 +235,7 @@ public class ScanChianGrouperZ4 {
                         //write y_node_impchain_g + ... >= 1 then
                         for (int i = 0; i < impactlist.size()-1; i++)
                             cons.write("y_" + nodeIdx + "_" + impactlist.get(i) + "_" + g + " + ");
-                        cons.write("y_" + nodeIdx + "_" + impactlist.get(impactlist.size()-1) + "_" + g + " >= 1 then ");
+                        cons.write("y_" + nodeIdx + "_" + impactlist.get(impactlist.size()-1) + "_" + g + " ) >= 1 then ");
 
                         cons.write("z_" + nodeIdx + "_" + chainIdx + "_" + g + " == 1 else ");
                         cons.write("z_" + nodeIdx + "_" + chainIdx + "_" + g + " == 0 end;\n");
