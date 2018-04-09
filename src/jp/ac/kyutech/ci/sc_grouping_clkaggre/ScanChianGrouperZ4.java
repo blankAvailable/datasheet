@@ -73,6 +73,8 @@ public class ScanChianGrouperZ4 {
     int conflict;
 
     public void testCase() throws IOException {
+        MinCircuit testcase = new MinCircuit();
+        BitSet[] emptyforY = new BitSet[testcase.impacts.length];
         BufferedWriter test = null;
         File testWriter = new File("test.zpl");
         testWriter.createNewFile();
@@ -80,18 +82,20 @@ public class ScanChianGrouperZ4 {
         long constrainId = 0;
         int conflict = 0;
 
-        MinCircuit testcase = new MinCircuit();
+        for (int chainIdx = 0; chainIdx < testcase.impacts.length; chainIdx++)
+            emptyforY[chainIdx] = new BitSet();
 
-        VariableWriter(testcase.chain2aggressor, test, 2, 'x');
-        VariableWriter(testcase.impacts, test, 2, 'y');
-        VariableWriter(testcase.chain2aggressor, test, 2, 'z');
+        VariableWriter(testcase.chain2aggressor, testcase.impacts,test, 2, 'x');
+        VariableWriter(testcase.impacts, emptyforY, test, 2, 'y');
+        VariableWriter(testcase.chain2aggressor, testcase.impacts, test, 2, 'z');
         test.write("\n");
-        constrainId = Var2ChainConsWriter(testcase.chain2aggressor, test, 2, 'x', constrainId);
-        constrainId = Var2ChainConsWriter(testcase.impacts, test, 2, 'y', constrainId);
-        constrainId = OnevOnegConsWriter(testcase.chain2aggressor, test, 2, 'x', constrainId);
-        constrainId = OnevOnegConsWriter(testcase.impacts, test, 2, 'y', constrainId);
+        constrainId = Var2ChainConsWriter(testcase.chain2aggressor, testcase.impacts, test, 2, 'x', constrainId);
+        constrainId = Var2ChainConsWriter(testcase.impacts, emptyforY, test, 2, 'y', constrainId);
+        constrainId = OnevOnegConsWriter(testcase.chain2aggressor, testcase.impacts, test, 2, 'x', constrainId);
+        constrainId = OnevOnegConsWriter(testcase.impacts, emptyforY, test, 2, 'y', constrainId);
         constrainId = ZConsWriter(testcase.chain2aggressor, testcase.impacts, test, 2, constrainId);
         //constrainId = SelfConsWriter(testcase.chain2aggressor, testcase.impacts, test, 2, constrainId);
+        constrainId = aggImp2ChainConsWriter(testcase.chain2aggressor, testcase.impacts, test, 2, constrainId);
         conflict = ThrConsWeiter(testcase.aregion, testcase.impacts, test, 2, 0, constrainId);
         test.write("\n");
         ObjectiveWriter(conflict, test);
@@ -157,9 +161,14 @@ public class ScanChianGrouperZ4 {
         }
     }
 
-    private void VariableWriter(BitSet[] objectivelist, BufferedWriter var, int groupCount, char variablename) throws IOException {
+    private void VariableWriter(BitSet[] objectivelist, BitSet[] objectivelist1 ,BufferedWriter var, int groupCount, char variablename) throws IOException {
         for (int chainIdx = 0; chainIdx < objectivelist.length; chainIdx++){
             for (int nodeIdx = 0; nodeIdx < objectivelist[chainIdx].length(); nodeIdx++){
+
+                //jump the self impact nodes
+                if (objectivelist1[chainIdx].get(nodeIdx))
+                    continue;
+
                 if (objectivelist[chainIdx].get(nodeIdx)){
                     for (int g = 0; g < groupCount; g++)
                         var.write("var " + variablename + "_"  + nodeIdx + "_" + chainIdx + "_" + g + " binary;\n");
@@ -168,12 +177,17 @@ public class ScanChianGrouperZ4 {
         }
     }
 
-    private long Var2ChainConsWriter(BitSet[] objectivelist, BufferedWriter cons, int groupCount, char variablename, long constrainId) throws IOException {
+    private long Var2ChainConsWriter(BitSet[] objectivelist, BitSet[] objectivelist1, BufferedWriter cons, int groupCount, char variablename, long constrainId) throws IOException {
         for (int chainIdx = 0; chainIdx < objectivelist.length; chainIdx++){
             for (int g = 0; g < groupCount; g++){
                 ArrayList<Integer> nodecounter = new ArrayList<>();
                 for (int nodeIdx = 0; nodeIdx < objectivelist[chainIdx].size(); nodeIdx++){
                     if (objectivelist[chainIdx].get(nodeIdx)) {
+
+                        //jump the self impact nodes
+                        if (objectivelist1[chainIdx].get(nodeIdx))
+                            continue;
+
                         nodecounter.add(nodeIdx);
                     }
                 }
@@ -195,10 +209,47 @@ public class ScanChianGrouperZ4 {
         return constrainId;
     }
 
-    private long OnevOnegConsWriter(BitSet[] objectivelist, BufferedWriter cons, int groupCount, char variablename, long constrainId) throws IOException {
+    // the aggressor region and the impact area of a chain should be in the same group
+    private long aggImp2ChainConsWriter(BitSet[] objectivelist, BitSet[] objectivelist1, BufferedWriter cons, int groupCount, long constrainId) throws IOException {
+        for (int chainIdx = 0; chainIdx < objectivelist.length; chainIdx++){
+            for (int g = 0; g < groupCount; g++){
+
+                // x variables
+                for (int nodeIdx = 0; nodeIdx < objectivelist[chainIdx].length(); nodeIdx++){
+                    if (objectivelist[chainIdx].get(nodeIdx)){
+                        if (objectivelist1[chainIdx].get(nodeIdx))
+                            continue;
+
+                        //y variables
+                        for (int nodeIdx1 = 0; nodeIdx1 < objectivelist1[chainIdx].length(); nodeIdx1++){
+                            if (objectivelist1[chainIdx].get(nodeIdx1)){
+                                cons.write("subto c" + constrainId + ": ");
+                                cons.write("x_" + nodeIdx + "_" + chainIdx + "_" + g + " - ");
+                                cons.write("y_" + nodeIdx1 + "_" + chainIdx + "_" + g + " == 0;\n");
+                                constrainId++;
+                                break;
+                            }
+                        }
+
+                        break;
+                    }
+                }
+
+            }
+        }
+
+        return constrainId;
+    }
+
+    private long OnevOnegConsWriter(BitSet[] objectivelist, BitSet[] objectivelist1, BufferedWriter cons, int groupCount, char variablename, long constrainId) throws IOException {
         for (int chainIdx  = 0; chainIdx < objectivelist.length; chainIdx++){
             for (int nodeIdx = 0; nodeIdx < objectivelist[chainIdx].length(); nodeIdx++) {
                 if (objectivelist[chainIdx].get(nodeIdx)) {
+
+                    //jump the self impact nodes
+                    if (objectivelist1[chainIdx].get(nodeIdx))
+                        continue;
+
                     cons.write("subto c" + constrainId + ": ");
                     for (int g = 0; g < groupCount-1; g++)
                         cons.write(variablename + "_" + nodeIdx + "_" + chainIdx + "_" + g + " + ");
@@ -309,43 +360,6 @@ public class ScanChianGrouperZ4 {
         return conflict;
     }
 
-    private int ThrConsWeiter(int[][][] aregions, BufferedWriter cons, int groupCount, int thr, long constrainId) throws IOException {
-        int conflict = 0;
-        boolean pairingflag = true;
-        StringBuilder thrbuilder = new StringBuilder();
-        for (int chainIdx = 0; chainIdx < aregions.length; chainIdx++){
-            for (int scancellIdx = 0; scancellIdx < aregions[chainIdx].length; scancellIdx++){
-                int selfimpnodes = 0;
-                if (aregions[chainIdx][scancellIdx][0] == -1)
-                    continue;
-                if (pairingflag){
-                    cons.write("var conf" + conflict + " binary;\n");
-                    cons.write("subto c" + constrainId + ": vif vabs(");
-                    if (scancellIdx > 0)
-                        scancellIdx--;
-                }
-
-                for (int nodeIdx = 0; nodeIdx < aregions[chainIdx][scancellIdx].length; nodeIdx++){
-                    for (int g = 0; g < groupCount; g++){
-                        if (pairingflag)
-                            cons.write(" + ");
-                        else
-                            cons.write(" - ");
-                        cons.write("z_" + aregions[chainIdx][scancellIdx][nodeIdx] + "_" + chainIdx + "_" + g);
-
-                    }
-                }
-                if (!pairingflag) {
-                    cons.write(" ) > " + thr + " then conf" + conflict + " == 1 " + "else conf" + conflict + " == 0 end;\n");
-                    conflict++;
-                    constrainId++;
-                }
-                pairingflag = !pairingflag;
-            }
-        }
-        return conflict;
-    }
-
     private void ObjectiveWriter(int conflict, BufferedWriter obj) throws IOException  {
         obj.write("minimize conflict:");
         for (int conf = 0; conf < conflict-1; conf++){
@@ -355,30 +369,34 @@ public class ScanChianGrouperZ4 {
     }
 
     public void ZplWriter(String filename, int groupCount) throws IOException {
+        BitSet[] emptyforY = new BitSet[impacts.length];
         BufferedWriter zpl = null;
         File zplWriter = new File(filename);
         zplWriter.createNewFile();
         zpl = new BufferedWriter(new FileWriter(zplWriter));
         long constrainId = 0;
 
+        for (int chainIdx = 0; chainIdx < impacts.length; chainIdx++)
+            emptyforY[chainIdx] = new BitSet();
+
         //write all x variables
-        VariableWriter(chain2aggressors, zpl, groupCount, 'x');
+        VariableWriter(chain2aggressors, impacts,zpl, groupCount, 'x');
         //write all z variables
-        VariableWriter(chain2aggressors, zpl, groupCount, 'z');
+        VariableWriter(chain2aggressors, impacts, zpl, groupCount, 'z');
         //write all y variables
-        VariableWriter(impacts, zpl, groupCount, 'y');
+        VariableWriter(impacts, emptyforY, zpl, groupCount, 'y');
 
         zpl.write("\n");
 
         //write the constrain that x of one chain should belong to the same group
-        constrainId = Var2ChainConsWriter(chain2aggressors, zpl, groupCount, 'x', constrainId);
+        constrainId = Var2ChainConsWriter(chain2aggressors, impacts, zpl, groupCount, 'x', constrainId);
         //write the constrains that y for one chain should belong to the same group
-        constrainId = Var2ChainConsWriter(impacts, zpl, groupCount, 'y', constrainId);
+        constrainId = Var2ChainConsWriter(impacts, emptyforY, zpl, groupCount, 'y', constrainId);
 
         //write the constrains that one x can only belong to one group
-        constrainId = OnevOnegConsWriter(chain2aggressors, zpl, groupCount, 'x', constrainId);
+        constrainId = OnevOnegConsWriter(chain2aggressors, impacts, zpl, groupCount, 'x', constrainId);
         //write the constrains that one y can only belong to one group
-        constrainId = OnevOnegConsWriter(impacts, zpl, groupCount, 'y', constrainId);
+        constrainId = OnevOnegConsWriter(impacts, emptyforY, zpl, groupCount, 'y', constrainId);
 
         //write the constrains of z
         constrainId = ZConsWriter(chain2aggressors, impacts, zpl, groupCount, constrainId);

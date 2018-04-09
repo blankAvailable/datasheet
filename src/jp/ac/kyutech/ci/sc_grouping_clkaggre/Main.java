@@ -189,7 +189,7 @@ public class Main extends KyupiApp {
             String filename = argsParsed().getOptionValue("zpl");
             zpl = new ScanChianGrouperZ4(chain2impactset, cell2aggressorSet, skewthreshold);
             zpl.ZplWriter(filename, clocks);
-            //zpl.testCase();
+            zpl.testCase();
         }
 
 
