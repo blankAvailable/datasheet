@@ -68,7 +68,6 @@ public class ScanChianGrouperZ4 {
     BitSet[] chain2aggressors;
     BitSet[] impacts;
     int[][][] aregions;
-    int[][] chainaregions;
     int skewthreshold;
     int conflict;
 
@@ -125,7 +124,6 @@ public class ScanChianGrouperZ4 {
         }
 
         aregions = new int[impacts.length][][];
-        chainaregions = new int[impacts.length][];
         for (ScanChain chain : chain2impactSet.keySet()){
             int chainId = chain.chainIdx();
             int scancells = chain.cells.size();
@@ -142,21 +140,19 @@ public class ScanChianGrouperZ4 {
                 for (Node n : agg)
                     if (node2idx.containsKey(n))
                         aregions[chainId][cellId][idx++] = node2idx.get(n);
+                System.out.println( "cell_aggsize " + aregions[chainId][cellId].length);
             }
         }
+        System.out.println("\n");
 
         //generate chain2aggressors list for constrains and x, z variables
         chain2aggressors = new BitSet[chain2impactSet.keySet().size()];
-        for (ScanChain chain : chain2impactSet.keySet()){
-            int chainId = chain.chainIdx();
-            int scancells = chain.cells.size();
-            chain2aggressors[chainId] = new BitSet();
-            for (int cellId = 0; cellId < scancells; cellId++){
-                ScanCell cell = chain.cells.get(cellId);
-                ArrayList<Node> agg = cell2aggressorSet.get(cell);
-                for (Node n : agg)
-                    if (node2idx.containsKey(n))
-                        chain2aggressors[chainId].set(node2idx.get(n));
+        for (int chainIdx = 0; chainIdx < chain2aggressors.length; chainIdx++){
+            chain2aggressors[chainIdx] = new BitSet();
+            for (int cellIdx = 0; cellIdx < aregions[chainIdx].length; cellIdx++){
+                for (int nodeIdx = 0; nodeIdx < aregions[chainIdx][cellIdx].length; nodeIdx++){
+                    chain2aggressors[chainIdx].set(aregions[chainIdx][cellIdx][nodeIdx]);
+                }
             }
         }
     }
@@ -317,10 +313,17 @@ public class ScanChianGrouperZ4 {
         return constrainId;
     }
 
+    private int ThrConsWriter(int[][][]aregions, BitSet[] objectivelist1, BufferedWriter cons, int groupcount, int thr, long constrainId) throws IOException {
+        int conflict = 0;
+
+
+
+        return conflict;
+    }
+
     private int ThrConsWeiter(int[][][] aregions, BitSet[] objectivelist1, BufferedWriter cons, int groupCount, int thr, long constrainId) throws IOException {
         int conflict = 0;
         boolean pairingflag = true;
-        StringBuilder thrbuilder = new StringBuilder();
         for (int chainIdx = 0; chainIdx < aregions.length; chainIdx++){
             int selfimpnode_pre = 0;
             boolean consflag = true;
@@ -330,14 +333,26 @@ public class ScanChianGrouperZ4 {
                     continue;
                 if (pairingflag && scancellIdx > 0) {
                     scancellIdx--;
-                    consflag = !consflag;
+                    consflag = true;
                 }
+
+                System.out.println( "cell_aggsize " + aregions[chainIdx][scancellIdx].length);
 
                 for (int nodeIdx = 0; nodeIdx < aregions[chainIdx][scancellIdx].length; nodeIdx++){
                     if (objectivelist1[chainIdx].get(aregions[chainIdx][scancellIdx][nodeIdx])){
                         selfimpnodes++;
                         continue;
                     }
+
+                    //jump the aggressors shared by clock paths of neighboring ffs
+//                    if (pairingflag){
+//                       if (IsNodeShared(aregions[chainIdx][scancellIdx][nodeIdx], aregions[chainIdx][scancellIdx+1]))
+//                           continue;
+//                    }else {
+//                        if (IsNodeShared(aregions[chainIdx][scancellIdx][nodeIdx], aregions[chainIdx][scancellIdx-1]))
+//                            continue;
+//                    }
+
                     if (consflag){
                         cons.write("var conf" + conflict + " binary;\n");
                         cons.write("subto c" + constrainId + ": vif vabs(");
@@ -349,7 +364,6 @@ public class ScanChianGrouperZ4 {
                         else
                             cons.write(" - ");
                         cons.write("z_" + aregions[chainIdx][scancellIdx][nodeIdx] + "_" + chainIdx + "_" + g);
-
                     }
                 }
                 if (!pairingflag) {
@@ -364,6 +378,19 @@ public class ScanChianGrouperZ4 {
             }
         }
         return conflict;
+    }
+
+    private boolean IsNodeShared(int node, int[] needsearch){
+        boolean exist = false;
+
+        for (int nodeIdx = 0; nodeIdx < needsearch.length; nodeIdx++){
+            if (node == needsearch[nodeIdx]){
+                exist = true;
+                break;
+            }
+        }
+
+        return exist;
     }
 
     private void ObjectiveWriter(int conflict, BufferedWriter obj) throws IOException  {
@@ -386,7 +413,7 @@ public class ScanChianGrouperZ4 {
             emptyforY[chainIdx] = new BitSet();
 
         //write all x variables
-        VariableWriter(chain2aggressors, impacts,zpl, groupCount, 'x');
+        VariableWriter(chain2aggressors, impacts, zpl, groupCount, 'x');
         //write all z variables
         VariableWriter(chain2aggressors, impacts, zpl, groupCount, 'z');
         //write all y variables

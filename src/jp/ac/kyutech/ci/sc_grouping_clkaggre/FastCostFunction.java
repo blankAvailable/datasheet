@@ -4,10 +4,7 @@ import org.kyupi.graph.Graph.Node;
 import org.kyupi.graph.ScanChains.ScanCell;
 import org.kyupi.graph.ScanChains.ScanChain;
 
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.*;
 
 public class FastCostFunction {
     HashMap<Node, Integer> node2idx;
@@ -63,6 +60,7 @@ public class FastCostFunction {
     private int last_clock_id = 0;
 
     public int evaluate(int[] clocking, int clocks){
+        int conf = 0;
         int maxCostDiff = 0;
         groupCost = new int[clocks];
 
@@ -83,7 +81,9 @@ public class FastCostFunction {
                     for (int aggId = 0; aggId < aregions[chainId][cellId].length; aggId++){
                         if (impactUnion.get(aregions[chainId][cellId][aggId]))
                             cost++;
+
                     }
+
                     if (costPredecessor == 0){
                         costPredecessor = cost;
                         continue;
@@ -93,6 +93,7 @@ public class FastCostFunction {
                         last_cell_id = cellId;
                         last_clock_id = c;
                     }
+                    System.out.println(conf++ + " " + Math.abs(costPredecessor - cost));
                     if (Math.abs((costPredecessor - cost)) > groupCostDiff)
                         groupCostDiff = Math.abs((costPredecessor - cost));
                     costPredecessor = cost;
