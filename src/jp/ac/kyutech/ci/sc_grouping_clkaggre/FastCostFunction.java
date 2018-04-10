@@ -83,7 +83,6 @@ public class FastCostFunction {
                             cost++;
 
                     }
-
                     if (costPredecessor == 0){
                         costPredecessor = cost;
                         continue;
@@ -93,7 +92,6 @@ public class FastCostFunction {
                         last_cell_id = cellId;
                         last_clock_id = c;
                     }
-                    System.out.println(conf++ + " " + Math.abs(costPredecessor - cost));
                     if (Math.abs((costPredecessor - cost)) > groupCostDiff)
                         groupCostDiff = Math.abs((costPredecessor - cost));
                     costPredecessor = cost;

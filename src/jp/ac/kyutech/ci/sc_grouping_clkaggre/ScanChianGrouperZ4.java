@@ -93,9 +93,8 @@ public class ScanChianGrouperZ4 {
         constrainId = OnevOnegConsWriter(testcase.chain2aggressor, testcase.impacts, test, 2, 'x', constrainId);
         constrainId = OnevOnegConsWriter(testcase.impacts, emptyforY, test, 2, 'y', constrainId);
         constrainId = ZConsWriter(testcase.chain2aggressor, testcase.impacts, test, 2, constrainId);
-        //constrainId = SelfConsWriter(testcase.chain2aggressor, testcase.impacts, test, 2, constrainId);
         constrainId = aggImp2ChainConsWriter(testcase.chain2aggressor, testcase.impacts, test, 2, constrainId);
-        conflict = ThrConsWeiter(testcase.aregion, testcase.impacts, test, 2, 0, constrainId);
+        conflict = ThrConsWriter(testcase.aregion, testcase.impacts, test, 2, 0, constrainId);
         test.write("\n");
         ObjectiveWriter(conflict, test);
 
@@ -140,7 +139,7 @@ public class ScanChianGrouperZ4 {
                 for (Node n : agg)
                     if (node2idx.containsKey(n))
                         aregions[chainId][cellId][idx++] = node2idx.get(n);
-                System.out.println( "cell_aggsize " + aregions[chainId][cellId].length);
+                System.out.println( "cell_aggsize_z4 " + aregions[chainId][cellId].length);
             }
         }
         System.out.println("\n");
@@ -206,7 +205,7 @@ public class ScanChianGrouperZ4 {
     }
 
     // the aggressor region and the impact area of a chain should be in the same group
-    private long aggImp2ChainConsWriter(BitSet[] objectivelist, BitSet[] objectivelist1, BufferedWriter cons, int groupCount, long constrainId) throws IOException {
+    private long aggImp2ChainConsWriter(BitSet[] objectivelist, BitSet[] objectivelist1, BufferedWriter cons, int groupCount, long constraintId) throws IOException {
         for (int chainIdx = 0; chainIdx < objectivelist.length; chainIdx++){
             for (int g = 0; g < groupCount; g++){
 
@@ -219,14 +218,13 @@ public class ScanChianGrouperZ4 {
                         //y variables
                         for (int nodeIdx1 = 0; nodeIdx1 < objectivelist1[chainIdx].length(); nodeIdx1++){
                             if (objectivelist1[chainIdx].get(nodeIdx1)){
-                                cons.write("subto c" + constrainId + ": ");
+                                cons.write("subto c" + constraintId + ": ");
                                 cons.write("x_" + nodeIdx + "_" + chainIdx + "_" + g + " - ");
                                 cons.write("y_" + nodeIdx1 + "_" + chainIdx + "_" + g + " == 0;\n");
-                                constrainId++;
+                                constraintId++;
                                 break;
                             }
                         }
-
                         break;
                     }
                 }
@@ -234,10 +232,10 @@ public class ScanChianGrouperZ4 {
             }
         }
 
-        return constrainId;
+        return constraintId;
     }
 
-    private long OnevOnegConsWriter(BitSet[] objectivelist, BitSet[] objectivelist1, BufferedWriter cons, int groupCount, char variablename, long constrainId) throws IOException {
+    private long OnevOnegConsWriter(BitSet[] objectivelist, BitSet[] objectivelist1, BufferedWriter cons, int groupCount, char variablename, long constraintId) throws IOException {
         for (int chainIdx  = 0; chainIdx < objectivelist.length; chainIdx++){
             for (int nodeIdx = 0; nodeIdx < objectivelist[chainIdx].length(); nodeIdx++) {
                 if (objectivelist[chainIdx].get(nodeIdx)) {
@@ -246,18 +244,18 @@ public class ScanChianGrouperZ4 {
                     if (objectivelist1[chainIdx].get(nodeIdx))
                         continue;
 
-                    cons.write("subto c" + constrainId + ": ");
+                    cons.write("subto c" + constraintId + ": ");
                     for (int g = 0; g < groupCount-1; g++)
                         cons.write(variablename + "_" + nodeIdx + "_" + chainIdx + "_" + g + " + ");
                     cons.write(variablename + "_" + nodeIdx + "_" + chainIdx + "_" + (groupCount-1) + " == 1;\n");
-                    constrainId++;
+                    constraintId++;
                 }
             }
         }
-        return constrainId;
+        return constraintId;
     }
 
-    private long ZConsWriter(BitSet[] objectivelist, BitSet[] objectivelist1, BufferedWriter cons, int groupCount, long constrainId) throws IOException {
+    private long ZConsWriter(BitSet[] objectivelist, BitSet[] objectivelist1, BufferedWriter cons, int groupCount, long constraintId) throws IOException {
         for (int chainIdx = 0; chainIdx < objectivelist.length; chainIdx++){
             for (int nodeIdx = 0; nodeIdx < objectivelist[chainIdx].length(); nodeIdx++){
                 if (objectivelist[chainIdx].get(nodeIdx)){
@@ -267,7 +265,7 @@ public class ScanChianGrouperZ4 {
                         continue;
 
                     for (int g = 0; g < groupCount; g++) {
-                        cons.write("subto c" + constrainId + ": ");
+                        cons.write("subto c" + constraintId + ": ");
                         //write vif x_node_chain_g == 1 and
                         cons.write("vif x_" + nodeIdx + "_" + chainIdx + "_" + g + " * ( ");
                         ArrayList<Integer> impactlist = new ArrayList<>();
@@ -286,97 +284,100 @@ public class ScanChianGrouperZ4 {
 
                         cons.write("z_" + nodeIdx + "_" + chainIdx + "_" + g + " == 1 else ");
                         cons.write("z_" + nodeIdx + "_" + chainIdx + "_" + g + " == 0 end;\n");
-                        constrainId++;
+                        constraintId++;
                     }
                 }
             }
         }
-        return constrainId;
+        return constraintId;
     }
 
-    private long SelfConsWriter(BitSet[] objectivelist, BitSet[] objectivelist1, BufferedWriter cons, int groupCount, long constrainId) throws IOException {
-        for (int chainIdx = 0; chainIdx < objectivelist.length; chainIdx++){
-            for (int nodeIdx = 0; nodeIdx < objectivelist[chainIdx].length(); nodeIdx++){
-                if (objectivelist[chainIdx].get(nodeIdx)){
-                    if (objectivelist1[chainIdx].get(nodeIdx)){
-                        for (int g = 0; g < groupCount; g++) {
-                            cons.write("subto c" + constrainId + ": ");
-                            cons.write("x_" + nodeIdx + "_" + chainIdx + "_" + g + " == ");
-                            cons.write("y_" + nodeIdx + "_" + chainIdx + "_" + g + ";\n");
-                            constrainId++;
+    private int ThrConsWriter(int[][][] aregions, BitSet[] objectivelist1, BufferedWriter cons, int groupcount, int thr, long constraintId) throws IOException {
+        int conflict = 0;
+
+        for (int chainIdx = 0; chainIdx < aregions.length; chainIdx++){
+
+            for (int scancellIdx = 1; scancellIdx < aregions[chainIdx].length; scancellIdx++){
+                boolean consflag = false;
+
+                //jump shared nodes
+                int [] precell = aregions[chainIdx][scancellIdx-1].clone();
+                int [] curcell = aregions[chainIdx][scancellIdx].clone();
+                for (int prenodeIdx = 0; prenodeIdx < precell.length; prenodeIdx++){
+                    for (int curnodeIdx = 0; curnodeIdx < curcell.length; curnodeIdx++){
+                        if (precell[prenodeIdx] == curcell[curnodeIdx]){
+                            precell[prenodeIdx] = -1;
+                            curcell[curnodeIdx] = -1;
                         }
                     }
                 }
-            }
 
-        }
-        return constrainId;
-    }
-
-    private int ThrConsWriter(int[][][]aregions, BitSet[] objectivelist1, BufferedWriter cons, int groupcount, int thr, long constrainId) throws IOException {
-        int conflict = 0;
-
-
-
-        return conflict;
-    }
-
-    private int ThrConsWeiter(int[][][] aregions, BitSet[] objectivelist1, BufferedWriter cons, int groupCount, int thr, long constrainId) throws IOException {
-        int conflict = 0;
-        boolean pairingflag = true;
-        for (int chainIdx = 0; chainIdx < aregions.length; chainIdx++){
-            int selfimpnode_pre = 0;
-            boolean consflag = true;
-            for (int scancellIdx = 0; scancellIdx < aregions[chainIdx].length; scancellIdx++){
-                int selfimpnodes = 0;
-                if (aregions[chainIdx][scancellIdx][0] == -1)
-                    continue;
-                if (pairingflag && scancellIdx > 0) {
-                    scancellIdx--;
-                    consflag = true;
-                }
-
-                System.out.println( "cell_aggsize " + aregions[chainIdx][scancellIdx].length);
-
-                for (int nodeIdx = 0; nodeIdx < aregions[chainIdx][scancellIdx].length; nodeIdx++){
-                    if (objectivelist1[chainIdx].get(aregions[chainIdx][scancellIdx][nodeIdx])){
-                        selfimpnodes++;
+                //jump self impact nodes
+                int preselfimp = 0;
+                int curselfimp = 0;
+                for (int prenodeIdx = 0; prenodeIdx < precell.length; prenodeIdx++){
+                    if (precell[prenodeIdx] == -1)
                         continue;
+                    if (objectivelist1[chainIdx].get(precell[prenodeIdx])){
+                        preselfimp++;
+                        precell[prenodeIdx] = -1;
                     }
+                }
+                for (int curnodeIdx = 0; curnodeIdx < curcell.length; curnodeIdx++){
+                    if (curcell[curnodeIdx] == -1)
+                        continue;
+                    if (objectivelist1[chainIdx].get(curcell[curnodeIdx])){
+                        curselfimp++;
+                        curcell[curnodeIdx] = -1;
+                    }
+                }
 
-                    //jump the aggressors shared by clock paths of neighboring ffs
-//                    if (pairingflag){
-//                       if (IsNodeShared(aregions[chainIdx][scancellIdx][nodeIdx], aregions[chainIdx][scancellIdx+1]))
-//                           continue;
-//                    }else {
-//                        if (IsNodeShared(aregions[chainIdx][scancellIdx][nodeIdx], aregions[chainIdx][scancellIdx-1]))
-//                            continue;
-//                    }
-
-                    if (consflag){
+                //start to write the constraint
+                for (int prenodeIdx = 0; prenodeIdx < precell.length; prenodeIdx++){
+                    if (precell[prenodeIdx] == -1)
+                        continue;
+                    if (!consflag){
                         cons.write("var conf" + conflict + " binary;\n");
-                        cons.write("subto c" + constrainId + ": vif vabs(");
-                        consflag = false;
-                    }
-                    for (int g = 0; g < groupCount; g++){
-                        if (pairingflag)
-                            cons.write(" + ");
-                        else
-                            cons.write(" - ");
-                        cons.write("z_" + aregions[chainIdx][scancellIdx][nodeIdx] + "_" + chainIdx + "_" + g);
-                    }
-                }
-                if (!pairingflag) {
-                    if (selfimpnodes != aregions[chainIdx][scancellIdx].length) {
-                        cons.write( " + " + selfimpnode_pre + " - " + selfimpnodes + " ) > " + thr + " then conf" + conflict + " == 1 " + "else conf" + conflict + " == 0 end;\n");
+                        cons.write("subto c" + constraintId + ": vif vabs(");
+                        consflag = true;
                         conflict++;
-                        constrainId++;
+                        constraintId++;
+                    }
+                    for (int g = 0; g < groupcount; g++){
+                        cons.write(" + z_" + precell[prenodeIdx] + "_" + chainIdx + "_" + g);
                     }
                 }
-                pairingflag = !pairingflag;
-                selfimpnode_pre = selfimpnodes;
+                for (int curnodeIdx = 0; curnodeIdx < curcell.length; curnodeIdx++){
+                    if (curcell[curnodeIdx] == -1)
+                        continue;
+                    if (!consflag){
+                        cons.write("var conf" + conflict + " binary;\n");
+                        cons.write("subto c" + constraintId + ": vif vabs(");
+                        consflag = true;
+                        conflict++;
+                        constraintId++;
+                    }
+                    for (int g = 0; g < groupcount; g++){
+                        cons.write(" - z_" + curcell[curnodeIdx] + "_" + chainIdx + "_" +g);
+                    }
+                }
+
+                if (consflag){
+                    cons.write( " + " + preselfimp + " - " + curselfimp + " ) > " + thr +
+                            " then conf" + (conflict-1) + " == 1 " + "else conf" + (conflict-1) + " == 0 end;\n");
+                }else {
+                    if (preselfimp != curselfimp && Math.abs(preselfimp - curselfimp) > thr){
+                        cons.write("var conf" + conflict + " binary;\n");
+                        cons.write("subto c" + constraintId + ": conf" + conflict + " == 1;\n");
+                        conflict++;
+                        constraintId++;
+                    }
+                }
+
             }
+
         }
+
         return conflict;
     }
 
@@ -437,11 +438,8 @@ public class ScanChianGrouperZ4 {
         //write the constrains of z
         constrainId = ZConsWriter(chain2aggressors, impacts, zpl, groupCount, constrainId);
 
-        //write the self impacted constrains
-        //constrainId = SelfConsWriter(chain2aggressors, impacts, zpl, groupCount, constrainId);
-
         //write the threshold constrains
-        conflict = ThrConsWeiter(aregions, impacts, zpl, groupCount, skewthreshold, constrainId);
+        conflict = ThrConsWriter(aregions, impacts, zpl, groupCount, skewthreshold, constrainId);
 
         //write the objective function
         ObjectiveWriter(conflict, zpl);
