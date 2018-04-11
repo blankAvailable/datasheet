@@ -114,15 +114,7 @@ public class ScanChianGrouperZ4 {
                 if (!node2idx.containsKey(n))
                     node2idx.put(n, idx++);
 
-        impacts = new BitSet[chain2impactSet.keySet().size()];
-        for (ScanChain chain : chain2impactSet.keySet()){
-            idx = chain.chainIdx();
-            impacts[idx] = new BitSet();
-            for (Node n : chain2impactSet.get(chain))
-                impacts[idx].set(node2idx.get(n));
-        }
-
-        aregions = new int[impacts.length][][];
+        aregions = new int[chain2impactSet.keySet().size()][][];
         for (ScanChain chain : chain2impactSet.keySet()){
             int chainId = chain.chainIdx();
             int scancells = chain.cells.size();
@@ -154,6 +146,22 @@ public class ScanChianGrouperZ4 {
                 }
             }
         }
+
+        impacts = new BitSet[chain2impactSet.keySet().size()];
+        for (ScanChain chain : chain2impactSet.keySet()){
+            idx = chain.chainIdx();
+            impacts[idx] = new BitSet();
+            for (Node n : chain2impactSet.get(chain)){
+                for (int chainIdx = 0; chainIdx < chain2aggressors.length; chainIdx++){
+                    if (chain2aggressors[chainIdx].get(node2idx.get(n))) {
+                        impacts[idx].set(node2idx.get(n));
+                        break;
+                    }
+                }
+            }
+
+        }
+
     }
 
     private void VariableWriter(BitSet[] objectivelist, BitSet[] objectivelist1 ,BufferedWriter var, int groupCount, char variablename) throws IOException {
@@ -191,6 +199,7 @@ public class ScanChianGrouperZ4 {
                     continue;
 
                 //write a constrain
+                int counter = 0;
                 cons.write("subto c" + constrainId + ": vif " + variablename + "_" + nodecounter.get(0) + "_" + chainIdx + "_" + g + " == 1 then ");
                 for (int i = 0; i < nodecounter.size()-1; i ++)
                     cons.write(variablename + "_" + nodecounter.get(i) + "_" + chainIdx + "_" + g + " + ");
