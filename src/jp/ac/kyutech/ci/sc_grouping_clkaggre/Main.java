@@ -424,11 +424,13 @@ public class Main extends KyupiApp {
                 for (Node n : cbInfo.sff_to_clock_buffer_set.get(cell.node)){
                     int x = placement.getX(n);
                     int y = placement.getY(n);
+                    System.out.print(x + " " + y + "\t");
                     cbuf2aggressorSet.put(n, placement.getRectangle(x - arxnm / 2, y - arynm / 2, x + arxnm / 2,
                             y+ arynm / 2));
                     //no duplication removing
                     saffaggressors.addAll(cbuf2aggressorSet.get(n));
                 }
+                System.out.println();
             }
         }
     }
