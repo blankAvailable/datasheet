@@ -1,5 +1,6 @@
 package jp.ac.kyutech.ci.sc_grouping_clkaggre;
 
+import jdk.internal.dynalink.ChainedCallSite;
 import jp.ac.kyutech.ci.sc_grouping_clkaggre.QBWeightedSwitchingActivitySim.WeightedNodeSet;
 import org.kyupi.data.QVExpander;
 import org.kyupi.data.item.QVector;
@@ -263,12 +264,22 @@ public class Main extends KyupiApp {
                 }
                 aggressorWNSet.put(saff, wnSet);
             }
+
+            WeightedNodeSet overallwnSet = sim.new WeightedNodeSet();
+            for (ScanChain chain : chain2impactset.keySet()){
+                for (Node n : chain2impactset.get(chain)){
+                    overallwnSet.add(n, 1.0);
+                }
+            }
+
             log.info("WSA simulation started... ");
             for (int i = 0; i < blocks; i++)
                 sim.next();
             log.info("WSA simulation finished.");
 
-            double overallActivityDiffMax= 0.0;
+            double overallActivityDiffMax = 0.0;
+            double worstactivity1 = 0.0;
+            double worstactivity2 = 0.0;
             for (int chainId = 0; chainId < chains.size(); chainId++){
 
                 //WSA difference may large somewhere else, but at this those places are not activated.
@@ -294,12 +305,23 @@ public class Main extends KyupiApp {
                             wns2 = aggressorWNSet.get(cell);
                             activity2 = wns2.getActivity(patternId);
                             flag = false;
-                            overallActivityDiffMax = Math.max(overallActivityDiffMax, Math.abs(activity1 - activity2));
+                            if (overallActivityDiffMax < Math.abs(activity1 - activity2)){
+                                overallActivityDiffMax = Math.abs(activity1 - activity2);
+                                worstactivity1 = activity1;
+                                worstactivity2 = activity2;
+                            }
                         }
                     }
                 }
             }
             log.info("OverallMaxWSADiff " + overallActivityDiffMax);
+            log.info("WorstActivity1 " + worstactivity1);
+            log.info("WorstActivity2 " + worstactivity2);
+
+            double sumacticity = 0.0;
+            for (int patternId = 0; patternId < blocks * 32; patternId++)
+                sumacticity+=overallwnSet.getActivity(patternId);
+            log.info("OverallAvgWSA " + (sumacticity/(blocks*32)));
 
         } // caseId loop
 
