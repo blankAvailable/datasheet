@@ -131,7 +131,6 @@ public class ScanChianGrouperZ4 {
                 for (Node n : agg)
                     if (node2idx.containsKey(n))
                         aregions[chainId][cellId][idx++] = node2idx.get(n);
-                System.out.println( "cell_aggsize_z4 " + aregions[chainId][cellId].length);
             }
         }
         System.out.println("\n");
@@ -340,97 +339,25 @@ public class ScanChianGrouperZ4 {
                     }
                 }
 
-                //start to write the constraint
-                for (int prenodeIdx = 0; prenodeIdx < precell.length; prenodeIdx++){
-                    if (precell[prenodeIdx] == -1)
+                impactChain(precell, curcell,objectivelist1);
+
+                //if even count in self impact aggressors the biggest possible difference is <= thr
+                //then jump this pair of flip-flops
+                int preaggcounter = 0;
+                int curaggcounter = 0;
+                for (int aggIdx = 0; aggIdx < precell.length; aggIdx++){
+                    if (precell[aggIdx] == -1)
                         continue;
-                    if (!consflag){
-                        cons.write("var conf" + conflict + " binary;\n");
-                        cons.write("subto c" + constraintId + ": vif vabs(");
-                        consflag = true;
-                        conflict++;
-                        constraintId++;
-                    }
-                    for (int g = 0; g < groupcount; g++){
-                        cons.write(" + z_" + precell[prenodeIdx] + "_" + chainIdx + "_" + g);
-                    }
+                    preaggcounter++;
                 }
-                for (int curnodeIdx = 0; curnodeIdx < curcell.length; curnodeIdx++){
-                    if (curcell[curnodeIdx] == -1)
+                for (int aggIdx = 0; aggIdx < curcell.length; aggIdx++){
+                    if (curcell[aggIdx] == -1)
                         continue;
-                    if (!consflag){
-                        cons.write("var conf" + conflict + " binary;\n");
-                        cons.write("subto c" + constraintId + ": vif vabs(");
-                        consflag = true;
-                        conflict++;
-                        constraintId++;
-                    }
-                    for (int g = 0; g < groupcount; g++){
-                        cons.write(" - z_" + curcell[curnodeIdx] + "_" + chainIdx + "_" +g);
-                    }
+                    curaggcounter++;
                 }
-
-                if (consflag){
-                    cons.write( " + " + preselfimp + " - " + curselfimp + " ) > " + thr +
-                            " then conf" + (conflict-1) + " == 1 " + "else conf" + (conflict-1) + " == 0 end;\n");
-                }else {
-                    if (preselfimp != curselfimp && Math.abs(preselfimp - curselfimp) > thr){
-                        cons.write("var conf" + conflict + " binary;\n");
-                        cons.write("subto c" + constraintId + ": conf" + conflict + " == 1;\n");
-                        conflict++;
-                        constraintId++;
-                    }
-                }
-
-            }
-
-        }
-
-        return conflict;
-    }
-
-    private int ThrConsWriter(int[][][] aregions, BitSet[] impacts, BitSet[] objectivelist1, BufferedWriter cons, int groupcount, int thr, long constraintId) throws IOException {
-        int conflict = 0;
-
-        for (int chainIdx = 0; chainIdx < aregions.length; chainIdx++){
-
-            for (int scancellIdx = 1; scancellIdx < aregions[chainIdx].length; scancellIdx++){
-                boolean consflag = false;
-
-                //jump shared nodes
-                int [] precell = aregions[chainIdx][scancellIdx-1].clone();
-                int [] curcell = aregions[chainIdx][scancellIdx].clone();
-                for (int prenodeIdx = 0; prenodeIdx < precell.length; prenodeIdx++){
-                    for (int curnodeIdx = 0; curnodeIdx < curcell.length; curnodeIdx++){
-                        if (precell[prenodeIdx] == curcell[curnodeIdx]){
-                            precell[prenodeIdx] = -1;
-                            curcell[curnodeIdx] = -1;
-                        }
-                    }
-                }
-
-                //jump self impact nodes
-                int preselfimp = 0;
-                int curselfimp = 0;
-                for (int prenodeIdx = 0; prenodeIdx < precell.length; prenodeIdx++){
-                    if (precell[prenodeIdx] == -1)
-                        continue;
-                    if (objectivelist1[chainIdx].get(precell[prenodeIdx])){
-                        preselfimp++;
-                        precell[prenodeIdx] = -1;
-                    }
-                }
-                for (int curnodeIdx = 0; curnodeIdx < curcell.length; curnodeIdx++){
-                    if (curcell[curnodeIdx] == -1)
-                        continue;
-                    if (objectivelist1[chainIdx].get(curcell[curnodeIdx])){
-                        curselfimp++;
-                        curcell[curnodeIdx] = -1;
-                    }
-                }
-
-                impactChain(precell, impacts);
-                impactChain(curcell, impacts);
+                int possiblediff = ((preaggcounter + preselfimp) > (curaggcounter + curselfimp))?(preaggcounter + preselfimp):(curaggcounter + curselfimp);
+                if ( possiblediff <= thr)
+                    continue;
 
                 //start to write the constraint
                 for (int prenodeIdx = 0; prenodeIdx < precell.length; prenodeIdx++){
@@ -481,16 +408,37 @@ public class ScanChianGrouperZ4 {
         return conflict;
     }
 
-    private void impactChain(int[] agg2cell, BitSet[] impacts){
+    private void impactChain(int[] precell, int[] curcell, BitSet[] impacts){
+        int[] preimpactcounter = new int[impacts.length];
+        int[] curimpactcounter = new int[impacts.length];
+        int prevalidaggcounter = 0;
+        int curvalidaggcounter = 0;
 
-            for (int chainIdx = 0; chainIdx < impacts.length; chainIdx++) {
-                for (int aggIdx = 0; aggIdx < agg2cell.length; aggIdx++){
-                    if (agg2cell[aggIdx] == -1)
-                        continue;
-                    if (impacts[chainIdx].get(agg2cell[aggIdx]))
-                        System.out.print(chainIdx + "\t");
-                }
+        for (int aggIdx = 0; aggIdx < precell.length; aggIdx++){
+            if (precell[aggIdx] == -1)
+                continue;
+            prevalidaggcounter++;
+            for (int chainIdx = 0; chainIdx < impacts.length; chainIdx++){
+                if (impacts[chainIdx].get(precell[aggIdx]))
+                    preimpactcounter[chainIdx]++;
             }
+        }
+
+        for (int aggIdx = 0; aggIdx < curcell.length; aggIdx++){
+            if (curcell[aggIdx] == -1)
+                continue;
+            curvalidaggcounter++;
+            for (int chainIdx = 0; chainIdx < impacts.length; chainIdx++){
+                if (impacts[chainIdx].get(curcell[aggIdx]))
+                    curimpactcounter[chainIdx]++;
+            }
+        }
+
+            System.out.println("AggressorDiff " + (Math.abs(prevalidaggcounter - curvalidaggcounter)));
+            for (int chaingIdx = 0; chaingIdx < preimpactcounter.length; chaingIdx++) {
+                System.out.println("ChainContribution " + chaingIdx + " " + Math.abs(preimpactcounter[chaingIdx] - curimpactcounter[chaingIdx]));
+            }
+            System.out.println("\n");
 
     }
 
