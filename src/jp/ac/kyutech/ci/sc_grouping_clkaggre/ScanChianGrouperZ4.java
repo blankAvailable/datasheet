@@ -389,17 +389,109 @@ public class ScanChianGrouperZ4 {
         return conflict;
     }
 
-    private boolean IsNodeShared(int node, int[] needsearch){
-        boolean exist = false;
+    private int ThrConsWriter(int[][][] aregions, BitSet[] impacts, BitSet[] objectivelist1, BufferedWriter cons, int groupcount, int thr, long constraintId) throws IOException {
+        int conflict = 0;
 
-        for (int nodeIdx = 0; nodeIdx < needsearch.length; nodeIdx++){
-            if (node == needsearch[nodeIdx]){
-                exist = true;
-                break;
+        for (int chainIdx = 0; chainIdx < aregions.length; chainIdx++){
+
+            for (int scancellIdx = 1; scancellIdx < aregions[chainIdx].length; scancellIdx++){
+                boolean consflag = false;
+
+                //jump shared nodes
+                int [] precell = aregions[chainIdx][scancellIdx-1].clone();
+                int [] curcell = aregions[chainIdx][scancellIdx].clone();
+                for (int prenodeIdx = 0; prenodeIdx < precell.length; prenodeIdx++){
+                    for (int curnodeIdx = 0; curnodeIdx < curcell.length; curnodeIdx++){
+                        if (precell[prenodeIdx] == curcell[curnodeIdx]){
+                            precell[prenodeIdx] = -1;
+                            curcell[curnodeIdx] = -1;
+                        }
+                    }
+                }
+
+                //jump self impact nodes
+                int preselfimp = 0;
+                int curselfimp = 0;
+                for (int prenodeIdx = 0; prenodeIdx < precell.length; prenodeIdx++){
+                    if (precell[prenodeIdx] == -1)
+                        continue;
+                    if (objectivelist1[chainIdx].get(precell[prenodeIdx])){
+                        preselfimp++;
+                        precell[prenodeIdx] = -1;
+                    }
+                }
+                for (int curnodeIdx = 0; curnodeIdx < curcell.length; curnodeIdx++){
+                    if (curcell[curnodeIdx] == -1)
+                        continue;
+                    if (objectivelist1[chainIdx].get(curcell[curnodeIdx])){
+                        curselfimp++;
+                        curcell[curnodeIdx] = -1;
+                    }
+                }
+
+                impactChain(precell, impacts);
+                impactChain(curcell, impacts);
+
+                //start to write the constraint
+                for (int prenodeIdx = 0; prenodeIdx < precell.length; prenodeIdx++){
+                    if (precell[prenodeIdx] == -1)
+                        continue;
+                    if (!consflag){
+                        cons.write("var conf" + conflict + " binary;\n");
+                        cons.write("subto c" + constraintId + ": vif vabs(");
+                        consflag = true;
+                        conflict++;
+                        constraintId++;
+                    }
+                    for (int g = 0; g < groupcount; g++){
+                        cons.write(" + z_" + precell[prenodeIdx] + "_" + chainIdx + "_" + g);
+                    }
+                }
+                for (int curnodeIdx = 0; curnodeIdx < curcell.length; curnodeIdx++){
+                    if (curcell[curnodeIdx] == -1)
+                        continue;
+                    if (!consflag){
+                        cons.write("var conf" + conflict + " binary;\n");
+                        cons.write("subto c" + constraintId + ": vif vabs(");
+                        consflag = true;
+                        conflict++;
+                        constraintId++;
+                    }
+                    for (int g = 0; g < groupcount; g++){
+                        cons.write(" - z_" + curcell[curnodeIdx] + "_" + chainIdx + "_" +g);
+                    }
+                }
+
+                if (consflag){
+                    cons.write( " + " + preselfimp + " - " + curselfimp + " ) > " + thr +
+                            " then conf" + (conflict-1) + " == 1 " + "else conf" + (conflict-1) + " == 0 end;\n");
+                }else {
+                    if (preselfimp != curselfimp && Math.abs(preselfimp - curselfimp) > thr){
+                        cons.write("var conf" + conflict + " binary;\n");
+                        cons.write("subto c" + constraintId + ": conf" + conflict + " == 1;\n");
+                        conflict++;
+                        constraintId++;
+                    }
+                }
+
             }
+
         }
 
-        return exist;
+        return conflict;
+    }
+
+    private void impactChain(int[] agg2cell, BitSet[] impacts){
+
+            for (int chainIdx = 0; chainIdx < impacts.length; chainIdx++) {
+                for (int aggIdx = 0; aggIdx < agg2cell.length; aggIdx++){
+                    if (agg2cell[aggIdx] == -1)
+                        continue;
+                    if (impacts[chainIdx].get(agg2cell[aggIdx]))
+                        System.out.print(chainIdx + "\t");
+                }
+            }
+
     }
 
     private void ObjectiveWriter(int conflict, BufferedWriter obj) throws IOException  {
