@@ -1,28 +1,29 @@
 package jp.ac.kyutech.ci.grouping;
 
-import jp.ac.kyutech.ci.grouping.Main.CBInfo;
-import org.kyupi.graph.Graph.Node;
-import org.kyupi.graph.ScanChains.ScanCell;
-import org.kyupi.graph.ScanChains.ScanChain;
-
 import java.util.BitSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
+import org.kyupi.circuit.Cell;
+import org.kyupi.circuit.ScanChains.ScanCell;
+import org.kyupi.circuit.ScanChains.ScanChain;
+
+import jp.ac.kyutech.ci.grouping.Main.CBInfo;
+
 public class FastCostFunction {
 
-	HashMap<Node, Integer> node2idx;
+	HashMap<Cell, Integer> node2idx;
 	BitSet[] impacts;
 	int[][][] aregions;
 	float[] nodeCost;
 
-	public FastCostFunction(HashMap<ScanChain, HashSet<Node>> chain2impactSet,
-							HashMap<ScanCell, HashSet<Node>> cell2aggressorSet, CBInfo cbInfo){
+	public FastCostFunction(HashMap<ScanChain, HashSet<Cell>> chain2impactSet,
+							HashMap<ScanCell, HashSet<Cell>> cell2aggressorSet, CBInfo cbInfo){
 		node2idx = new HashMap<>();
 		int idx = 0;
-		for (HashSet<Node> nodes : chain2impactSet.values())
-			for (Node n : nodes)
+		for (HashSet<Cell> nodes : chain2impactSet.values())
+			for (Cell n : nodes)
 				if (!node2idx.containsKey(n))
 					node2idx.put(n, idx++);
 
@@ -30,7 +31,7 @@ public class FastCostFunction {
 		for (ScanChain chain : chain2impactSet.keySet()) {
 			idx = chain.chainIdx();
 			impacts[idx] = new BitSet();
-			for (Node n : chain2impactSet.get(chain))
+			for (Cell n : chain2impactSet.get(chain))
 				impacts[idx].set(node2idx.get(n));
 		}
 
@@ -41,24 +42,24 @@ public class FastCostFunction {
 			aregions[chain_idx] = new int[cells][];
 			for (int cell_idx = 0; cell_idx < cells; cell_idx++) {
 				ScanCell cell = chain.cells.get(cell_idx);
-				HashSet<Node> agg = cell2aggressorSet.get(cell);
+				HashSet<Cell> agg = cell2aggressorSet.get(cell);
 				idx = 0;
-				for (Node n : agg)
+				for (Cell n : agg)
 					if (node2idx.containsKey(n))
 						idx++;
 				aregions[chain_idx][cell_idx] = new int[idx];
 				idx = 0;
-				for (Node n : agg)
+				for (Cell n : agg)
 					if (node2idx.containsKey(n))
 						aregions[chain_idx][cell_idx][idx++] = node2idx.get(n);
 			}
 		}
 
 		nodeCost = new float[node2idx.size()];
-		for (Map.Entry<Node, Integer> entry : node2idx.entrySet()){
+		for (Map.Entry<Cell, Integer> entry : node2idx.entrySet()){
 			String typename = entry.getKey().typeName();
 			if (cbInfo.all_clock_buffers.contains(entry.getKey())) {
-				nodeCost[entry.getValue()] = 1 * entry.getKey().countIns();
+				nodeCost[entry.getValue()] = 1 * entry.getKey().inputCount();
 			}else if (typename.contains("AND")){
 				if (typename.contains("NAND")) {
 					nodeCost[entry.getValue()] = (float) 0.75;
@@ -77,13 +78,13 @@ public class FastCostFunction {
 		}
 	}
 
-	public FastCostFunction(HashMap<ScanChain, HashSet<Node>> chain2impactSet,
-			HashMap<ScanCell, HashSet<Node>> cell2aggressorSet) {
+	public FastCostFunction(HashMap<ScanChain, HashSet<Cell>> chain2impactSet,
+			HashMap<ScanCell, HashSet<Cell>> cell2aggressorSet) {
 
 		node2idx = new HashMap<>();
 		int idx = 0;
-		for (HashSet<Node> nodes : chain2impactSet.values())
-			for (Node n : nodes)
+		for (HashSet<Cell> nodes : chain2impactSet.values())
+			for (Cell n : nodes)
 				if (!node2idx.containsKey(n))
 					node2idx.put(n, idx++);
 
@@ -91,7 +92,7 @@ public class FastCostFunction {
 		for (ScanChain chain : chain2impactSet.keySet()) {
 			idx = chain.chainIdx();
 			impacts[idx] = new BitSet();
-			for (Node n : chain2impactSet.get(chain))
+			for (Cell n : chain2impactSet.get(chain))
 				impacts[idx].set(node2idx.get(n));
 		}
 
@@ -102,14 +103,14 @@ public class FastCostFunction {
 			aregions[chain_idx] = new int[cells][];
 			for (int cell_idx = 0; cell_idx < cells; cell_idx++) {
 				ScanCell cell = chain.cells.get(cell_idx);
-				HashSet<Node> agg = cell2aggressorSet.get(cell);
+				HashSet<Cell> agg = cell2aggressorSet.get(cell);
 				idx = 0;
-				for (Node n : agg)
+				for (Cell n : agg)
 					if (node2idx.containsKey(n))
 						idx++;
 				aregions[chain_idx][cell_idx] = new int[idx];
 				idx = 0;
-				for (Node n : agg)
+				for (Cell n : agg)
 					if (node2idx.containsKey(n))
 						aregions[chain_idx][cell_idx][idx++] = node2idx.get(n);
 			}
@@ -215,9 +216,9 @@ public class FastCostFunction {
 		return maxCost;
 	}
 
-	public float evaluate_weighted(HashSet<Node> aggressor){
+	public float evaluate_weighted(HashSet<Cell> aggressor){
 		float cost = 0;
-		for (Node n : aggressor){
+		for (Cell n : aggressor){
 			cost = cost + nodeCost[node2idx.get(n)];
 		}
 		return cost;

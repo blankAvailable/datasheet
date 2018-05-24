@@ -2,15 +2,16 @@ package jp.ac.kyutech.ci.sc_grouping_clkaggre;
 
 import jdk.internal.dynalink.ChainedCallSite;
 import jp.ac.kyutech.ci.sc_grouping_clkaggre.QBWeightedSwitchingActivitySim.WeightedNodeSet;
+
+import org.kyupi.circuit.*;
+import org.kyupi.circuit.MutableCircuit.MutableCell;
+import org.kyupi.circuit.ScanChains.ScanCell;
+import org.kyupi.circuit.ScanChains.ScanChain;
 import org.kyupi.data.QVExpander;
 import org.kyupi.data.item.QVector;
 import org.kyupi.data.source.BBSource;
 import org.kyupi.data.source.QBSource;
 import org.kyupi.data.source.QVSource;
-import org.kyupi.graph.*;
-import org.kyupi.graph.Graph.Node;
-import org.kyupi.graph.ScanChains.ScanCell;
-import org.kyupi.graph.ScanChains.ScanChain;
 import org.kyupi.misc.KyupiApp;
 import org.kyupi.misc.StringFilter;
 import org.kyupi.sim.BBPlainSim;
@@ -55,7 +56,8 @@ public class Main extends KyupiApp {
         options.addOption("sol", true, "read the solution from the ILP model to get the optimized grouping");
     }
 
-    private Graph circuit;
+    private MutableCircuit mcircuit;
+    private LevelizedCircuit circuit;
     /**
      * Computes a result, or throws an exception if unable to do so.
      * balance clock aggressor number through scan chain grouping
@@ -68,14 +70,14 @@ public class Main extends KyupiApp {
 
         // load circuit and print basic statistics
         setLib(new LibraryOldSAED());
-        circuit = loadCircuitFromArgs();
-        circuit.printStats();
-        int nodecount = circuit.countNonPseudoNodes();
+        mcircuit = loadNextCircuitFromArgs();
+        mcircuit.printStats();
+        int nodecount = mcircuit.countNonPseudoNodes();
         log.info("NonPseudoNodes " + nodecount);
 
         //extract scan chains and clock paths
-        ScanChains chains = new ScanChains(circuit);
-        CBInfo cbinfo = collectClockBuffers(circuit, chains);
+        ScanChains chains = new ScanChains(mcircuit);
+        CBInfo cbinfo = collectClockBuffers(mcircuit, chains);
         log.info("ScanChainCount " + chains.size());
         log.info("MaxChainLength " + chains.maxChainLength());
 
@@ -84,15 +86,21 @@ public class Main extends KyupiApp {
             String filename = argsParsed().getOptionValue("sep_clk");
             separateClks(chains, cbinfo);
             FileOutputStream output = new FileOutputStream(filename);
-            FormatVerilog.save(output, circuit);
+            FormatVerilog.save(output, mcircuit);
             output.close();
             printGoodbye();
             return null;
         }
+        
+        circuit = mcircuit.levelized();
+        
+        chains = new ScanChains(circuit);
+        cbinfo = collectClockBuffers(circuit, chains);
+
 
         // extract impact area/set
         log.info("Calculating impact sets...");
-        HashMap<ScanChain, HashSet<Node>> chain2impactset = new HashMap<>();
+        HashMap<ScanChain, HashSet<Cell>> chain2impactset = new HashMap<>();
         calculateImpactSets(chains, cbinfo, chain2impactset);
 
         // load placement info from .def file
@@ -114,8 +122,8 @@ public class Main extends KyupiApp {
         log.info("AggressorRegionSizeNM X " + arxnm + " Y " + arynm);
 
         // extract clock aggressor sets
-        HashMap<Node, HashSet<Node>> cbuf2aggressorSet = new HashMap<>();
-        HashMap<ScanCell, ArrayList<Node>> cell2aggressorSet = new HashMap<>();
+        HashMap<Cell, HashSet<Cell>> cbuf2aggressorSet = new HashMap<>();
+        HashMap<ScanCell, ArrayList<Cell>> cell2aggressorSet = new HashMap<>();
         calculateAggressorSets(cbinfo, chains, placement, arxnm, arynm, cbuf2aggressorSet, cell2aggressorSet);
         printAggressorAndImpactInfo(chains, cell2aggressorSet, chain2impactset);
 
@@ -259,7 +267,7 @@ public class Main extends KyupiApp {
             for (ScanCell saff : cell2aggressorSet.keySet()){
                 WeightedNodeSet wnSet = sim.new WeightedNodeSet();
 
-                for (Node n : cell2aggressorSet.get(saff)){
+                for (Cell n : cell2aggressorSet.get(saff)){
                     wnSet.add(n, 1.0);
                 }
                 aggressorWNSet.put(saff, wnSet);
@@ -267,7 +275,7 @@ public class Main extends KyupiApp {
 
             WeightedNodeSet overallwnSet = sim.new WeightedNodeSet();
             for (ScanChain chain : chain2impactset.keySet()){
-                for (Node n : chain2impactset.get(chain)){
+                for (Cell n : chain2impactset.get(chain)){
                     overallwnSet.add(n, 1.0);
                 }
             }
@@ -289,7 +297,7 @@ public class Main extends KyupiApp {
 
                 ScanChain chain = chains.get(chainId);
                 // int clock_phase = clocking[chainId]
-                log.info("Chain " + chainId + " ScanInPort " + chain.in.node.queryName());
+                log.info("Chain " + chainId + " ScanInPort " + chain.in.node.name());
                 WeightedNodeSet wns1;
                 double activity1 = 0.0;
                 WeightedNodeSet wns2;
@@ -334,23 +342,23 @@ public class Main extends KyupiApp {
         return null;
     }
 
-    private CBInfo collectClockBuffers(Graph circuit, ScanChains sc){
+    private CBInfo collectClockBuffers(Circuit circuit, ScanChains sc){
         log.info("Collecting clock buffers for each scan cell");
 
         CBInfo clkbuf = new CBInfo();
-        HashMap<Node, ArrayList<Node>> saff2cb = new HashMap<>();
-        HashSet<Node> all_cbuf = new HashSet<>();
+        HashMap<Cell, ArrayList<Cell>> saff2cb = new HashMap<>();
+        HashSet<Cell> all_cbuf = new HashSet<>();
 
         for(int chain = 0; chain < sc.size(); chain++){
             ScanChain c = sc.get(chain);
             for(int chainpos = 0; chainpos < c.cells.size(); chainpos++){
                 ScanCell saff = c.cells.get(chainpos);
-                Node saffnode = saff.node;
-                Node cbuf = saffnode.in(getLib().getClockPin(saffnode.type()));
-                ArrayList<Node> cb = collectClockBuffers(cbuf, new ArrayList<Node>());
+                Cell saffnode = saff.node;
+                Cell cbuf = saffnode.inputCellAt(getLib().getClockPin(saffnode.type()));
+                ArrayList<Cell> cb = collectClockBuffers(cbuf, new ArrayList<Cell>());
                 StringBuffer strbuf = new StringBuffer();
-                for(Node n : cb){
-                    strbuf.append(" " + n.queryName());
+                for(Cell n : cb){
+                    strbuf.append(" " + n.name());
                 }
                 saff2cb.put(saffnode, cb);
                 all_cbuf.addAll(cb);
@@ -360,11 +368,11 @@ public class Main extends KyupiApp {
         int saff_num = saff2cb.size();
         int cbuf_num = 0;
         int cbuf_max = 0;
-        for(Node saff : saff2cb.keySet()){
-            HashSet<Node> cbufset = new HashSet<>();
+        for(Cell saff : saff2cb.keySet()){
+            HashSet<Cell> cbufset = new HashSet<>();
             clkbuf.sff_to_clock_buffer_set.put(saff, cbufset);
             int cbuf = 0;
-            for(Node cb : saff2cb.get(saff)){
+            for(Cell cb : saff2cb.get(saff)){
                 if((!cb.isPseudo() && !cb.isInput())){
                     cbufset.add(cb);
                     cbuf++;
@@ -375,7 +383,7 @@ public class Main extends KyupiApp {
         }
         int cbuf_count = 0;
         log.debug("hash set size " + all_cbuf.size());
-        for(Node cb : all_cbuf){
+        for(Cell cb : all_cbuf){
             if((!cb.isPseudo() && !cb.isInput())){
                 clkbuf.all_clock_buffers.add(cb);
                 cbuf_count++;
@@ -388,62 +396,62 @@ public class Main extends KyupiApp {
         return clkbuf;
     }
 
-    private ArrayList<Node> collectClockBuffers(Node head, ArrayList<Node> tail){
+    private ArrayList<Cell> collectClockBuffers(Cell head, ArrayList<Cell> tail){
         if (head == null)
             return tail;
         tail.add(head);
-        if (head.countIns() > 1) {
+        if (head.inputCount() > 1) {
             if (head.isType(LibrarySAED.TYPE_CGLPPR)) {
-                return collectClockBuffers(head.in(getLib().pinIndex(LibrarySAED.TYPE_CGLPPR, "CLK")), tail);
+                return collectClockBuffers(head.inputCellAt(getLib().pinIndex(LibrarySAED.TYPE_CGLPPR, "CLK")), tail);
             } else {
                 log.error("found odd gate in clock tree, terminating here: " + head);
                 return tail;
             }
         } else {
-            return collectClockBuffers(head.in(0), tail);
+            return collectClockBuffers(head.inputCellAt(0), tail);
         }
     }
 
     private void separateClks(ScanChains chains, CBInfo cbinfo){
-        Node oriClk = circuit.searchNode("clock");
+        MutableCell oriClk = mcircuit.searchCellByName("clock");
         oriClk.remove();
-        int intfNodeIdx = circuit.accessInterface().length;
+        int intfNodeIdx = mcircuit.width();
         for(int chainId = 0; chainId < chains.size(); chainId++){
             ScanChain chain = chains.get(chainId);
-            Node clk = circuit.new Node(String.format("clk%03d", chainId), LibrarySAED.TYPE_BUF | Library.FLAG_INPUT);
+            MutableCell clk = mcircuit.new MutableCell(String.format("clk%03d", chainId), LibrarySAED.TYPE_BUF | Library.FLAG_INPUT);
             clk.setIntfPosition(intfNodeIdx++);
             for(ScanCell cell : chain.cells){
-                circuit.connect(clk, -1, cell.node, circuit.library().getClockPin(cell.node.type()));
+                mcircuit.connect(clk, -1, (MutableCell) cell.node, mcircuit.library().getClockPin(cell.node.type()));
             }
         }
     }
 
-    private void calculateImpactSets(ScanChains chains, CBInfo cbinfo, HashMap<ScanChain, HashSet<Node>> chain2impactset){
+    private void calculateImpactSets(ScanChains chains, CBInfo cbinfo, HashMap<ScanChain, HashSet<Cell>> chain2impactset){
         for(int chainId = 0; chainId < chains.size(); chainId++){
             ScanChain chain = chains.get(chainId);
-            HashSet<Node> impactset = new HashSet<Node>();
+            HashSet<Cell> impactset = new HashSet<Cell>();
             chain2impactset.put(chain, impactset);
             for(ScanCell cell : chain.cells){
                 impactset.add(cell.node);
-                impactset.addAll(GraphTools.collectCombinationalOutputCone(cell.node));
+                impactset.addAll(CircuitTools.collectCombinationalOutputCone(cell.node));
                 if (cbinfo.sff_to_clock_buffer_set.get(cell) != null)
                     impactset.addAll(cbinfo.sff_to_clock_buffer_set.get(cell));
             }
-            impactset.removeIf(new Predicate<Node>() {
+            impactset.removeIf(new Predicate<Cell>() {
                 @Override
-                public boolean test(Node node) { return node.isPseudo(); }
+                public boolean test(Cell node) { return node.isPseudo(); }
             });
         }
     }
 
-    private void calculateAggressorSets(CBInfo cbInfo, ScanChains chains, Placement placement, int arxnm, int arynm, HashMap<Node,
-            HashSet<Node>> cbuf2aggressorSet, HashMap<ScanCell, ArrayList<Node>> cell2aggressorSet){
+    private void calculateAggressorSets(CBInfo cbInfo, ScanChains chains, Placement placement, int arxnm, int arynm, HashMap<Cell,
+            HashSet<Cell>> cbuf2aggressorSet, HashMap<ScanCell, ArrayList<Cell>> cell2aggressorSet){
         for (int chainId = 0; chainId < chains.size(); chainId++){
             ScanChain chain = chains.get(chainId);
             for (ScanCell cell : chain.cells){
-                ArrayList<Node> saffaggressors = new ArrayList<>();
+                ArrayList<Cell> saffaggressors = new ArrayList<>();
                 cell2aggressorSet.put(cell, saffaggressors);
-                for (Node n : cbInfo.sff_to_clock_buffer_set.get(cell.node)){
+                for (Cell n : cbInfo.sff_to_clock_buffer_set.get(cell.node)){
                     int x = placement.getX(n);
                     int y = placement.getY(n);
                     System.out.print(x + " " + y + "\t");
@@ -457,7 +465,7 @@ public class Main extends KyupiApp {
         }
     }
 
-    private void printAggressorAndImpactInfo(ScanChains chains, HashMap<ScanCell, ArrayList<Node>> cell2aggressorSet, HashMap<ScanChain, HashSet<Node>> chain2impactSet) throws IOException {
+    private void printAggressorAndImpactInfo(ScanChains chains, HashMap<ScanCell, ArrayList<Cell>> cell2aggressorSet, HashMap<ScanChain, HashSet<Cell>> chain2impactSet) throws IOException {
         BufferedWriter table = null;
         if (argsParsed().hasOption("table")){
             String filename = argsParsed().getOptionValue("table");
@@ -467,7 +475,7 @@ public class Main extends KyupiApp {
         }
         for (int chainId = 0; chainId < chains.size(); chainId++){
             ScanChain chain = chains.get(chainId);
-            log.info("Chain " + chainId + " ScanInPort " + chain.in.node.queryName());
+            log.info("Chain " + chainId + " ScanInPort " + chain.in.node.name());
             log.info("  ChainLength " + chain.cells.size());
             int aggmin = Integer.MAX_VALUE;
             int aggmax = 0;
@@ -501,7 +509,7 @@ public class Main extends KyupiApp {
     private QBSource prepareExpandedRandomPatterns(ScanChains chains, int[] clocking) {
         int stimuliExpansionMap[][] = expandForWsa(chains.scanInMapping(clocking));
         int responseExpansionMap[][] = expandForWsa(chains.scanOutMapping(clocking));
-        BBSource stimuli = BBSource.random(circuit.accessInterface().length, 42);
+        BBSource stimuli = BBSource.random(circuit.width(), 42);
         BBSource responses = BBPlainSim.from(stimuli);
         // FIXME remove first pattern from stimuli for proper alignment
         QVSource stimuliExpanded = new QVExpander(QVSource.from(stimuli), stimuliExpansionMap);

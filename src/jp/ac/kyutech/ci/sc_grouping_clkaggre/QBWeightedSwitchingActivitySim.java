@@ -1,16 +1,16 @@
 package jp.ac.kyutech.ci.sc_grouping_clkaggre;
 
-import org.apache.log4j.Logger;
-import org.kyupi.data.item.QBlock;
-import org.kyupi.data.source.QBSource;
-import org.kyupi.graph.Graph;
-import org.kyupi.graph.Graph.Node;
-import org.kyupi.sim.Simulator;
-import org.kyupi.sim.Simulator.State;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+
+import org.apache.log4j.Logger;
+import org.kyupi.circuit.Cell;
+import org.kyupi.circuit.LevelizedCircuit;
+import org.kyupi.data.item.QBlock;
+import org.kyupi.data.source.QBSource;
+import org.kyupi.sim.CombLogicSim;
+import org.kyupi.sim.CombLogicSim.State;
 
 public class QBWeightedSwitchingActivitySim extends QBSource {
 
@@ -22,13 +22,13 @@ public class QBWeightedSwitchingActivitySim extends QBSource {
 	private ArrayList<WeightedNodeSet> groups = new ArrayList<>();
 
 	public class WeightedNodeSet {
-		private HashMap<Node, Double> weights = new HashMap<>();
+		private HashMap<Cell, Double> weights = new HashMap<>();
 
 		public WeightedNodeSet() {
 			groups.add(this);
 		}
 
-		public double add(Node n, double weight) {
+		public double add(Cell n, double weight) {
 			double w = weights.getOrDefault(n, Double.valueOf(0.0));
 			weights.put(n, w + weight);
 			return w + weight;
@@ -62,13 +62,13 @@ public class QBWeightedSwitchingActivitySim extends QBSource {
 		}
 	}
 
-	public QBWeightedSwitchingActivitySim(Graph circuit, QBSource source) {
+	public QBWeightedSwitchingActivitySim(LevelizedCircuit circuit, QBSource source) {
 		super(source.length());
-		if (circuit.accessInterface().length > source.length()) {
+		if (circuit.width() > source.length()) {
 			throw new IllegalArgumentException("insufficient data width for the interface of the netlist.");
 		}
 		this.source = source;
-		this.state = (new Simulator(circuit)).new State();
+		this.state = (new CombLogicSim(circuit)).new State();
 	}
 
 	private double[] tmp = new double[32];
@@ -82,8 +82,8 @@ public class QBWeightedSwitchingActivitySim extends QBSource {
 		state.propagate();
 		for (WeightedNodeSet g : groups) {
 			Arrays.fill(tmp, 0.0);
-			for (Node n : g.weights.keySet()) {
-				long v = state.getV(n.level(), n.levelPosition());
+			for (Cell n : g.weights.keySet()) {
+				long v = state.getV(n.outputSignalAt(0));
 				long diff = v ^ (v >> 1);
 				for (int i = 0; i < 32; i++) {
 					tmp[i] += g.weights.get(n) * (diff & 1L);
@@ -94,7 +94,7 @@ public class QBWeightedSwitchingActivitySim extends QBSource {
 				g.activity.add(tmp[i]);
 			}
 		}
-		state.capture();
+//		state.capture();
 		state.storeOutputsTo(b);
 		state.clear();
 		return b;

@@ -1,23 +1,26 @@
 package jp.ac.kyutech.ci.sc_grouping_clkaggre;
 
-import org.kyupi.graph.Graph.Node;
-import org.kyupi.graph.ScanChains.ScanCell;
-import org.kyupi.graph.ScanChains.ScanChain;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.HashMap;
+import java.util.HashSet;
 
-import java.util.*;
+import org.kyupi.circuit.Cell;
+import org.kyupi.circuit.ScanChains.ScanCell;
+import org.kyupi.circuit.ScanChains.ScanChain;
 
 public class FastCostFunction {
-    HashMap<Node, Integer> node2idx;
+    HashMap<Cell, Integer> node2idx;
     BitSet[] impacts;
     int[][][] aregions;
     int[] groupCost;
 
-    public FastCostFunction(HashMap<ScanChain, HashSet<Node>> chain2impactSet, HashMap<ScanCell, ArrayList<Node>> cell2aggressorSet){
+    public FastCostFunction(HashMap<ScanChain, HashSet<Cell>> chain2impactSet, HashMap<ScanCell, ArrayList<Cell>> cell2aggressorSet){
 
         node2idx = new HashMap<>();
         int idx = 0;
-        for (HashSet<Node> nodes : chain2impactSet.values())
-            for (Node n : nodes)
+        for (HashSet<Cell> nodes : chain2impactSet.values())
+            for (Cell n : nodes)
                 if (!node2idx.containsKey(n))
                     node2idx.put(n, idx++);
 
@@ -25,7 +28,7 @@ public class FastCostFunction {
         for (ScanChain chain : chain2impactSet.keySet()){
             idx = chain.chainIdx();
             impacts[idx] = new BitSet();
-            for (Node n : chain2impactSet.get(chain))
+            for (Cell n : chain2impactSet.get(chain))
                 impacts[idx].set(node2idx.get(n));
         }
 
@@ -36,14 +39,14 @@ public class FastCostFunction {
             aregions[chainId] = new int[cells][];
             for (int cellId = 0; cellId < cells; cellId++){
                 ScanCell cell = chain.cells.get(cellId);
-                ArrayList<Node> agg = cell2aggressorSet.get(cell);
+                ArrayList<Cell> agg = cell2aggressorSet.get(cell);
                 idx = 0;
-                for (Node n : agg)
+                for (Cell n : agg)
                     if (node2idx.containsKey(n))
                         idx++;
                 aregions[chainId][cellId] = new int[idx];
                 idx = 0;
-                for (Node n : agg)
+                for (Cell n : agg)
                     if (node2idx.containsKey(n))
                         aregions[chainId][cellId][idx++] = node2idx.get(n);
             }

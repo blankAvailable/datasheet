@@ -1,8 +1,8 @@
 package jp.ac.kyutech.ci.grouping;
 
-import org.kyupi.graph.Graph;
-
 import java.util.*;
+
+import org.kyupi.circuit.MutableCircuit;
 
 import static java.lang.Math.abs;
 import static java.lang.Math.max;

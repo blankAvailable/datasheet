@@ -1,11 +1,20 @@
 package jp.ac.kyutech.ci.sc_grouping_clkaggre;
 
-import org.kyupi.graph.Graph.Node;
-import org.kyupi.graph.ScanChains.ScanCell;
-import org.kyupi.graph.ScanChains.ScanChain;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.BitSet;
+import java.util.HashMap;
+import java.util.HashSet;
 
-import java.io.*;
-import java.util.*;
+import org.kyupi.circuit.Cell;
+import org.kyupi.circuit.ScanChains.ScanCell;
+import org.kyupi.circuit.ScanChains.ScanChain;
 
 /**
  * integer linear programming
@@ -64,7 +73,7 @@ class  MinCircuit {
  * generate the integer linear problem model, write it in zimpl format(.zpl file).
  */
 public class ScanChianGrouperZ4 {
-    HashMap<Node, Integer> node2idx;
+    HashMap<Cell, Integer> node2idx;
     BitSet[] chain2aggressors;
     BitSet[] impacts;
     int[][][] aregions;
@@ -103,14 +112,14 @@ public class ScanChianGrouperZ4 {
             test.close();
     }
 
-    public ScanChianGrouperZ4(HashMap<ScanChain, HashSet<Node>> chain2impactSet, HashMap<ScanCell, ArrayList<Node>> cell2aggressorSet, int skewthreshold){
+    public ScanChianGrouperZ4(HashMap<ScanChain, HashSet<Cell>> chain2impactSet, HashMap<ScanCell, ArrayList<Cell>> cell2aggressorSet, int skewthreshold){
 
         this.skewthreshold = skewthreshold;
 
         node2idx = new HashMap<>();
         int idx = 0;
-        for (HashSet<Node> nodes : chain2impactSet.values())
-            for (Node n : nodes)
+        for (HashSet<Cell> nodes : chain2impactSet.values())
+            for (Cell n : nodes)
                 if (!node2idx.containsKey(n))
                     node2idx.put(n, idx++);
 
@@ -121,17 +130,16 @@ public class ScanChianGrouperZ4 {
             aregions[chainId] = new int[scancells][];
             for (int cellId = 0; cellId < scancells; cellId++){
                 ScanCell cell = chain.cells.get(cellId);
-                ArrayList<Node> agg = cell2aggressorSet.get(cell);
+                ArrayList<Cell> agg = cell2aggressorSet.get(cell);
                 idx = 0;
-                for (Node n : agg)
+                for (Cell n : agg)
                     if (node2idx.containsKey(n))
                         idx++;
                 aregions[chainId][cellId] = new int[idx];
                 idx = 0;
-                for (Node n : agg)
+                for (Cell n : agg)
                     if (node2idx.containsKey(n))
                         aregions[chainId][cellId][idx++] = node2idx.get(n);
-                System.out.println( "cell_aggsize_z4 " + aregions[chainId][cellId].length);
             }
         }
         System.out.println("\n");
@@ -151,7 +159,7 @@ public class ScanChianGrouperZ4 {
         for (ScanChain chain : chain2impactSet.keySet()){
             idx = chain.chainIdx();
             impacts[idx] = new BitSet();
-            for (Node n : chain2impactSet.get(chain)){
+            for (Cell n : chain2impactSet.get(chain)){
                 for (int chainIdx = 0; chainIdx < chain2aggressors.length; chainIdx++){
                     if (chain2aggressors[chainIdx].get(node2idx.get(n))) {
                         impacts[idx].set(node2idx.get(n));
@@ -340,6 +348,26 @@ public class ScanChianGrouperZ4 {
                     }
                 }
 
+                impactChain(precell, curcell,objectivelist1);
+
+                //if even count in self impact aggressors the biggest possible difference is <= thr
+                //then jump this pair of flip-flops
+                int preaggcounter = 0;
+                int curaggcounter = 0;
+                for (int aggIdx = 0; aggIdx < precell.length; aggIdx++){
+                    if (precell[aggIdx] == -1)
+                        continue;
+                    preaggcounter++;
+                }
+                for (int aggIdx = 0; aggIdx < curcell.length; aggIdx++){
+                    if (curcell[aggIdx] == -1)
+                        continue;
+                    curaggcounter++;
+                }
+                int possiblediff = ((preaggcounter + preselfimp) > (curaggcounter + curselfimp))?(preaggcounter + preselfimp):(curaggcounter + curselfimp);
+                if ( possiblediff <= thr)
+                    continue;
+
                 //start to write the constraint
                 for (int prenodeIdx = 0; prenodeIdx < precell.length; prenodeIdx++){
                     if (precell[prenodeIdx] == -1)
@@ -389,17 +417,38 @@ public class ScanChianGrouperZ4 {
         return conflict;
     }
 
-    private boolean IsNodeShared(int node, int[] needsearch){
-        boolean exist = false;
+    private void impactChain(int[] precell, int[] curcell, BitSet[] impacts){
+        int[] preimpactcounter = new int[impacts.length];
+        int[] curimpactcounter = new int[impacts.length];
+        int prevalidaggcounter = 0;
+        int curvalidaggcounter = 0;
 
-        for (int nodeIdx = 0; nodeIdx < needsearch.length; nodeIdx++){
-            if (node == needsearch[nodeIdx]){
-                exist = true;
-                break;
+        for (int aggIdx = 0; aggIdx < precell.length; aggIdx++){
+            if (precell[aggIdx] == -1)
+                continue;
+            prevalidaggcounter++;
+            for (int chainIdx = 0; chainIdx < impacts.length; chainIdx++){
+                if (impacts[chainIdx].get(precell[aggIdx]))
+                    preimpactcounter[chainIdx]++;
             }
         }
 
-        return exist;
+        for (int aggIdx = 0; aggIdx < curcell.length; aggIdx++){
+            if (curcell[aggIdx] == -1)
+                continue;
+            curvalidaggcounter++;
+            for (int chainIdx = 0; chainIdx < impacts.length; chainIdx++){
+                if (impacts[chainIdx].get(curcell[aggIdx]))
+                    curimpactcounter[chainIdx]++;
+            }
+        }
+
+            System.out.println("AggressorDiff " + (Math.abs(prevalidaggcounter - curvalidaggcounter)));
+            for (int chaingIdx = 0; chaingIdx < preimpactcounter.length; chaingIdx++) {
+                System.out.println("ChainContribution " + chaingIdx + " " + Math.abs(preimpactcounter[chaingIdx] - curimpactcounter[chaingIdx]));
+            }
+            System.out.println("\n");
+
     }
 
     private void ObjectiveWriter(int conflict, BufferedWriter obj) throws IOException  {

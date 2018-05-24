@@ -1,16 +1,17 @@
 package jp.ac.kyutech.ci.grouping;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 
 import org.junit.Test;
+import org.kyupi.circuit.CircuitTools;
+import org.kyupi.circuit.LevelizedCircuit;
+import org.kyupi.circuit.LevelizedCircuit.LevelizedCell;
+import org.kyupi.circuit.MutableCircuit.MutableCell;
 import org.kyupi.data.item.BVector;
 import org.kyupi.data.source.BVSource;
 import org.kyupi.data.source.QBSource;
-import org.kyupi.graph.Graph;
-import org.kyupi.graph.Graph.Node;
-import org.kyupi.graph.GraphTools;
 
 import jp.ac.kyutech.ci.grouping.QBWeightedSwitchingActivitySim.WeightedNodeSet;
 
@@ -18,7 +19,7 @@ public class QBWeightedSwitchingActivitySimTest {
 
 	@Test
 	public void test() {
-		Graph circuit = GraphTools.benchToGraph("INPUT(a) INPUT(b) OUTPUT(z) z=AND(a,b)");
+		LevelizedCircuit circuit = CircuitTools.parseBench("INPUT(a) INPUT(b) OUTPUT(z) z=AND(a,b)").levelized();
 		//System.out.println(circuit);
 		ArrayList<BVector> v = new ArrayList<>();
 		v.add(new BVector("110")); // activity 0
@@ -30,9 +31,9 @@ public class QBWeightedSwitchingActivitySimTest {
 		BVSource pat = BVSource.from(3, v);
 		QBWeightedSwitchingActivitySim sim = new QBWeightedSwitchingActivitySim(circuit, QBSource.from(pat));
 
-		Node and = circuit.searchNode("z_");
-		Node a = circuit.searchNode("a");
-		Node b = circuit.searchNode("b");
+		LevelizedCell and = circuit.searchCellByName("z_");
+		LevelizedCell a = circuit.searchCellByName("a");
+		LevelizedCell b = circuit.searchCellByName("b");
 
 		WeightedNodeSet wns1 = sim.new WeightedNodeSet();
 		wns1.add(and, 2.2);
