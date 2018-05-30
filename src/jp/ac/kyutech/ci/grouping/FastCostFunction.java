@@ -185,7 +185,7 @@ public class FastCostFunction {
 		return usable;
 	}
 
-	public float evaluate_weighted(int[] clocking, int clocks) {
+	public float evaluate_float(int[] clocking, int clocks) {
 
 		float maxCost = 0;
 
@@ -199,10 +199,10 @@ public class FastCostFunction {
 			}
 			for (int chain_idx = 0; chain_idx < aregions.length; chain_idx++) {
 				for (int cell_idx = 0; cell_idx < aregions[chain_idx].length; cell_idx++) {
-					float cost = 0;
+					int cost = 0;
 					for (int agg_idx = 0; agg_idx < aregions[chain_idx][cell_idx].length; agg_idx++) {
 						if (impactUnion.get(aregions[chain_idx][cell_idx][agg_idx]))
-							cost = cost + nodeCost[aregions[chain_idx][cell_idx][agg_idx]];
+							cost++;
 					}
 					if (cost > maxCost) {
 						maxCost = cost;
@@ -214,14 +214,6 @@ public class FastCostFunction {
 			}
 		}
 		return maxCost;
-	}
-
-	public float evaluate_weighted(HashSet<Cell> aggressor){
-		float cost = 0;
-		for (Cell n : aggressor){
-			cost = cost + nodeCost[node2idx.get(n)];
-		}
-		return cost;
 	}
 	
 	public int getLastWorstClockIdx() {

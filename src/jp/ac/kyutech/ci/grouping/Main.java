@@ -245,7 +245,10 @@ public class Main extends KyupiApp {
 		}else if (prt_method.startsWith("z2")){
 			log.info("PartitionMethod Z2");
 			partAlg = new ScanChainGrouperAlgZ2();
-		} else {
+		} else if (prt_method.startsWith("z3")) {
+			log.info("PartitionMethod Z3(S2 + cost in float)");
+			partAlg = new ScanChainGrouperAlgZ3();
+		}else {
 			File f = new File(prt_method);
 			if (!f.canRead()) {
 				log.error("File does not exist or not readable: " + prt_method);
