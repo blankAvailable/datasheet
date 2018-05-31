@@ -2,40 +2,17 @@ package jp.ac.kyutech.ci.grouping;
 
 import static java.lang.Math.toIntExact;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.function.Predicate;
 
 import org.junit.Test;
-import org.kyupi.circuit.Cell;
-import org.kyupi.circuit.Circuit;
-import org.kyupi.circuit.CircuitTools;
-import org.kyupi.circuit.FormatVerilog;
-import org.kyupi.circuit.LevelizedCircuit;
-import org.kyupi.circuit.Library;
-import org.kyupi.circuit.LibraryOldSAED;
-import org.kyupi.circuit.LibrarySAED;
-import org.kyupi.circuit.MutableCircuit;
+import org.kyupi.circuit.*;
 import org.kyupi.circuit.MutableCircuit.MutableCell;
-import org.kyupi.circuit.Placement;
-import org.kyupi.circuit.ScanChains;
 import org.kyupi.circuit.ScanChains.ScanCell;
 import org.kyupi.circuit.ScanChains.ScanChain;
 import org.kyupi.data.QVExpander;
@@ -95,6 +72,41 @@ public class Main extends KyupiApp {
 
 		printWelcome();
 
+		// load circuit and print basic statistics
+		setLib(new LibraryOldSAED());
+		mcircuit = loadNextCircuitFromArgs();
+		mcircuit.printStats();
+		int nodecount = mcircuit.countNonPseudoNodes();
+		log.info("NonPseudoNodes " + nodecount);
+
+
+		// extract scan chains and clock tree
+		ScanChains chains = new ScanChains(mcircuit);
+		CBInfo cbinfo = collectClockBuffers(mcircuit, chains);
+		log.info("ScanChainCount " + chains.size());
+		log.info("MaxChainLength " + chains.maxChainLength());
+
+		// sep_clk operation. Exits here if executed.
+		if (argsParsed().hasOption("sep_clk")) {
+			String filename = argsParsed().getOptionValue("sep_clk");
+			separateClocks(chains, cbinfo);
+			FileOutputStream os = new FileOutputStream(filename);
+			FormatVerilog.save(os, mcircuit);
+			os.close();
+			printGoodbye();
+			return null;
+		}
+		
+		circuit = mcircuit.levelized();
+
+		chains = new ScanChains(circuit);
+		cbinfo = collectClockBuffers(circuit, chains);
+
+
+		log.info("Calculating impact sets...");
+		HashMap<ScanChain, HashSet<Cell>> chain2impactSet = new HashMap<>();
+		calculateImpactSets(chains, cbinfo, chain2impactSet);
+
 		if (argsParsed().hasOption("ir_drop")) {
 			int[] dropffcount = new int[101];
 			String filename = argsParsed().getOptionValue("ir_drop");
@@ -132,42 +144,6 @@ public class Main extends KyupiApp {
 			log.info("MaxIRdropOnFF " + max + " lineNum " + maxIRdropLine);
 			log.info("AvgIRdropOnFFs " + avg);
 		}
-
-		Util util = new Util();
-		// load circuit and print basic statistics
-		setLib(new LibraryOldSAED());
-		mcircuit = loadNextCircuitFromArgs();
-		mcircuit.printStats();
-		int nodecount = mcircuit.countNonPseudoNodes();
-		log.info("NonPseudoNodes " + nodecount);
-
-
-		// extract scan chains and clock tree
-		ScanChains chains = new ScanChains(mcircuit);
-		CBInfo cbinfo = collectClockBuffers(mcircuit, chains);
-		log.info("ScanChainCount " + chains.size());
-		log.info("MaxChainLength " + chains.maxChainLength());
-
-		// sep_clk operation. Exits here if executed.
-		if (argsParsed().hasOption("sep_clk")) {
-			String filename = argsParsed().getOptionValue("sep_clk");
-			separateClocks(chains, cbinfo);
-			FileOutputStream os = new FileOutputStream(filename);
-			FormatVerilog.save(os, mcircuit);
-			os.close();
-			printGoodbye();
-			return null;
-		}
-		
-		circuit = mcircuit.levelized();
-
-		chains = new ScanChains(circuit);
-		cbinfo = collectClockBuffers(circuit, chains);
-
-
-		log.info("Calculating impact sets...");
-		HashMap<ScanChain, HashSet<Cell>> chain2impactSet = new HashMap<>();
-		calculateImpactSets(chains, cbinfo, chain2impactSet);
 
 		// load placement
 		Placement placement = new Placement(circuit);
@@ -295,6 +271,7 @@ public class Main extends KyupiApp {
 			HashMap<ScanCell, HashSet<Cell>> cell2activeAggressorSet = calculateMaxActiveAggressors(chains, clocking,
 					cell2aggressorSet, chain2impactSet);
 
+			Util util = new Util();
 			FastCostFunction cost = new FastCostFunction(chain2impactSet, cell2aggressorSet);
 			int maxActiveAggressors = printSizeHistogram(cell2activeAggressorSet, cell2aggressorSet);
 			log.info("  MaxActiveAggressors " + maxActiveAggressors);
@@ -743,7 +720,7 @@ public class Main extends KyupiApp {
 
 	@Test
 	public void testB20() throws Exception {
-		setArgs("-d", "testdata/b20/b20_25_10_layout.v", "-def", "testdata/b20/b20_25_10_layout.def");
+		setArgs("-d", "testdata/b17/b17_25_10_layout.v", "-def", "testdata/b17/b17_25_10_layout.def");
 		call();
 		assertEquals(67741, circuit.size());
 		assertEquals(54, circuit.countInputs());
