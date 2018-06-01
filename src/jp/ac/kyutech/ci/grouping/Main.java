@@ -720,6 +720,14 @@ public class Main extends KyupiApp {
 
 	@Test
 	public void testB20() throws Exception {
+		setArgs("-d", "testdata/b20/b20_25_10_layout.v", "-def", "testdata/b20/b20_25_10_layout.def");
+		call();
+		assertEquals(67741, circuit.size());
+		assertEquals(54, circuit.countInputs());
+		assertEquals(32, circuit.countOutputs());
+	}
+
+	public void testB17() throws Exception {
 		setArgs("-d", "testdata/b17/b17_25_10_layout.v", "-def", "testdata/b17/b17_25_10_layout.def");
 		call();
 		assertEquals(67741, circuit.size());
