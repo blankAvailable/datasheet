@@ -69,7 +69,7 @@ public class Main extends KyupiApp {
         printWelcome();
 
         // load circuit and print basic statistics
-        setLib(new LibraryOldSAED());
+        setLib(new LibraryNewSAED90());
         mcircuit = loadNextCircuitFromArgs();
         mcircuit.printStats();
         int nodecount = mcircuit.countNonPseudoNodes();
@@ -401,8 +401,8 @@ public class Main extends KyupiApp {
             return tail;
         tail.add(head);
         if (head.inputCount() > 1) {
-            if (head.isType(LibrarySAED.TYPE_CGLPPR)) {
-                return collectClockBuffers(head.inputCellAt(getLib().pinIndex(LibrarySAED.TYPE_CGLPPR, "CLK")), tail);
+            if (head.isType(LibrarySAED90.TYPE_CGLPPR)) {
+                return collectClockBuffers(head.inputCellAt(getLib().pinIndex(LibrarySAED90.TYPE_CGLPPR, "CLK")), tail);
             } else {
                 log.error("found odd gate in clock tree, terminating here: " + head);
                 return tail;
@@ -418,7 +418,7 @@ public class Main extends KyupiApp {
         int intfNodeIdx = mcircuit.width();
         for(int chainId = 0; chainId < chains.size(); chainId++){
             ScanChain chain = chains.get(chainId);
-            MutableCell clk = mcircuit.new MutableCell(String.format("clk%03d", chainId), LibrarySAED.TYPE_BUF | Library.FLAG_INPUT);
+            MutableCell clk = mcircuit.new MutableCell(String.format("clk%03d", chainId), LibrarySAED90.TYPE_BUF | Library.FLAG_INPUT);
             clk.setIntfPosition(intfNodeIdx++);
             for(ScanCell cell : chain.cells){
                 mcircuit.connect(clk, -1, (MutableCell) cell.node, mcircuit.library().getClockPin(cell.node.type()));
