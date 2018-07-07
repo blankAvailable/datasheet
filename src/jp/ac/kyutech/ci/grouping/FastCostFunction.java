@@ -156,6 +156,37 @@ public class FastCostFunction {
 		return maxCost;
 	}
 
+	public float evaluate_float(int[] clocking, int clocks) {
+
+		float maxCost = 0;
+
+		for (int c = 0; c < clocks; c++) {
+			// compute sets of possibly active nodes current staggered clock.
+			impactUnion.clear();
+			for (int chainIdx = 0; chainIdx < impacts.length; chainIdx++) {
+				if (clocking[chainIdx] == c)
+					//copy impacts[chainIdx] to bitset impactUnion
+					impactUnion.or(impacts[chainIdx]);
+			}
+			for (int chain_idx = 0; chain_idx < aregions.length; chain_idx++) {
+				for (int cell_idx = 0; cell_idx < aregions[chain_idx].length; cell_idx++) {
+					float cost = 0;
+					for (int agg_idx = 0; agg_idx < aregions[chain_idx][cell_idx].length; agg_idx++) {
+						if (impactUnion.get(aregions[chain_idx][cell_idx][agg_idx]))
+							cost += 1.1;
+					}
+					if (cost > maxCost) {
+						maxCost = cost;
+						last_chain_idx = chain_idx;
+						last_cell_idx = cell_idx;
+						last_clock_idx = c;
+					}
+				}
+			}
+		}
+		return maxCost;
+	}
+
 	public boolean evaluate_usable(int[] clocking, int clocks, float threshold) {
 		boolean usable = true;
 
@@ -183,37 +214,6 @@ public class FastCostFunction {
 				break;
 		}
 		return usable;
-	}
-
-	public float evaluate_float(int[] clocking, int clocks) {
-
-		float maxCost = 0;
-
-		for (int c = 0; c < clocks; c++) {
-			// compute sets of possibly active nodes current staggered clock.
-			impactUnion.clear();
-			for (int chainIdx = 0; chainIdx < impacts.length; chainIdx++) {
-				if (clocking[chainIdx] == c)
-					//copy impacts[chainIdx] to bitset impactUnion
-					impactUnion.or(impacts[chainIdx]);
-			}
-			for (int chain_idx = 0; chain_idx < aregions.length; chain_idx++) {
-				for (int cell_idx = 0; cell_idx < aregions[chain_idx].length; cell_idx++) {
-					int cost = 0;
-					for (int agg_idx = 0; agg_idx < aregions[chain_idx][cell_idx].length; agg_idx++) {
-						if (impactUnion.get(aregions[chain_idx][cell_idx][agg_idx]))
-							cost++;
-					}
-					if (cost > maxCost) {
-						maxCost = cost;
-						last_chain_idx = chain_idx;
-						last_cell_idx = cell_idx;
-						last_clock_idx = c;
-					}
-				}
-			}
-		}
-		return maxCost;
 	}
 	
 	public int getLastWorstClockIdx() {
