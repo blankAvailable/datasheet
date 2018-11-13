@@ -5,6 +5,7 @@ import java.util.Random;
 
 /**
  * Created by Zhang on 2017/5/11.
+ * heuristic greedy
  */
 public class ScanChainGrouperAlgZ2 extends ScanChainGrouper {
     private Random r = new Random();

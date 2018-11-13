@@ -83,7 +83,12 @@ public class QBWeightedSwitchingActivitySim extends QBSource {
 		for (WeightedNodeSet g : groups) {
 			Arrays.fill(tmp, 0.0);
 			for (Cell n : g.weights.keySet()) {
-				long v = state.getV(n.outputSignalAt(0));
+				long v;
+				if (n.outputCount() == 0) {
+					v = state.getV(n.inputSignalAt(0));	// take input signal if there are no outputs.
+				} else {
+					v = state.getV(n.outputSignalAt(0));
+				}
 				long diff = v ^ (v >> 1);
 				for (int i = 0; i < 32; i++) {
 					tmp[i] += g.weights.get(n) * (diff & 1L);

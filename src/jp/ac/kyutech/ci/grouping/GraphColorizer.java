@@ -56,6 +56,7 @@ public class GraphColorizer {
 
 	private int[] clause = new int[2];
 
+	//add normal edge.
 	public void addEdge(int v1, int v2) {
 		try {
 			// connected vertices cannot have the same color
@@ -70,6 +71,7 @@ public class GraphColorizer {
 		}
 	}
 
+	//add hyper-edge.
 	public void addEdge(int[] vs, int edgeSize) {
 		if (vs.length < edgeSize)
 			throw new IllegalArgumentException("vs too short");

@@ -3,6 +3,10 @@ package jp.ac.kyutech.ci.sc_grouping_clkaggre;
 import java.util.Arrays;
 import java.util.Random;
 
+/**
+ * heuristic greedy
+ */
+
 public class ScanChainGrouperZ5 extends ScanChainGrouper {
     private int threshold = 0;
 
