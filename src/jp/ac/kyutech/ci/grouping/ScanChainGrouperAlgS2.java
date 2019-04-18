@@ -11,7 +11,7 @@ public class ScanChainGrouperAlgS2 extends ScanChainGrouper {
 	public int[] calculateClocking(int clockCount) {
 
 		if (cost == null) {
-			cost = new FastCostFunction(chain2impactSet, cell2aggressorSet);
+			cost = new FastCostFunction(chain2impactSet, cell2aggressorSet, row_height, placement);
 			log.info("FastCostFunction initialized.");
 		}
 

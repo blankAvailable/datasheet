@@ -1,21 +1,26 @@
 package jp.ac.kyutech.ci.grouping;
 
+import jp.ac.kyutech.ci.grouping.Main.CBInfo;
+import org.kyupi.circuit.Cell;
+import org.kyupi.circuit.Placement;
+import org.kyupi.circuit.ScanChains.ScanCell;
+import org.kyupi.circuit.ScanChains.ScanChain;
+
 import java.util.BitSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
-import org.kyupi.circuit.Cell;
-import org.kyupi.circuit.ScanChains.ScanCell;
-import org.kyupi.circuit.ScanChains.ScanChain;
-
-import jp.ac.kyutech.ci.grouping.Main.CBInfo;
-
 public class FastCostFunction {
 
+	int row_height = 0;
 	HashMap<Cell, Integer> node2idx;
 	BitSet[] impacts;
+	int[][] scancell2idx;
 	int[][][] aregions;
+	int[] idx2fanout;
+	int[] idx2X;
+	int[] idx2Y;
 	float[] nodeCost;
 
 	public FastCostFunction(HashMap<ScanChain, HashSet<Cell>> chain2impactSet,
@@ -79,7 +84,10 @@ public class FastCostFunction {
 	}
 
 	public FastCostFunction(HashMap<ScanChain, HashSet<Cell>> chain2impactSet,
-			HashMap<ScanCell, HashSet<Cell>> cell2aggressorSet) {
+							HashMap<ScanCell, HashSet<Cell>> cell2aggressorSet, int row_height, Placement placement) {
+
+		this.row_height = row_height;
+		System.out.println("row height: " + this.row_height);
 
 		node2idx = new HashMap<>();
 		int idx = 0;
@@ -97,12 +105,15 @@ public class FastCostFunction {
 		}
 
 		aregions = new int[impacts.length][][];
+		scancell2idx = new int[impacts.length][];
 		for (ScanChain chain : chain2impactSet.keySet()) {
 			int chain_idx = chain.chainIdx();
 			int cells = chain.cells.size();
 			aregions[chain_idx] = new int[cells][];
+			scancell2idx[chain_idx] = new int[cells];
 			for (int cell_idx = 0; cell_idx < cells; cell_idx++) {
 				ScanCell cell = chain.cells.get(cell_idx);
+				scancell2idx[chain_idx][cell_idx] = node2idx.get(cell.node);
 				HashSet<Cell> agg = cell2aggressorSet.get(cell);
 				idx = 0;
 				for (Cell n : agg)
@@ -114,6 +125,15 @@ public class FastCostFunction {
 					if (node2idx.containsKey(n))
 						aregions[chain_idx][cell_idx][idx++] = node2idx.get(n);
 			}
+		}
+
+		idx2fanout = new int[node2idx.size()];
+		idx2X = new int[node2idx.size()];
+		idx2Y = new int[node2idx.size()];
+		for (Map.Entry<Cell, Integer> entry : node2idx.entrySet()){
+			idx2fanout[entry.getValue()] = entry.getKey().outputCount() + 1;
+			idx2X[entry.getValue()] = placement.getX(entry.getKey());
+			idx2Y[entry.getValue()] = placement.getY(entry.getKey());
 		}
 	}
 
@@ -172,8 +192,19 @@ public class FastCostFunction {
 				for (int cell_idx = 0; cell_idx < aregions[chain_idx].length; cell_idx++) {
 					float cost = 0;
 					for (int agg_idx = 0; agg_idx < aregions[chain_idx][cell_idx].length; agg_idx++) {
-						if (impactUnion.get(aregions[chain_idx][cell_idx][agg_idx]))
-							cost += 1.1;
+						if (impactUnion.get(aregions[chain_idx][cell_idx][agg_idx])) {
+							if (Math.abs(idx2X[scancell2idx[chain_idx][cell_idx]] - idx2X[aregions[chain_idx][cell_idx][agg_idx]])
+									+ Math.abs(idx2Y[scancell2idx[chain_idx][cell_idx]] - idx2Y[aregions[chain_idx][cell_idx][agg_idx]])<=row_height){
+								cost += (float)idx2fanout[aregions[chain_idx][cell_idx][agg_idx]] + 1;
+							}else{
+								cost += (float)(idx2fanout[aregions[chain_idx][cell_idx][agg_idx]] + 1) * row_height /
+										(Math.abs(idx2X[scancell2idx[chain_idx][cell_idx]] - idx2X[aregions[chain_idx][cell_idx][agg_idx]])
+												+ Math.abs(idx2Y[scancell2idx[chain_idx][cell_idx]] - idx2Y[aregions[chain_idx][cell_idx][agg_idx]]));
+								/*System.out.println("check the cost" + (float)(idx2fanout[aregions[chain_idx][cell_idx][agg_idx]] + 1) * row_height /
+										(Math.abs(idx2X[scancell2idx[chain_idx][cell_idx]] - idx2X[aregions[chain_idx][cell_idx][agg_idx]])
+												+ Math.abs(idx2Y[scancell2idx[chain_idx][cell_idx]] - idx2Y[aregions[chain_idx][cell_idx][agg_idx]])));*/
+							}
+						}
 					}
 					if (cost > maxCost) {
 						maxCost = cost;

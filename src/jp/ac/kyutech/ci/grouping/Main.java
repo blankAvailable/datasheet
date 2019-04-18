@@ -1,15 +1,6 @@
 package jp.ac.kyutech.ci.grouping;
 
-import static java.lang.Math.toIntExact;
-
-import java.io.*;
-import java.math.BigInteger;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.text.NumberFormat;
-import java.util.*;
-import java.util.function.Predicate;
-
+import jp.ac.kyutech.ci.grouping.QBWeightedSwitchingActivitySim.WeightedNodeSet;
 import org.junit.Test;
 import org.kyupi.circuit.*;
 import org.kyupi.circuit.MutableCircuit.MutableCell;
@@ -25,7 +16,15 @@ import org.kyupi.misc.KyupiApp;
 import org.kyupi.misc.StringFilter;
 import org.kyupi.sim.BBPlainSim;
 
-import jp.ac.kyutech.ci.grouping.QBWeightedSwitchingActivitySim.WeightedNodeSet;
+import java.io.*;
+import java.math.BigInteger;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
+import java.util.*;
+import java.util.function.Predicate;
+
+import static java.lang.Math.toIntExact;
 
 public class Main extends KyupiApp {
 
@@ -158,7 +157,7 @@ public class Main extends KyupiApp {
 
 		// read aggressor region size parameters
 		double arx = doubleFromArgsOrDefault("arx", 600);
-		double ary = doubleFromArgsOrDefault("ary", 14);
+		double ary = doubleFromArgsOrDefault("ary", 7);
 		int arxnm = (int) (arx * NAND_WIDTH);
 		int arynm = (int) (ary * ROW_HEIGHT);
 		log.info("AggressorRegionSize X " + arx + "  Y " + ary);
@@ -239,6 +238,8 @@ public class Main extends KyupiApp {
 
 		// set algorithm parameters, if an algorithm is selected
 		if (partAlg != null) {
+			partAlg.setRowHeight(ROW_HEIGHT);
+			partAlg.setPlacement(placement);
 			partAlg.setChains(chains);
 			partAlg.setCell2aggressorSet(cell2aggressorSet);
 			partAlg.setChain2impactSet(chain2impactSet);
@@ -272,7 +273,7 @@ public class Main extends KyupiApp {
 					cell2aggressorSet, chain2impactSet);
 
 			Util util = new Util();
-			FastCostFunction cost = new FastCostFunction(chain2impactSet, cell2aggressorSet);
+			FastCostFunction cost = new FastCostFunction(chain2impactSet, cell2aggressorSet, ROW_HEIGHT, placement);
 			int maxActiveAggressors = printSizeHistogram(cell2activeAggressorSet, cell2aggressorSet);
 			log.info("  MaxActiveAggressors " + maxActiveAggressors);
 			log.info(" CostAfterGrouping " + cost.evaluate(clocking, clocks));
