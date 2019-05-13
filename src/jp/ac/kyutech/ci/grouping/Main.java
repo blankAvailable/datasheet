@@ -156,8 +156,8 @@ public class Main extends KyupiApp {
 		}
 
 		// read aggressor region size parameters
-		double arx = doubleFromArgsOrDefault("arx", 600);
-		double ary = doubleFromArgsOrDefault("ary", 7);
+		double arx = doubleFromArgsOrDefault("arx", 300);
+		double ary = doubleFromArgsOrDefault("ary", 2);
 		int arxnm = (int) (arx * NAND_WIDTH);
 		int arynm = (int) (ary * ROW_HEIGHT);
 		log.info("AggressorRegionSize X " + arx + "  Y " + ary);
@@ -276,7 +276,7 @@ public class Main extends KyupiApp {
 			FastCostFunction cost = new FastCostFunction(chain2impactSet, cell2aggressorSet, ROW_HEIGHT, placement);
 			int maxActiveAggressors = printSizeHistogram(cell2activeAggressorSet, cell2aggressorSet);
 			log.info("  MaxActiveAggressors " + maxActiveAggressors);
-			log.info(" CostAfterGrouping " + cost.evaluate(clocking, clocks));
+			log.info(" CostAfterGrouping " + cost.evaluate_float(clocking, clocks));
 			maxOverlap[case_idx] = maxActiveAggressors;
 			log.info("Clocking "
 					+ Arrays.toString(clocking).replaceAll("\\[", "").replaceAll("\\]", "").replaceAll(",", ""));
