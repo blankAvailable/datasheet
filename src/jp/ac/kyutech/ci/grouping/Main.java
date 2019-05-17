@@ -467,7 +467,7 @@ public class Main extends KyupiApp {
 			MutableCell clk = mcircuit.new MutableCell(String.format("clk%03d", chainIdx), LibrarySAED90.TYPE_BUF | Library.FLAG_INPUT);
 			clk.setIntfPosition(intfNodeIdx++);
 			for (ScanCell cell : chain.cells) {
-				mcircuit.connect(clk, -1, (MutableCell) cell.node, circuit.library().getClockPin(cell.node.type()));
+				mcircuit.connect(clk, -1, (MutableCell)cell.node, mcircuit.library().getClockPin(cell.node.type()));
 			}
 		}
 	}

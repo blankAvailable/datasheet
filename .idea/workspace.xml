@@ -2,11 +2,58 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="cae84d3d-baa2-453a-b51c-b59977cd4fe2" name="Default" comment="fix a bug that when number of groups &gt; than number of chains">
+      <change afterPath="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/grouping/jp/ac/kyutech/ci/grouping/FastCostFunction.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/grouping/jp/ac/kyutech/ci/grouping/GraphColorizer.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/grouping/jp/ac/kyutech/ci/grouping/GraphColorizerTest.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/grouping/jp/ac/kyutech/ci/grouping/Main$1.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/grouping/jp/ac/kyutech/ci/grouping/Main$2.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/grouping/jp/ac/kyutech/ci/grouping/Main$3.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/grouping/jp/ac/kyutech/ci/grouping/Main$CBInfo.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/grouping/jp/ac/kyutech/ci/grouping/Main.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/grouping/jp/ac/kyutech/ci/grouping/PartitionGenerator.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/grouping/jp/ac/kyutech/ci/grouping/PartitionGeneratorFile.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/grouping/jp/ac/kyutech/ci/grouping/PartitionGeneratorRandom.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/grouping/jp/ac/kyutech/ci/grouping/PartitionGeneratorSeq.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/grouping/jp/ac/kyutech/ci/grouping/PartitionGeneratorTest.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/grouping/jp/ac/kyutech/ci/grouping/QBWeightedSwitchingActivitySim$WeightedNodeSet.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/grouping/jp/ac/kyutech/ci/grouping/QBWeightedSwitchingActivitySim.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/grouping/jp/ac/kyutech/ci/grouping/QBWeightedSwitchingActivitySimTest.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/grouping/jp/ac/kyutech/ci/grouping/ScanChainGrouper.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/grouping/jp/ac/kyutech/ci/grouping/ScanChainGrouperAlgS1.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/grouping/jp/ac/kyutech/ci/grouping/ScanChainGrouperAlgS2$1.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/grouping/jp/ac/kyutech/ci/grouping/ScanChainGrouperAlgS2$1P.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/grouping/jp/ac/kyutech/ci/grouping/ScanChainGrouperAlgS2.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/grouping/jp/ac/kyutech/ci/grouping/ScanChainGrouperAlgZ1$1.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/grouping/jp/ac/kyutech/ci/grouping/ScanChainGrouperAlgZ1$1P.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/grouping/jp/ac/kyutech/ci/grouping/ScanChainGrouperAlgZ1.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/grouping/jp/ac/kyutech/ci/grouping/ScanChainGrouperAlgZ2.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/grouping/jp/ac/kyutech/ci/grouping/ScanChainGrouperAlgZ3$1.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/grouping/jp/ac/kyutech/ci/grouping/ScanChainGrouperAlgZ3$1P.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/grouping/jp/ac/kyutech/ci/grouping/ScanChainGrouperAlgZ3.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/grouping/jp/ac/kyutech/ci/grouping/Util.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/grouping/jp/ac/kyutech/ci/sc_grouping_clkaggre/CBInfo.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/grouping/jp/ac/kyutech/ci/sc_grouping_clkaggre/FastCostFunction.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/grouping/jp/ac/kyutech/ci/sc_grouping_clkaggre/GraphColorizer.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/grouping/jp/ac/kyutech/ci/sc_grouping_clkaggre/Main$1.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/grouping/jp/ac/kyutech/ci/sc_grouping_clkaggre/Main$2.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/grouping/jp/ac/kyutech/ci/sc_grouping_clkaggre/Main$3.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/grouping/jp/ac/kyutech/ci/sc_grouping_clkaggre/Main.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/grouping/jp/ac/kyutech/ci/sc_grouping_clkaggre/MinCircuit.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/grouping/jp/ac/kyutech/ci/sc_grouping_clkaggre/QBWeightedSwitchingActivitySim$WeightedNodeSet.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/grouping/jp/ac/kyutech/ci/sc_grouping_clkaggre/QBWeightedSwitchingActivitySim.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/grouping/jp/ac/kyutech/ci/sc_grouping_clkaggre/RandomGrouping.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/grouping/jp/ac/kyutech/ci/sc_grouping_clkaggre/ScanChainGrouper.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/grouping/jp/ac/kyutech/ci/sc_grouping_clkaggre/ScanChainGrouperZ1.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/grouping/jp/ac/kyutech/ci/sc_grouping_clkaggre/ScanChainGrouperZ2.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/grouping/jp/ac/kyutech/ci/sc_grouping_clkaggre/ScanChainGrouperZ3.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/grouping/jp/ac/kyutech/ci/sc_grouping_clkaggre/ScanChainGrouperZ5.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/grouping/jp/ac/kyutech/ci/sc_grouping_clkaggre/ScanChainGrouping.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/grouping/jp/ac/kyutech/ci/sc_grouping_clkaggre/ScanChianGrouperZ4.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/out/production/grouping/jp/ac/kyutech/ci/sc_grouping_clkaggre/SeqGrouping.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/jp/ac/kyutech/ci/grouping/GraphColorizer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/jp/ac/kyutech/ci/grouping/GraphColorizer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/jp/ac/kyutech/ci/grouping/ScanChainGrouperAlgZ2.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/jp/ac/kyutech/ci/grouping/ScanChainGrouperAlgZ2.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/QBWeightedSwitchingActivitySim.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/QBWeightedSwitchingActivitySim.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/ScanChainGrouperZ5.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/ScanChainGrouperZ5.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/jp/ac/kyutech/ci/grouping/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/jp/ac/kyutech/ci/grouping/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../kyupi/src/org/kyupi/circuit/MutableCircuit.java" beforeDir="false" afterPath="$PROJECT_DIR$/../kyupi/src/org/kyupi/circuit/MutableCircuit.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -20,156 +67,69 @@
       <FILTER>jp.ac.kyutech.ci.grouping.*</FILTER>
     </SUITE>
   </component>
-  <component name="FUSProjectUsageTrigger">
-    <session id="-1260805622">
-      <usages-collector id="statistics.lifecycle.project">
-        <counts>
-          <entry key="project.closed" value="2" />
-          <entry key="project.open.time.10" value="1" />
-          <entry key="project.open.time.8" value="1" />
-          <entry key="project.open.time.9" value="1" />
-          <entry key="project.opened" value="3" />
-        </counts>
-      </usages-collector>
-      <usages-collector id="statistics.file.types.edit" />
-      <usages-collector id="statistics.file.extensions.open">
-        <counts>
-          <entry key="class" value="1" />
-          <entry key="java" value="1" />
-        </counts>
-      </usages-collector>
-      <usages-collector id="statistics.file.extensions.edit" />
-      <usages-collector id="statistics.file.types.open">
-        <counts>
-          <entry key="CLASS" value="1" />
-          <entry key="JAVA" value="1" />
-        </counts>
-      </usages-collector>
-    </session>
-    <session id="869538642">
-      <usages-collector id="statistics.lifecycle.project">
-        <counts>
-          <entry key="project.closed" value="3" />
-          <entry key="project.open.time.1" value="1" />
-          <entry key="project.open.time.10" value="2" />
-          <entry key="project.open.time.11" value="1" />
-          <entry key="project.open.time.9" value="1" />
-          <entry key="project.opened" value="5" />
-        </counts>
-      </usages-collector>
-      <usages-collector id="statistics.file.extensions.open">
-        <counts>
-          <entry key="java" value="12" />
-        </counts>
-      </usages-collector>
-      <usages-collector id="statistics.file.types.open">
-        <counts>
-          <entry key="JAVA" value="12" />
-        </counts>
-      </usages-collector>
-      <usages-collector id="statistics.file.types.edit">
-        <counts>
-          <entry key="JAVA" value="39" />
-        </counts>
-      </usages-collector>
-      <usages-collector id="statistics.vcs.git.usages" />
-      <usages-collector id="statistics.file.extensions.edit">
-        <counts>
-          <entry key="java" value="39" />
-        </counts>
-      </usages-collector>
-    </session>
+  <component name="DefaultGradleProjectSettings">
+    <option name="isMigrated" value="true" />
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/GraphColorizer.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="532">
+            <state relative-caret-position="560">
               <caret line="33" column="45" selection-start-line="33" selection-start-column="45" selection-end-line="33" selection-end-column="45" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/QBWeightedSwitchingActivitySim.java">
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/grouping/Main.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1406">
-              <caret line="90" column="17" selection-start-line="90" selection-start-column="17" selection-end-line="90" selection-end-column="17" />
+            <state relative-caret-position="-282">
+              <caret line="469" column="93" selection-start-line="469" selection-start-column="93" selection-end-line="469" selection-end-column="93" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/Main.java">
+        <entry file="file://$PROJECT_DIR$/../kyupi/src/org/kyupi/circuit/Library.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="437">
-              <caret line="67" column="40" selection-start-line="67" selection-start-column="40" selection-end-line="67" selection-end-column="40" />
+            <state relative-caret-position="10560">
+              <caret line="557" column="15" selection-start-line="557" selection-start-column="15" selection-end-line="557" selection-end-column="15" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../kyupi/src/org/kyupi/circuit/Cell.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1900">
+              <caret line="101" column="46" selection-start-line="101" selection-start-column="42" selection-end-line="101" selection-end-column="46" />
               <folding>
-                <element signature="method#Main#0;class#Main#0" />
-                <element signature="docComment;method#call#0;class#Main#0" />
-                <element signature="method#call#0;class#Main#0" />
-                <element signature="method#collectClockBuffers#0;class#Main#0" />
-                <element signature="method#collectClockBuffers#1;class#Main#0" />
-                <element signature="method#separateClks#0;class#Main#0" />
+                <element signature="e#199#200#0" expanded="true" />
+                <element signature="e#217#218#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/ScanChainGrouperZ1.java">
+        <entry file="file://$PROJECT_DIR$/../kyupi/src/org/kyupi/circuit/MutableCircuit.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="95">
-              <caret line="5" column="47" selection-start-line="5" selection-start-column="47" selection-end-line="5" selection-end-column="47" />
+            <state relative-caret-position="7520">
+              <caret line="425" column="15" selection-start-line="425" selection-start-column="15" selection-end-line="425" selection-end-column="15" />
+              <folding>
+                <element signature="e#10279#10280#0" expanded="true" />
+                <element signature="e#10300#10301#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/ScanChainGrouperZ3.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="304">
-              <caret line="17" column="31" selection-start-line="17" selection-start-column="31" selection-end-line="17" selection-end-column="31" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/grouping/ScanChainGrouperAlgZ3.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="76">
-              <caret line="6" column="13" selection-start-line="6" selection-start-column="13" selection-end-line="6" selection-end-column="13" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/grouping/ScanChainGrouperAlgZ2.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="266">
-              <caret line="15" selection-start-line="15" selection-end-line="16" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/grouping/ScanChainGrouperAlgS2.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="285">
-              <caret line="41" column="25" selection-start-line="41" selection-start-column="25" selection-end-line="41" selection-end-column="25" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/ScanChainGrouperZ5.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="95">
-              <caret line="6" column="19" selection-start-line="6" selection-start-column="19" selection-end-line="6" selection-end-column="19" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
+            <state relative-caret-position="640">
+              <caret line="34" selection-start-line="34" selection-end-line="34" />
             </state>
           </provider>
         </entry>
@@ -193,6 +153,10 @@
       <find>objectiv</find>
       <find>testB20</find>
       <find>AverageCost</find>
+      <find>connect</find>
+      <find>Library</find>
+      <find>library</find>
+      <find>library()</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -212,80 +176,38 @@
         <option value="$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/ScanChainGrouperZ3.java" />
         <option value="$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/Main.java" />
         <option value="$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/ScanChianGrouperZ4.java" />
-        <option value="$PROJECT_DIR$/src/jp/ac/kyutech/ci/grouping/Main.java" />
         <option value="$PROJECT_DIR$/src/jp/ac/kyutech/ci/grouping/GraphColorizer.java" />
         <option value="$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/QBWeightedSwitchingActivitySim.java" />
         <option value="$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/ScanChainGrouperZ5.java" />
         <option value="$PROJECT_DIR$/src/jp/ac/kyutech/ci/grouping/ScanChainGrouperAlgZ2.java" />
+        <option value="$PROJECT_DIR$/../kyupi/src/org/kyupi/circuit/MutableCircuit.java" />
+        <option value="$PROJECT_DIR$/src/jp/ac/kyutech/ci/grouping/Main.java" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="-8" />
-    <option name="y" value="-8" />
-    <option name="width" value="1936" />
-    <option name="height" value="1066" />
+    <option name="y" value="30" />
+    <option name="width" value="1170" />
+    <option name="height" value="1500" />
   </component>
   <component name="ProjectLevelVcsManager">
     <OptionsSetting value="false" id="Update" />
     <ConfirmationsSetting value="2" id="Add" />
   </component>
   <component name="ProjectView">
-    <navigator currentView="PackagesPane" proportions="" version="1">
+    <navigator proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
     </navigator>
-    <panes>
-      <pane id="Scope" />
-      <pane id="ProjectPane">
-        <subPane>
-          <expand>
-            <path>
-              <item name="grouping" type="b2602c69:ProjectViewProjectNode" />
-              <item name="grouping" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="grouping" type="b2602c69:ProjectViewProjectNode" />
-              <item name="grouping" type="462c0819:PsiDirectoryNode" />
-              <item name="testdata" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="grouping" type="b2602c69:ProjectViewProjectNode" />
-              <item name="grouping" type="462c0819:PsiDirectoryNode" />
-              <item name="testdata" type="462c0819:PsiDirectoryNode" />
-              <item name="b19" type="462c0819:PsiDirectoryNode" />
-            </path>
-          </expand>
-          <select />
-        </subPane>
-      </pane>
-      <pane id="PackagesPane">
-        <subPane>
-          <expand>
-            <path>
-              <item name="grouping" type="58d84e3e:PackageViewProjectNode" />
-              <item name="grouping" type="616d4139:PackageViewModuleNode" />
-            </path>
-            <path>
-              <item name="grouping" type="58d84e3e:PackageViewProjectNode" />
-              <item name="grouping" type="616d4139:PackageViewModuleNode" />
-              <item name="jp.ac.kyutech.ci" type="1f31426a:PackageElementNode" />
-            </path>
-            <path>
-              <item name="grouping" type="58d84e3e:PackageViewProjectNode" />
-              <item name="grouping" type="616d4139:PackageViewModuleNode" />
-              <item name="jp.ac.kyutech.ci" type="1f31426a:PackageElementNode" />
-              <item name="grouping" type="1f31426a:PackageElementNode" />
-            </path>
-          </expand>
-          <select />
-        </subPane>
-      </pane>
-    </panes>
+    <panes />
   </component>
   <component name="PropertiesComponent">
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1541657103568" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
+    <property name="project.structure.last.edited" value="Project" />
+    <property name="project.structure.proportion" value="0.15" />
+    <property name="project.structure.side.proportion" value="0.2" />
+    <property name="settings.editor.selected.configurable" value="configurable.group.editor" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -327,7 +249,7 @@
       </Profilers>
       <method />
     </configuration>
-    <configuration default="true" type="Applet" factoryName="Applet">
+    <configuration default="true" type="Applet">
       <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -351,7 +273,7 @@
     <configuration name="Main_ATS" type="Application" factoryName="Application" temporary="true">
       <option name="MAIN_CLASS_NAME" value="jp.ac.kyutech.ci.grouping.Main" />
       <module name="grouping" />
-      <option name="PROGRAM_PARAMETERS" value="-d testdata\b19\b19_60_50_layout.v -def testdata\b19\b19_60_50_layout.def -clk 5 -prt_method z2" />
+      <option name="PROGRAM_PARAMETERS" value="-d testdata\b22\b22_25_10_scan.vg -sep_clk testdata\b22\b22_25_10_scan_multiclk.vg" />
       <extension name="coverage">
         <pattern>
           <option name="PATTERN" value="jp.ac.kyutech.ci.grouping.*" />
@@ -393,12 +315,14 @@
       </method>
     </configuration>
     <configuration default="true" type="JUnit" factoryName="JUnit">
+      <option name="TEST_OBJECT" value="class" />
       <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration default="true" type="TestNG" factoryName="TestNG">
+    <configuration default="true" type="TestNG">
+      <option name="TEST_OBJECT" value="CLASS" />
       <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
       <properties />
       <listeners />
@@ -408,9 +332,9 @@
     </configuration>
     <list>
       <item itemvalue="Application.Main" />
+      <item itemvalue="Application.Main_ATS" />
       <item itemvalue="JUnit.Main_ATStestb17" />
       <item itemvalue="JUnit.Main_ATStestb20" />
-      <item itemvalue="Application.Main_ATS" />
     </list>
     <recent_temporary>
       <list>
@@ -517,9 +441,43 @@
     </history-entry>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1066" extended-state="6" />
+    <frame x="-7" y="-7" width="815" height="1184" extended-state="6" />
+    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.20735608" />
+      <window_info content_ui="combo" id="Project" order="0" weight="0.21268164" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info id="Capture Tool" order="2" />
+      <window_info id="Designer" order="3" />
+      <window_info id="UI Designer" order="4" />
+      <window_info id="Nl-Palette" order="5" />
+      <window_info id="Favorites" order="6" side_tool="true" />
+      <window_info id="Learn" order="7" />
+      <window_info id="Image Layers" order="8" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.4553232" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
+      <window_info anchor="bottom" id="Messages" order="8" weight="0.32794678" />
+      <window_info anchor="bottom" id="Terminal" order="9" />
+      <window_info anchor="bottom" id="Version Control" order="10" weight="0.42381975" />
+      <window_info anchor="right" id="Commander" order="0" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="right" id="Palette" order="3" />
+      <window_info anchor="right" id="Maven Projects" order="4" />
+      <window_info anchor="right" id="Capture Analysis" order="5" />
+      <window_info anchor="right" id="Properties" order="6" />
+      <window_info anchor="right" id="Theme Preview" order="7" />
+      <window_info anchor="right" id="Coverage" order="8" side_tool="true" weight="0.329429" />
+      <window_info anchor="right" id="Palette&#9;" order="9" />
+      <window_info anchor="right" id="Maven" order="10" />
+    </layout>
+    <layout-to-restore>
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.21268164" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Capture Tool" order="2" />
       <window_info id="Designer" order="3" />
@@ -539,48 +497,17 @@
       <window_info anchor="bottom" id="Messages" order="8" weight="0.3284055" />
       <window_info anchor="bottom" id="Terminal" order="9" />
       <window_info anchor="bottom" id="Version Control" order="10" weight="0.42381975" />
-      <window_info anchor="right" id="Commander" order="0" weight="0.4" />
-      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
-      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-      <window_info anchor="right" id="Palette" order="3" />
-      <window_info anchor="right" id="Maven Projects" order="4" />
-      <window_info anchor="right" id="Capture Analysis" order="5" />
-      <window_info anchor="right" id="Properties" order="6" />
-      <window_info anchor="right" id="Theme Preview" order="7" />
-      <window_info anchor="right" id="Coverage" order="8" side_tool="true" weight="0.329429" />
-      <window_info anchor="right" id="Palette&#9;" order="9" />
-    </layout>
-    <layout-to-restore>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.23735726" />
-      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info id="Capture Tool" order="2" />
-      <window_info id="Designer" order="3" />
-      <window_info id="UI Designer" order="4" />
-      <window_info id="Nl-Palette" order="5" />
-      <window_info id="Favorites" order="6" side_tool="true" />
-      <window_info id="Learn" order="7" />
-      <window_info id="Image Layers" order="8" />
-      <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.3717001" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
-      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
-      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
-      <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
-      <window_info anchor="bottom" id="Messages" order="8" weight="0.3284055" />
-      <window_info anchor="bottom" id="Terminal" order="9" />
-      <window_info anchor="bottom" id="Version Control" order="10" weight="0.32845187" />
-      <window_info anchor="right" id="Commander" order="0" weight="0.4" />
-      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
-      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-      <window_info anchor="right" id="Palette" order="3" />
-      <window_info anchor="right" id="Maven Projects" order="4" />
-      <window_info anchor="right" id="Capture Analysis" order="5" />
-      <window_info anchor="right" id="Properties" order="6" />
-      <window_info anchor="right" id="Theme Preview" order="7" />
-      <window_info anchor="right" id="Coverage" order="8" side_tool="true" weight="0.329429" />
-      <window_info anchor="right" id="Palette&#9;" order="9" />
+      <window_info anchor="right" id="Maven" order="0" />
+      <window_info anchor="right" id="Commander" order="1" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="2" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="3" weight="0.25" />
+      <window_info anchor="right" id="Palette" order="4" />
+      <window_info anchor="right" id="Maven Projects" order="5" />
+      <window_info anchor="right" id="Capture Analysis" order="6" />
+      <window_info anchor="right" id="Properties" order="7" />
+      <window_info anchor="right" id="Theme Preview" order="8" />
+      <window_info anchor="right" id="Coverage" order="9" side_tool="true" weight="0.329429" />
+      <window_info anchor="right" id="Palette&#9;" order="10" />
     </layout-to-restore>
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -608,9 +535,20 @@
         </entry>
       </map>
     </option>
-  </component>
-  <component name="VcsContentAnnotationSettings">
-    <option name="myLimit" value="2678400000" />
+    <option name="RECENT_FILTERS">
+      <map>
+        <entry key="Branch">
+          <value>
+            <list />
+          </value>
+        </entry>
+        <entry key="User">
+          <value>
+            <list />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="change to check the max wsa diff from all rounds of patterns" />
@@ -631,15 +569,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/grouping/PartitionGeneratorRandom.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="494">
-          <caret line="29" column="38" selection-start-line="29" selection-start-column="38" selection-end-line="29" selection-end-column="38" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_121/src.zip!/java/util/HashMap.java" />
-    <entry file="file://$PROJECT_DIR$/../kyupi/src/org/kyupi/graph/LibraryNangate.java" />
     <entry file="file://$PROJECT_DIR$/../kyupi/src/org/kyupi/graph/LibrarySAED.java" />
     <entry file="jar://C:/Program Files/Java/jdk1.8.0_121/src.zip!/java/util/LinkedList.java" />
     <entry file="file://$PROJECT_DIR$/../kyupi/src/org/kyupi/graph/GraphTools.java" />
@@ -714,13 +643,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../kyupi/src/org/kyupi/circuit/MutableCircuit.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1320">
-          <caret line="569" column="28" selection-start-line="569" selection-start-column="28" selection-end-line="569" selection-end-column="28" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../kyupi/src/org/kyupi/circuit/Circuit.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="399">
@@ -742,13 +664,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../kyupi/src/org/kyupi/circuit/LevelizedCircuit.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="6042">
-          <caret line="352" selection-start-line="352" selection-end-line="352" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../kyupi/src/org/kyupi/circuit/LevelizedCircuitTest.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="76">
@@ -767,13 +682,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="38">
           <caret line="4" column="28" selection-start-line="4" selection-start-column="28" selection-end-line="4" selection-end-column="28" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/grouping/Main.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3686">
-          <caret line="338" column="55" selection-start-line="338" selection-start-column="55" selection-end-line="338" selection-end-column="55" />
         </state>
       </provider>
     </entry>
@@ -857,23 +765,47 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/GraphColorizer.java">
+    <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/grouping/ScanChainGrouperAlgZ2.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="532">
-          <caret line="33" column="45" selection-start-line="33" selection-start-column="45" selection-end-line="33" selection-end-column="45" />
+        <state relative-caret-position="238">
+          <caret line="15" selection-start-line="15" selection-end-line="16" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/QBWeightedSwitchingActivitySim.java">
+    <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/ScanChainGrouperZ3.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1406">
-          <caret line="90" column="17" selection-start-line="90" selection-start-column="17" selection-end-line="90" selection-end-column="17" />
+        <state>
+          <caret line="17" column="31" selection-start-line="17" selection-start-column="31" selection-end-line="17" selection-end-column="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/grouping/ScanChainGrouperAlgZ3.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret line="6" column="13" selection-start-line="6" selection-start-column="13" selection-end-line="6" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/ScanChainGrouperZ5.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret line="6" column="19" selection-start-line="6" selection-start-column="19" selection-end-line="6" selection-end-column="19" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/ScanChainGrouperZ1.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="20">
+          <caret line="5" column="47" selection-start-line="5" selection-start-column="47" selection-end-line="5" selection-end-column="47" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/Main.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="437">
+        <state relative-caret-position="20">
           <caret line="67" column="40" selection-start-line="67" selection-start-column="40" selection-end-line="67" selection-end-column="40" />
           <folding>
             <element signature="method#Main#0;class#Main#0" />
@@ -886,50 +818,152 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/ScanChainGrouperZ1.java">
+    <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/QBWeightedSwitchingActivitySim.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="95">
-          <caret line="5" column="47" selection-start-line="5" selection-start-column="47" selection-end-line="5" selection-end-column="47" />
+        <state relative-caret-position="468">
+          <caret line="90" column="17" selection-start-line="90" selection-start-column="17" selection-end-line="90" selection-end-column="17" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/ScanChainGrouperZ3.java">
+    <entry file="file://$PROJECT_DIR$/../kyupi/src/org/kyupi/circuit/ScanChains.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="304">
-          <caret line="17" column="31" selection-start-line="17" selection-start-column="31" selection-end-line="17" selection-end-column="31" />
+        <state relative-caret-position="122">
+          <caret line="28" column="20" selection-start-line="28" selection-start-column="20" selection-end-line="28" selection-end-column="20" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/grouping/ScanChainGrouperAlgZ3.java">
+    <entry file="file://$PROJECT_DIR$/../kyupi/src/org/kyupi/circuit/LevelizedCircuit.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="76">
-          <caret line="6" column="13" selection-start-line="6" selection-start-column="13" selection-end-line="6" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/ScanChainGrouperZ5.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="95">
-          <caret line="6" column="19" selection-start-line="6" selection-start-column="19" selection-end-line="6" selection-end-column="19" />
+        <state relative-caret-position="182">
+          <caret line="404" column="19" selection-start-line="404" selection-start-column="19" selection-end-line="404" selection-end-column="19" />
           <folding>
-            <element signature="imports" expanded="true" />
+            <element signature="e#11324#11325#0" expanded="true" />
+            <element signature="e#11345#11346#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/grouping/ScanChainGrouperAlgZ2.java">
+    <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/sc_grouping_clkaggre/GraphColorizer.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="266">
-          <caret line="15" selection-start-line="15" selection-end-line="16" />
+        <state relative-caret-position="560">
+          <caret line="33" column="45" selection-start-line="33" selection-start-column="45" selection-end-line="33" selection-end-column="45" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../kyupi/src/org/kyupi/circuit/Library.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="10560">
+          <caret line="557" column="15" selection-start-line="557" selection-start-column="15" selection-end-line="557" selection-end-column="15" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../kyupi/src/org/kyupi/circuit/Cell.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1900">
+          <caret line="101" column="46" selection-start-line="101" selection-start-column="42" selection-end-line="101" selection-end-column="46" />
+          <folding>
+            <element signature="e#199#200#0" expanded="true" />
+            <element signature="e#217#218#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../kyupi/src/org/kyupi/circuit/MutableCircuit.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="7520">
+          <caret line="425" column="15" selection-start-line="425" selection-start-column="15" selection-end-line="425" selection-end-column="15" />
+          <folding>
+            <element signature="e#10279#10280#0" expanded="true" />
+            <element signature="e#10300#10301#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/grouping/ScanChainGrouperAlgS2.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="285">
-          <caret line="41" column="25" selection-start-line="41" selection-start-column="25" selection-end-line="41" selection-end-column="25" />
+        <state relative-caret-position="640">
+          <caret line="34" selection-start-line="34" selection-end-line="34" />
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/jp/ac/kyutech/ci/grouping/Main.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-282">
+          <caret line="469" column="93" selection-start-line="469" selection-start-column="93" selection-end-line="469" selection-end-column="93" />
+        </state>
+      </provider>
+    </entry>
+  </component>
+  <component name="masterDetails">
+    <states>
+      <state key="ArtifactsStructureConfigurable.UI">
+        <settings>
+          <artifact-editor />
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="FacetStructureConfigurable.UI">
+        <settings>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="GlobalLibrariesConfigurable.UI">
+        <settings>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="JdkListConfigurable.UI">
+        <settings>
+          <last-edited>1.8_x64</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ModuleStructureConfigurable.UI">
+        <settings>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ProjectLibrariesConfigurable.UI">
+        <settings>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+    </states>
   </component>
 </project>
