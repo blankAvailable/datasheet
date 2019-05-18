@@ -317,7 +317,7 @@ public class Main extends KyupiApp {
 			for (ScanCell sc : cell2aggressorSet.keySet()) {
 				WeightedNodeSet wns = sim.new WeightedNodeSet();
 				for (Cell n : cell2aggressorSet.get(sc)) {
-					wns.add(n, 1.0);
+					wns.add(n, n.outputCount());
 				}
 				aggressor_wns.put(sc, wns);
 			}

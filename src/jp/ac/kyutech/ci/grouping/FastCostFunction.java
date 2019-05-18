@@ -87,7 +87,6 @@ public class FastCostFunction {
 							HashMap<ScanCell, HashSet<Cell>> cell2aggressorSet, int row_height, Placement placement) {
 
 		this.row_height = row_height;
-		System.out.println("row height: " + this.row_height);
 
 		node2idx = new HashMap<>();
 		int idx = 0;
