@@ -10,7 +10,7 @@ import java.util.Random;
 public class ScanChainGrouperAlgZ2 extends ScanChainGrouper {
     private Random r = new Random();
     private FastCostFunction cost;
-    private int threshold = 0;
+    private float threshold = 0;
 
     public ScanChainGrouperAlgZ2(){
 
@@ -24,7 +24,7 @@ public class ScanChainGrouperAlgZ2 extends ScanChainGrouper {
         int[] thrClocking = new  int[chains.size()];
         for (int i = 0; i < thrClocking.length; i++)
             thrClocking[i] = i;
-        threshold = cost.evaluate(thrClocking, chains.size());
+        threshold = cost.evaluate_float(thrClocking, chains.size());
         log.info("Lower bound: " + threshold);
 
         if (clockCount >= chains.size()){
@@ -33,7 +33,7 @@ public class ScanChainGrouperAlgZ2 extends ScanChainGrouper {
             Random r = new Random();
             int[] clocking = new int[chains.size()];
 
-            int[] costlog = new int[chains.size()];
+            float[] costlog = new float[chains.size()];
             for (int initialchain = 0; initialchain < chains.size(); initialchain++) {
 
                 //initial clocksflag
@@ -50,7 +50,6 @@ public class ScanChainGrouperAlgZ2 extends ScanChainGrouper {
 
                     if (clocking[chainIdx] != -1)
                         continue;
-
                     System.out.println("Clocking " + Arrays.toString(clocking).replaceAll("\\[", "").replaceAll("\\]", "")
                             .replaceAll(",", ""));
 
@@ -58,7 +57,7 @@ public class ScanChainGrouperAlgZ2 extends ScanChainGrouper {
                         for (int clkIdx = 0; clkIdx < clockCount; clkIdx++) {
                             if (clocksFlag[clkIdx] == 1) {
                                 clocking[chainIdx] = clkIdx;
-                                if (cost.evaluate_usable(clocking, clockCount, threshold)) {
+                                if (cost.evaluate_float(clocking, clockCount) < threshold || Math.abs(cost.evaluate_float(clocking, clockCount) - threshold) < 0.001) {
                                     log.info("group " + clkIdx + " is reusable");
                                     break;
                                 }
@@ -75,12 +74,12 @@ public class ScanChainGrouperAlgZ2 extends ScanChainGrouper {
                             clocksFlag[i] = 1;
                         }
                     } else {
-                        int tempMinCost = Integer.MAX_VALUE;
+                        float tempMinCost = Float.MAX_VALUE;
                         int tempBestGroup = -1;
                         for (int clkIdx = 0; clkIdx < clockCount; clkIdx++) {
                             clocking[chainIdx] = clkIdx;
-                            if (tempMinCost > cost.evaluate(clocking, clockCount)) {
-                                tempMinCost = cost.evaluate(clocking, clockCount);
+                            if (tempMinCost > cost.evaluate_float(clocking, clockCount)) {
+                                tempMinCost = cost.evaluate_float(clocking, clockCount);
                                 tempBestGroup = clkIdx;
                             }
                         }
@@ -89,13 +88,13 @@ public class ScanChainGrouperAlgZ2 extends ScanChainGrouper {
                         clocksFlag[tempBestGroup] = 1;
                     }
                 }
-                costlog[initialchain] = cost.evaluate(clocking, clockCount);
+                costlog[initialchain] = cost.evaluate_float(clocking, clockCount);
                 log.info("check cost: " + costlog[initialchain]);
             }
 
-            int sumcost = 0;
-            int maxcost = 0;
-            int mincost = Integer.MAX_VALUE;
+            float sumcost = 0;
+            float maxcost = 0;
+            float mincost = Float.MAX_VALUE;
             for (int chainIdx = 0; chainIdx < costlog.length; chainIdx++) {
                 sumcost += costlog[chainIdx];
                 if (costlog[chainIdx] > maxcost)
