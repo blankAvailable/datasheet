@@ -159,13 +159,13 @@ public class ScanChainGrouperAlgS2 extends ScanChainGrouper {
 		if (s != null) {
 			System.arraycopy(s, 0, solution, 0, solution.length);
 			log.info("Solution for " + middle + " (" + g.countEdges() + " constraints on " + g.size() + " chains)");
-			if (middle > lb)
+			if (middle > lb && Math.abs(middle - lb) > 0.001)
 				return searchLowerBound(lb, middle, clockCount, pairCost, solution);
 			else
 				return middle;
 		} else {
 			log.info("Conflict for " + middle + " (" + g.countEdges() + " constraints on " + g.size() + " chains)");
-			if (middle < (ub - 1))
+			if (middle < (ub - 1) && Math.abs(middle - (ub -1)) > 0.001)
 				return searchLowerBound(middle, ub, clockCount, pairCost, solution);
 			else
 				return middle + 1;

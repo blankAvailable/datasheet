@@ -104,8 +104,8 @@ public class ScanChainGrouperAlgZ2 extends ScanChainGrouper {
             }
 
             log.info("AverageCost: " + sumcost/costlog.length);
-            log.info("MaxCost: " + maxcost);
-            log.info(("MinCost: " + mincost));
+            log.info("MaxCost: " + String.format("%.2f", maxcost));
+            log.info("MinCost: " + String.format("%.2f", mincost));
 
             return clocking;
         }

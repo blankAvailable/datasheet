@@ -276,7 +276,7 @@ public class Main extends KyupiApp {
 			FastCostFunction cost = new FastCostFunction(chain2impactSet, cell2aggressorSet, ROW_HEIGHT, placement);
 			int maxActiveAggressors = printSizeHistogram(cell2activeAggressorSet, cell2aggressorSet);
 			log.info("  MaxActiveAggressors " + maxActiveAggressors);
-			log.info(" CostAfterGrouping " + cost.evaluate_float(clocking, clocks));
+			log.info(" CostAfterGrouping " + String.format("%.2f", cost.evaluate_float(clocking, clocks)));
 			maxOverlap[case_idx] = maxActiveAggressors;
 			log.info("Clocking "
 					+ Arrays.toString(clocking).replaceAll("\\[", "").replaceAll("\\]", "").replaceAll(",", ""));
